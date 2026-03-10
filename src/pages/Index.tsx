@@ -26,73 +26,72 @@ const GAME_HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Ping Pong Master</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#141b2d;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Inter',system-ui,sans-serif}
+body{background:#e8b730;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Nunito',sans-serif}
 canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 #ui-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none}
 .screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px}
 .screen.active{display:flex}
 
 h1{
-  font-size:clamp(32px,7vw,64px);
-  font-weight:900;
-  background:linear-gradient(135deg,#4a9eff,#f0803c);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-  margin-bottom:4px;letter-spacing:1px;
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(36px,9vw,60px);
+  color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,0.15);
+  margin-bottom:4px;
 }
 .subtitle{
-  font-size:clamp(11px,2.2vw,15px);
-  color:rgba(255,255,255,0.35);
-  margin-bottom:28px;letter-spacing:5px;text-transform:uppercase;font-weight:600;
+  font-size:clamp(12px,2.5vw,16px);
+  color:rgba(255,255,255,0.7);
+  margin-bottom:24px;letter-spacing:3px;text-transform:uppercase;font-weight:700;
 }
 
 .btn{
-  background:linear-gradient(135deg,#4a9eff,#3578de);
-  border:none;color:#fff;padding:13px 44px;
-  font-size:clamp(13px,2.8vw,17px);cursor:pointer;
+  background:#fff;border:none;color:#e8b730;padding:14px 48px;
+  font-size:clamp(14px,3vw,18px);cursor:pointer;
   letter-spacing:2px;text-transform:uppercase;
-  border-radius:12px;margin:6px;font-weight:700;
-  box-shadow:0 4px 20px rgba(74,158,255,0.3);
+  border-radius:50px;margin:6px;font-weight:800;
+  box-shadow:0 4px 15px rgba(0,0,0,0.15);
   transition:all .2s ease;font-family:inherit;
 }
-.btn:hover,.btn:active{transform:translateY(-1px);box-shadow:0 6px 28px rgba(74,158,255,0.45)}
+.btn:hover,.btn:active{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.2)}
 
 .btn-secondary{
-  background:linear-gradient(135deg,#2a3450,#1e2740);
-  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  background:rgba(255,255,255,0.2);color:#fff;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
-.btn-secondary:hover,.btn-secondary:active{box-shadow:0 6px 22px rgba(0,0,0,0.4)}
+.btn-secondary:hover,.btn-secondary:active{background:rgba(255,255,255,0.3)}
 
-.difficulty-row{display:flex;gap:6px;margin:14px 0;flex-wrap:wrap;justify-content:center}
+.difficulty-row{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap;justify-content:center}
 .diff-btn{
-  padding:9px 22px;font-size:clamp(10px,1.8vw,13px);
-  background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);
-  color:rgba(255,255,255,0.5);border-radius:10px;
+  padding:10px 24px;font-size:clamp(11px,2vw,14px);
+  background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.3);
+  color:rgba(255,255,255,0.8);border-radius:50px;
   box-shadow:none;font-family:inherit;
 }
-.diff-btn:hover{background:rgba(255,255,255,0.1);box-shadow:none}
+.diff-btn:hover{background:rgba(255,255,255,0.3);box-shadow:none}
 .diff-btn.selected{
-  background:linear-gradient(135deg,#4a9eff,#3578de);
-  border-color:transparent;color:#fff;
-  box-shadow:0 3px 14px rgba(74,158,255,0.3);
+  background:#fff;
+  border-color:#fff;color:#e8b730;
+  box-shadow:0 3px 12px rgba(0,0,0,0.15);
 }
 
 .winner-text{
-  font-size:clamp(22px,5.5vw,44px);font-weight:900;
-  background:linear-gradient(135deg,#ffd764,#f0803c);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;margin-bottom:20px;
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(28px,7vw,48px);
+  color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,0.15);
+  margin-bottom:20px;
 }
 
-.controls-hint{font-size:clamp(9px,1.6vw,12px);color:rgba(255,255,255,0.2);margin-top:22px;line-height:1.7;font-weight:400}
+.controls-hint{font-size:clamp(9px,1.8vw,12px);color:rgba(255,255,255,0.5);margin-top:18px;line-height:1.7;font-weight:600}
 
 #pause-text{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-size:clamp(26px,5.5vw,52px);font-weight:900;
-  color:rgba(255,255,255,0.15);letter-spacing:10px;display:none;z-index:20;
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(30px,7vw,56px);
+  color:rgba(255,255,255,0.6);letter-spacing:8px;display:none;z-index:20;
+  text-shadow:3px 3px 0 rgba(0,0,0,0.1);
 }
 </style>
 </head>
@@ -101,7 +100,7 @@ h1{
 <div id="pause-text">PAUSED</div>
 <div id="ui-overlay">
   <div class="screen active" id="start-screen">
-    <h1>PING PONG</h1>
+    <h1>🏓 PING PONG</h1>
     <div class="subtitle">M A S T E R</div>
     <div class="difficulty-row">
       <button class="btn diff-btn" data-diff="0">Easy</button>
@@ -109,7 +108,7 @@ h1{
       <button class="btn diff-btn" data-diff="2">Hard</button>
     </div>
     <button class="btn" id="play-btn">PLAY</button>
-    <div class="controls-hint">Mouse or Touch to move paddle &middot; P to pause</div>
+    <div class="controls-hint">Drag to move paddle &middot; P to pause</div>
   </div>
   <div class="screen" id="end-screen">
     <div class="winner-text" id="winner-text"></div>
@@ -141,63 +140,66 @@ const canvas=document.getElementById('gc');
 const ctx=canvas.getContext('2d');
 let W,H,scale;
 
+// Vertical orientation (portrait)
 function resize(){
-  const ar=4/3,vw=window.innerWidth,vh=window.innerHeight;
+  const ar=3/4,vw=window.innerWidth,vh=window.innerHeight;
   if(vw/vh>ar){H=vh;W=H*ar}else{W=vw;H=W/ar}
   W=Math.floor(W);H=Math.floor(H);
-  canvas.width=W;canvas.height=H;scale=W/800;
+  canvas.width=W;canvas.height=H;scale=W/600;
 }
 resize();
 window.addEventListener('resize',resize);
 
-// ===== CONSTANTS =====
-const GW=800,GH=600,WINNING_SCORE=10;
-const PW=14,PH=85,BALL_R=9,BALL_START=5,BALL_MAX=12,BALL_ACCEL=0.15;
-const PAD_X_L=35,PAD_X_R=GW-35-PW;
+// ===== CONSTANTS (vertical: 600w x 800h) =====
+const GW=600,GH=800,WINNING_SCORE=10;
+const PW=90,PH=16,BALL_R=12,BALL_START=4.5,BALL_MAX=11,BALL_ACCEL=0.12;
+const PAD_Y_TOP=60,PAD_Y_BOT=GH-60;
 
 // ===== COLORS =====
-const COL_BG1='#141b2d',COL_BG2='#1a2340';
-const COL_PLAYER='#4a9eff',COL_PLAYER2='#2d6fd6';
-const COL_AI='#f0803c',COL_AI2='#d4602a';
-const COL_BALL='#ffffff',COL_BALL_GLOW='rgba(255,255,255,0.08)';
-const COL_LINE='rgba(255,255,255,0.04)';
-const COL_SCORE_P='rgba(74,158,255,0.18)',COL_SCORE_A='rgba(240,128,60,0.18)';
+const COL_BG='#e8b730';
+const COL_TABLE='#e87d5a';
+const COL_TABLE_DARK='#d66a48';
+const COL_BORDER='#1a1a1a';
+const COL_NET='#fff';
+const COL_BALL='#fff';
+const COL_SHADOW='rgba(0,0,0,0.18)';
+const COL_SCORE='rgba(255,240,220,0.35)';
 
 // ===== STATE =====
 let difficulty=1;
-const AI_SPEEDS=[3,5.5,9],AI_ERRORS=[55,22,4];
+const AI_SPEEDS=[2.8,5,8.5],AI_ERRORS=[60,25,5];
 let gameState='menu',shakeX=0,shakeY=0,shakeMag=0;
 let playerScore=0,aiScore=0;
-let playerY=300,aiY=300,aiTargetY=300;
+let playerX=300,aiX=300,aiTargetX=300;
 let ballX,ballY,ballVX,ballVY,ballSpeed;
-const trail=[],MAX_TRAIL=14;
+const trail=[],MAX_TRAIL=12;
 const particles=[];
 
 function resetBall(dir){
-  ballX=400;ballY=300;ballSpeed=BALL_START;
+  ballX=300;ballY=400;ballSpeed=BALL_START;
   const a=(Math.random()*0.7-0.35);
-  ballVX=Math.cos(a)*ballSpeed*(dir||1);
-  ballVY=Math.sin(a)*ballSpeed;
+  ballVY=Math.cos(a)*ballSpeed*(dir||1);
+  ballVX=Math.sin(a)*ballSpeed;
   trail.length=0;
 }
 function resetGame(){
-  playerScore=0;aiScore=0;playerY=300;aiY=300;aiTargetY=300;
+  playerScore=0;aiScore=0;playerX=300;aiX=300;aiTargetX=300;
   resetBall(1);particles.length=0;shakeMag=0;
 }
 
 // ===== CONTROLS =====
-let mouseY=300;
+let mouseX=300;
 canvas.addEventListener('mousemove',e=>{
   const r=canvas.getBoundingClientRect();
-  mouseY=((e.clientY-r.top)/r.height)*GH;
+  mouseX=((e.clientX-r.left)/r.width)*GW;
 });
 canvas.addEventListener('touchstart',e=>{e.preventDefault();initAudio();
   const r=canvas.getBoundingClientRect();
-  mouseY=((e.touches[0].clientY-r.top)/r.height)*GH;
+  mouseX=((e.touches[0].clientX-r.left)/r.width)*GW;
 },{passive:false});
 canvas.addEventListener('touchmove',e=>{e.preventDefault();
   const r=canvas.getBoundingClientRect();
-  mouseY=((e.touches[0].clientY-r.top)/r.height)*GH;
+  mouseX=((e.touches[0].clientX-r.left)/r.width)*GW;
 },{passive:false});
 document.addEventListener('keydown',e=>{
   if(e.key==='p'||e.key==='P'){
@@ -210,29 +212,32 @@ document.addEventListener('keydown',e=>{
 function spawnParticles(x,y,color,count){
   for(let i=0;i<count;i++){
     const a=Math.random()*Math.PI*2,s=Math.random()*2.5+0.8;
-    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,color,size:Math.random()*2.5+1});
+    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,color,size:Math.random()*3+1.5});
   }
 }
 
 // ===== AI =====
 function updateAI(dt){
   const spd=AI_SPEEDS[difficulty]*dt,err=AI_ERRORS[difficulty];
-  if(ballVX>0){
-    const t=(PAD_X_R-ballX)/Math.max(Math.abs(ballVX),0.1);
-    aiTargetY=ballY+ballVY*t+(Math.random()-0.5)*err;
+  if(ballVY<0){
+    const t=(PAD_Y_TOP-ballY)/Math.min(-0.1,ballVY);
+    aiTargetX=ballX+ballVX*t+(Math.random()-0.5)*err;
   }
-  const diff=aiTargetY-aiY;
-  if(Math.abs(diff)>2)aiY+=Math.sign(diff)*Math.min(Math.abs(diff),spd);
-  aiY=Math.max(PH/2,Math.min(GH-PH/2,aiY));
+  const diff=aiTargetX-aiX;
+  if(Math.abs(diff)>2)aiX+=Math.sign(diff)*Math.min(Math.abs(diff),spd);
+  aiX=Math.max(PW/2+40,Math.min(GW-PW/2-40,aiX));
 }
+
+// Table boundaries
+const TBL_L=40,TBL_R=GW-40,TBL_T=50,TBL_B=GH-50;
 
 // ===== PHYSICS =====
 function update(dt){
   if(gameState!=='playing')return;
 
-  // Player
-  playerY+=(mouseY-playerY)*0.14*dt;
-  playerY=Math.max(PH/2,Math.min(GH-PH/2,playerY));
+  // Player (bottom)
+  playerX+=(mouseX-playerX)*0.14*dt;
+  playerX=Math.max(PW/2+TBL_L,Math.min(TBL_R-PW/2,playerX));
 
   updateAI(dt);
 
@@ -243,35 +248,35 @@ function update(dt){
   trail.push({x:ballX,y:ballY,life:1});
   if(trail.length>MAX_TRAIL)trail.shift();
 
-  // Wall bounce
-  if(ballY-BALL_R<0){ballY=BALL_R;ballVY=-ballVY;sndWall();spawnParticles(ballX,0,'rgba(255,255,255,0.5)',4)}
-  if(ballY+BALL_R>GH){ballY=GH-BALL_R;ballVY=-ballVY;sndWall();spawnParticles(ballX,GH,'rgba(255,255,255,0.5)',4)}
+  // Wall bounce (left/right)
+  if(ballX-BALL_R<TBL_L){ballX=TBL_L+BALL_R;ballVX=-ballVX;sndWall();spawnParticles(TBL_L,ballY,'rgba(255,255,255,0.6)',4)}
+  if(ballX+BALL_R>TBL_R){ballX=TBL_R-BALL_R;ballVX=-ballVX;sndWall();spawnParticles(TBL_R,ballY,'rgba(255,255,255,0.6)',4)}
 
-  // Player paddle
-  if(ballVX<0&&ballX-BALL_R<PAD_X_L+PW&&ballX-BALL_R>PAD_X_L-5&&ballY>playerY-PH/2-BALL_R&&ballY<playerY+PH/2+BALL_R){
-    const hp=(ballY-playerY)/(PH/2);
+  // Player paddle (bottom)
+  if(ballVY>0&&ballY+BALL_R>PAD_Y_BOT-PH/2&&ballY+BALL_R<PAD_Y_BOT+PH/2+5&&ballX>playerX-PW/2-BALL_R&&ballX<playerX+PW/2+BALL_R){
+    const hp=(ballX-playerX)/(PW/2);
     ballSpeed=Math.min(ballSpeed+BALL_ACCEL,BALL_MAX);
     const ang=hp*Math.PI/3;
-    ballVX=Math.cos(ang)*ballSpeed;ballVY=Math.sin(ang)*ballSpeed;
-    ballX=PAD_X_L+PW+BALL_R;
-    sndHit();spawnParticles(ballX,ballY,COL_PLAYER,6);
+    ballVX=Math.sin(ang)*ballSpeed;ballVY=-Math.cos(ang)*ballSpeed;
+    ballY=PAD_Y_BOT-PH/2-BALL_R;
+    sndHit();spawnParticles(ballX,ballY,'#e87d5a',6);
     shakeMag=Math.abs(hp)*3+1.5;
   }
 
-  // AI paddle
-  if(ballVX>0&&ballX+BALL_R>PAD_X_R&&ballX+BALL_R<PAD_X_R+PW+5&&ballY>aiY-PH/2-BALL_R&&ballY<aiY+PH/2+BALL_R){
-    const hp=(ballY-aiY)/(PH/2);
+  // AI paddle (top)
+  if(ballVY<0&&ballY-BALL_R<PAD_Y_TOP+PH/2&&ballY-BALL_R>PAD_Y_TOP-PH/2-5&&ballX>aiX-PW/2-BALL_R&&ballX<aiX+PW/2+BALL_R){
+    const hp=(ballX-aiX)/(PW/2);
     ballSpeed=Math.min(ballSpeed+BALL_ACCEL,BALL_MAX);
-    const ang=Math.PI-hp*Math.PI/3;
-    ballVX=Math.cos(ang)*ballSpeed;ballVY=Math.sin(ang)*ballSpeed;
-    ballX=PAD_X_R-BALL_R;
-    sndHit();spawnParticles(ballX,ballY,COL_AI,6);
+    const ang=hp*Math.PI/3;
+    ballVX=Math.sin(ang)*ballSpeed;ballVY=Math.cos(ang)*ballSpeed;
+    ballY=PAD_Y_TOP+PH/2+BALL_R;
+    sndHit();spawnParticles(ballX,ballY,'#4ab8a1',6);
     shakeMag=Math.abs(hp)*3+1.5;
   }
 
   // Scoring
-  if(ballX<0){aiScore++;sndScore();spawnParticles(0,ballY,COL_AI,10);checkWin();resetBall(1)}
-  if(ballX>GW){playerScore++;sndScore();spawnParticles(GW,ballY,COL_PLAYER,10);checkWin();resetBall(-1)}
+  if(ballY>GH+20){aiScore++;sndScore();spawnParticles(ballX,GH,'#4ab8a1',10);checkWin();resetBall(-1)}
+  if(ballY<-20){playerScore++;sndScore();spawnParticles(ballX,0,'#e87d5a',10);checkWin();resetBall(1)}
 
   // Shake decay
   if(shakeMag>0){
@@ -284,13 +289,13 @@ function update(dt){
     const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=0.028*dt;
     if(p.life<=0)particles.splice(i,1);
   }
-  for(const t of trail)t.life-=0.055*dt;
+  for(const t of trail)t.life-=0.06*dt;
 }
 
 function checkWin(){
   if(playerScore>=WINNING_SCORE||aiScore>=WINNING_SCORE){
     gameState='ended';
-    document.getElementById('winner-text').textContent=playerScore>=WINNING_SCORE?'YOU WIN!':'AI WINS!';
+    document.getElementById('winner-text').textContent=playerScore>=WINNING_SCORE?'🎉 YOU WIN!':'🤖 AI WINS!';
     showScreen('end-screen');sndWin();
   }
 }
@@ -300,48 +305,64 @@ function draw(){
   ctx.save();
   ctx.setTransform(scale,0,0,scale,shakeX*scale,shakeY*scale);
 
-  // Background gradient
-  const bgGrad=ctx.createLinearGradient(0,0,0,GH);
-  bgGrad.addColorStop(0,COL_BG1);bgGrad.addColorStop(1,COL_BG2);
-  ctx.fillStyle=bgGrad;ctx.fillRect(0,0,GW,GH);
+  // Yellow background
+  ctx.fillStyle=COL_BG;
+  ctx.fillRect(0,0,GW,GH);
 
-  // Subtle grid
-  ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=1;
-  for(let i=0;i<GW;i+=40){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,GH);ctx.stroke()}
-  for(let i=0;i<GH;i+=40){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(GW,i);ctx.stroke()}
+  // Table with border
+  const tbPad=6;
+  ctx.fillStyle=COL_BORDER;
+  ctx.beginPath();
+  ctx.roundRect(TBL_L-tbPad,TBL_T-tbPad,TBL_R-TBL_L+tbPad*2,TBL_B-TBL_T+tbPad*2,12);
+  ctx.fill();
 
-  // Center line
-  ctx.setLineDash([8,12]);ctx.strokeStyle=COL_LINE;ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(400,0);ctx.lineTo(400,GH);ctx.stroke();
-  ctx.setLineDash([]);
+  // Table surface
+  ctx.fillStyle=COL_TABLE;
+  ctx.beginPath();
+  ctx.roundRect(TBL_L,TBL_T,TBL_R-TBL_L,TBL_B-TBL_T,8);
+  ctx.fill();
 
-  // Center circle
-  ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.arc(400,300,60,0,Math.PI*2);ctx.stroke();
+  // Center net (horizontal white bar)
+  ctx.fillStyle='#fff';
+  ctx.shadowColor='rgba(0,0,0,0.1)';ctx.shadowBlur=6;ctx.shadowOffsetY=2;
+  ctx.fillRect(TBL_L-4,GH/2-4,TBL_R-TBL_L+8,8);
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+
+  // Center line (vertical, subtle)
+  ctx.fillStyle='rgba(255,230,200,0.25)';
+  ctx.fillRect(GW/2-2,TBL_T,4,TBL_B-TBL_T);
+
+  // Scores on table
+  ctx.font='800 80px Fredoka One,Nunito,sans-serif';ctx.textAlign='center';
+  ctx.fillStyle=COL_SCORE;
+  ctx.fillText(aiScore,GW/2,GH/2-60);
+  ctx.fillText(playerScore,GW/2,GH/2+110);
 
   // Trail
   for(let i=0;i<trail.length;i++){
     const t=trail[i];if(t.life<=0)continue;
-    ctx.globalAlpha=t.life*0.2;
-    ctx.fillStyle='rgba(255,255,255,0.6)';
-    ctx.beginPath();ctx.arc(t.x,t.y,BALL_R*t.life*0.7,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=t.life*0.15;
+    ctx.fillStyle='rgba(0,0,0,0.3)';
+    ctx.beginPath();ctx.arc(t.x,t.y,BALL_R*t.life*0.6,0,Math.PI*2);ctx.fill();
   }
   ctx.globalAlpha=1;
 
-  // Ball soft glow
-  const bg=ctx.createRadialGradient(ballX,ballY,0,ballX,ballY,BALL_R*5);
-  bg.addColorStop(0,'rgba(255,255,255,0.1)');bg.addColorStop(1,'rgba(255,255,255,0)');
-  ctx.fillStyle=bg;ctx.fillRect(ballX-BALL_R*5,ballY-BALL_R*5,BALL_R*10,BALL_R*10);
+  // Ball shadow
+  ctx.fillStyle=COL_SHADOW;
+  ctx.beginPath();ctx.ellipse(ballX+3,ballY+4,BALL_R,BALL_R*0.7,0,0,Math.PI*2);ctx.fill();
 
   // Ball
-  ctx.fillStyle=COL_BALL;
-  ctx.shadowColor='rgba(255,255,255,0.4)';ctx.shadowBlur=12;
+  const ballGrad=ctx.createRadialGradient(ballX-3,ballY-3,1,ballX,ballY,BALL_R);
+  ballGrad.addColorStop(0,'#ffffff');ballGrad.addColorStop(1,'#e0e0e0');
+  ctx.fillStyle=ballGrad;
   ctx.beginPath();ctx.arc(ballX,ballY,BALL_R,0,Math.PI*2);ctx.fill();
-  ctx.shadowBlur=0;
+  // Ball outline
+  ctx.strokeStyle='rgba(0,0,0,0.12)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(ballX,ballY,BALL_R,0,Math.PI*2);ctx.stroke();
 
-  // Paddles
-  drawPaddle(PAD_X_L,playerY,COL_PLAYER,COL_PLAYER2);
-  drawPaddle(PAD_X_R,aiY,COL_AI,COL_AI2);
+  // Draw paddles as rackets
+  drawRacket(playerX,PAD_Y_BOT,'#e84878','#c73060',false);
+  drawRacket(aiX,PAD_Y_TOP,'#2ab89e','#1e9a82',true);
 
   // Particles
   for(const p of particles){
@@ -350,27 +371,32 @@ function draw(){
   }
   ctx.globalAlpha=1;
 
-  // Scores
-  ctx.font='700 56px Inter,system-ui,sans-serif';ctx.textAlign='center';
-  ctx.fillStyle=COL_SCORE_P;ctx.fillText(playerScore,300,72);
-  ctx.fillStyle=COL_SCORE_A;ctx.fillText(aiScore,500,72);
-
-  // Score labels
-  ctx.font='600 11px Inter,system-ui,sans-serif';
-  ctx.fillStyle='rgba(255,255,255,0.1)';ctx.letterSpacing='2px';
-  ctx.fillText('YOU',300,92);ctx.fillText('AI',500,92);
-
   ctx.restore();
 }
 
-function drawPaddle(x,y,c1,c2){
-  const r=7;
-  const g=ctx.createLinearGradient(x,y-PH/2,x,y+PH/2);
+function drawRacket(x,y,c1,c2,isTop){
+  // Paddle head (rounded rect)
+  const rw=PW,rh=PH+8,r=10;
+  const ry=isTop?y-rh/2:y-rh/2;
+  
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.beginPath();ctx.roundRect(x-rw/2+2,ry+3,rw,rh,r);ctx.fill();
+
+  // Racket face
+  const g=ctx.createLinearGradient(x-rw/2,ry,x+rw/2,ry+rh);
   g.addColorStop(0,c1);g.addColorStop(1,c2);
   ctx.fillStyle=g;
-  ctx.shadowColor=c1;ctx.shadowBlur=16;ctx.shadowOffsetX=0;ctx.shadowOffsetY=0;
-  ctx.beginPath();ctx.roundRect(x,y-PH/2,PW,PH,r);ctx.fill();
-  ctx.shadowBlur=0;
+  ctx.beginPath();ctx.roundRect(x-rw/2,ry,rw,rh,r);ctx.fill();
+
+  // Handle
+  const hw=10,hh=18;
+  const handleY=isTop?ry-hh+4:ry+rh-4;
+  ctx.fillStyle='#8B5E3C';
+  ctx.beginPath();ctx.roundRect(x-hw/2,handleY,hw,hh,4);ctx.fill();
+  // Handle shadow
+  ctx.fillStyle='#6B4226';
+  ctx.beginPath();ctx.roundRect(x-hw/2+2,handleY,hw-4,hh,3);ctx.fill();
 }
 
 // ===== UI =====
