@@ -29,25 +29,25 @@ const GAME_HTML = `<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#1a6b3c;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Nunito',sans-serif}
+body{background:#e8f5e9;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Nunito',sans-serif}
 canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 #ui-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none}
 .screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px}
 .screen.active{display:flex}
-h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,0.25);margin-bottom:4px}
-.subtitle{font-size:clamp(11px,2.2vw,14px);color:rgba(255,255,255,0.65);margin-bottom:20px;letter-spacing:3px;text-transform:uppercase;font-weight:700}
-.btn{background:#fff;border:none;color:#1a6b3c;padding:13px 44px;font-size:clamp(13px,2.8vw,17px);cursor:pointer;letter-spacing:2px;text-transform:uppercase;border-radius:50px;margin:6px;font-weight:800;box-shadow:0 4px 15px rgba(0,0,0,0.2);transition:all .2s ease;font-family:inherit}
-.btn:hover,.btn:active{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.25)}
-.btn-secondary{background:rgba(255,255,255,0.18);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.12)}
-.btn-secondary:hover,.btn-secondary:active{background:rgba(255,255,255,0.28)}
+h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#1b5e20;text-shadow:2px 2px 0 rgba(255,255,255,0.5);margin-bottom:4px}
+.subtitle{font-size:clamp(11px,2.2vw,14px);color:rgba(27,94,32,0.5);margin-bottom:20px;letter-spacing:3px;text-transform:uppercase;font-weight:700}
+.btn{background:#43a047;border:none;color:#fff;padding:13px 44px;font-size:clamp(13px,2.8vw,17px);cursor:pointer;letter-spacing:2px;text-transform:uppercase;border-radius:50px;margin:6px;font-weight:800;box-shadow:0 4px 15px rgba(67,160,71,0.3);transition:all .2s ease;font-family:inherit}
+.btn:hover,.btn:active{transform:translateY(-2px);box-shadow:0 6px 22px rgba(67,160,71,0.4);background:#388e3c}
+.btn-secondary{background:rgba(27,94,32,0.12);color:#2e7d32;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.btn-secondary:hover,.btn-secondary:active{background:rgba(27,94,32,0.2)}
 .difficulty-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center}
-.diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.75);border-radius:50px;box-shadow:none;font-family:inherit}
-.diff-btn:hover{background:rgba(255,255,255,0.25);box-shadow:none}
-.diff-btn.selected{background:#fff;border-color:#fff;color:#1a6b3c;box-shadow:0 3px 12px rgba(0,0,0,0.18)}
-.winner-text{font-family:'Fredoka One',cursive;font-size:clamp(26px,6.5vw,44px);color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,0.2);margin-bottom:18px}
-.final-score{font-size:clamp(16px,4vw,24px);color:rgba(255,255,255,0.7);margin-bottom:20px;font-weight:700}
-.controls-hint{font-size:clamp(9px,1.7vw,11px);color:rgba(255,255,255,0.4);margin-top:16px;line-height:1.7;font-weight:600}
-#pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fredoka One',cursive;font-size:clamp(28px,6.5vw,50px);color:rgba(255,255,255,0.5);letter-spacing:8px;display:none;z-index:20;text-shadow:3px 3px 0 rgba(0,0,0,0.15)}
+.diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(67,160,71,0.1);border:2px solid rgba(67,160,71,0.3);color:rgba(27,94,32,0.6);border-radius:50px;box-shadow:none;font-family:inherit;cursor:pointer}
+.diff-btn:hover{background:rgba(67,160,71,0.2);box-shadow:none}
+.diff-btn.selected{background:#43a047;border-color:#43a047;color:#fff;box-shadow:0 3px 12px rgba(67,160,71,0.3)}
+.winner-text{font-family:'Fredoka One',cursive;font-size:clamp(26px,6.5vw,44px);color:#1b5e20;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:18px}
+.final-score{font-size:clamp(16px,4vw,24px);color:rgba(27,94,32,0.5);margin-bottom:20px;font-weight:700}
+.controls-hint{font-size:clamp(9px,1.7vw,11px);color:rgba(27,94,32,0.35);margin-top:16px;line-height:1.7;font-weight:600}
+#pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fredoka One',cursive;font-size:clamp(28px,6.5vw,50px);color:rgba(27,94,32,0.35);letter-spacing:8px;display:none;z-index:20;text-shadow:2px 2px 0 rgba(255,255,255,0.3)}
 </style>
 </head>
 <body>
@@ -96,7 +96,7 @@ function sndWin(){playTone(523,0.18,'sine',0.06);setTimeout(()=>playTone(659,0.1
 const canvas=document.getElementById('gc');
 const ctx=canvas.getContext('2d');
 let W,H,scaleX,scaleY;
-const GW=400,GH=700;
+const GW=400,GH=600;
 
 function resize(){
   const vw=window.innerWidth,vh=window.innerHeight;
@@ -109,14 +109,15 @@ function resize(){
 resize();
 window.addEventListener('resize',resize);
 
-// ===== TABLE =====
-const TBL_L=30,TBL_R=GW-30,TBL_T=70,TBL_B=GH-70;
+// ===== TABLE (compact & close) =====
+const TBL_L=20,TBL_R=GW-20,TBL_T=50,TBL_B=GH-50;
 const TBL_W=TBL_R-TBL_L,TBL_H=TBL_B-TBL_T;
 const NET_Y=(TBL_T+TBL_B)/2;
+const TBL_CX=(TBL_L+TBL_R)/2;
 
-// ===== SIZES =====
-const PAD_W=50,PAD_H=38;
-const BALL_R=8;
+// ===== SIZES (closer together) =====
+const PAD_W=46,PAD_H=34;
+const BALL_R=7;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=4;
@@ -136,7 +137,7 @@ let shakeX=0,shakeY=0,shakeMag=0;
 // Ball
 let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0};
 
-// Bounce markers (visual circles that appear where ball bounces)
+// Bounce markers
 const bounceMarks=[];
 
 // Trail
@@ -146,9 +147,9 @@ const trail=[];const MAX_TRAIL=20;
 const particles=[];
 
 // Player
-let player={x:GW/2,y:TBL_B-50,prevX:GW/2,prevY:TBL_B-50,vx:0,vy:0};
+let player={x:GW/2,y:TBL_B-35,prevX:GW/2,prevY:TBL_B-35,vx:0,vy:0};
 // AI
-let ai={x:GW/2,y:TBL_T+50,prevX:GW/2,prevY:TBL_T+50,vx:0,vy:0,targetX:GW/2,targetY:TBL_T+50};
+let ai={x:GW/2,y:TBL_T+35,prevX:GW/2,prevY:TBL_T+35,vx:0,vy:0,targetX:GW/2,targetY:TBL_T+35};
 
 const AI_PARAMS=[
   {speed:2.5,accuracy:0.55,hitBoost:0.3,missChance:0.12},
@@ -157,7 +158,7 @@ const AI_PARAMS=[
 ];
 
 // ===== INPUT =====
-let inputX=GW/2,inputY=TBL_B-50;
+let inputX=GW/2,inputY=TBL_B-35;
 
 canvas.addEventListener('mousemove',e=>{
   const r=canvas.getBoundingClientRect();
@@ -215,16 +216,16 @@ function resetBall(server){
   ball.vx=0;ball.vy=0;
   ball.lastHitBy=0;
   if(server===1){
-    ball.x=player.x;ball.y=player.y-25;
+    ball.x=player.x;ball.y=player.y-20;
   } else {
-    ball.x=ai.x;ball.y=ai.y+25;
+    ball.x=ai.x;ball.y=ai.y+20;
   }
 }
 
 function resetGame(){
   playerScore=0;aiScore=0;
-  player.x=GW/2;player.y=TBL_B-50;player.prevX=GW/2;player.prevY=TBL_B-50;player.vx=0;player.vy=0;
-  ai.x=GW/2;ai.y=TBL_T+50;ai.prevX=GW/2;ai.prevY=TBL_T+50;ai.vx=0;ai.vy=0;
+  player.x=GW/2;player.y=TBL_B-35;player.prevX=GW/2;player.prevY=TBL_B-35;player.vx=0;player.vy=0;
+  ai.x=GW/2;ai.y=TBL_T+35;ai.prevX=GW/2;ai.prevY=TBL_T+35;ai.vx=0;ai.vy=0;
   particles.length=0;trail.length=0;bounceMarks.length=0;shakeMag=0;
   resetBall(1);
 }
@@ -233,33 +234,35 @@ function resetGame(){
 function doServe(dt){
   serveTimer+=dt*0.016;
   if(serveSide===1){
-    // Ball sticks to player paddle; when player moves fast enough, ball launches
-    ball.x=player.x;ball.y=player.y-25;
+    ball.x=player.x;ball.y=player.y-20;
     const pSpeed=Math.sqrt(player.vx*player.vx+player.vy*player.vy);
     if(serveTimer>0.6 && pSpeed>1.5){
       serving=false;
       ball.active=true;
-      // Ball goes in the direction the player is moving the paddle
-      const angle=Math.atan2(player.vy,player.vx);
-      // But mostly upward
       const speedBoost=Math.min(3,pSpeed*0.3);
       ball.speed=BASE_SPEED+speedBoost;
-      ball.vx=player.vx*0.3;
+      // Ball goes mostly straight up with slight paddle influence (CENTER BIAS)
+      const sideInfluence=player.vx*0.15; // reduced from 0.3 — keeps ball centered
+      ball.vx=sideInfluence;
       ball.vy=-(ball.speed);
+      // Normalize
+      const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+      if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
       ball.lastHitBy=1;
       sndHit(ball.speed);
-      spawnParticles(ball.x,ball.y,'#4fc3f7',6,0.6);
+      spawnParticles(ball.x,ball.y,'#66bb6a',6,0.6);
     }
   } else {
-    // AI serve
-    ball.x=ai.x;ball.y=ai.y+25;
+    ball.x=ai.x;ball.y=ai.y+20;
     if(serveTimer>1.0){
       serving=false;
       ball.active=true;
       const p=AI_PARAMS[difficulty];
       ball.speed=BASE_SPEED+p.hitBoost;
-      ball.vx=(Math.random()-0.5)*1.5;
+      ball.vx=(Math.random()-0.5)*0.8; // AI also mostly straight
       ball.vy=ball.speed;
+      const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+      if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
       ball.lastHitBy=-1;
       sndHit(ball.speed);
     }
@@ -268,7 +271,6 @@ function doServe(dt){
 
 // ===== PADDLE HIT =====
 function checkPaddleHit(paddle,isPlayer){
-  // Only if ball moving toward paddle
   if(isPlayer && ball.vy<0) return false;
   if(!isPlayer && ball.vy>0) return false;
 
@@ -278,18 +280,30 @@ function checkPaddleHit(paddle,isPlayer){
   const dx=ball.x-cx,dy=ball.y-cy;
   if(dx*dx+dy*dy>BALL_R*BALL_R) return false;
 
-  // Paddle speed
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
-  // The faster you move the paddle, the slightly faster the ball goes
-  // Ball NEVER slows down - only maintains or increases
+  // Speed boost — ball never slows down
   const speedBoost=Math.min(4,padSpeed*0.25);
   ball.speed=Math.max(ball.speed, ball.speed+speedBoost);
 
-  // Direction: ball goes where player pushes it
-  // Mostly straight but angled by paddle movement
+  // === CENTER BIAS: ball mostly goes straight, only strong side swipes push it out ===
   const hitOffsetX=(ball.x-paddle.x)/(PAD_W/2); // -1 to 1
-  let newVX=paddle.vx*0.4 + hitOffsetX*ball.speed*0.35;
+  
+  // Only apply significant sideways force if paddle is moving fast sideways
+  const sideForce=Math.abs(paddle.vx);
+  let sideMultiplier;
+  if(sideForce>4){
+    // Strong swipe toward boundary — allow ball to go wide
+    sideMultiplier=0.35;
+  } else if(sideForce>2){
+    // Medium swipe — slight angle
+    sideMultiplier=0.15;
+  } else {
+    // Gentle or no side movement — ball goes mostly straight
+    sideMultiplier=0.05;
+  }
+  
+  let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.08;
   let newVY=(isPlayer?-1:1)*ball.speed;
 
   // Normalize to ball.speed
@@ -300,13 +314,12 @@ function checkPaddleHit(paddle,isPlayer){
   ball.vy=newVY;
   ball.lastHitBy=isPlayer?1:-1;
 
-  // Push ball out
+  // Push ball out of paddle
   if(isPlayer){ball.y=paddle.y-PAD_H/2-BALL_R-1}
   else{ball.y=paddle.y+PAD_H/2+BALL_R+1}
 
-  // Effects
   sndHit(ball.speed);
-  const color=isPlayer?'#4fc3f7':'#ff7043';
+  const color=isPlayer?'#66bb6a':'#ef5350';
   spawnParticles(ball.x,ball.y,color,Math.floor(4+padSpeed*2),0.5+padSpeed*0.1);
   if(padSpeed>4)shakeMag=Math.min(6,padSpeed*0.6);
 
@@ -316,22 +329,22 @@ function checkPaddleHit(paddle,isPlayer){
 // ===== AI =====
 function updateAI(dt){
   const p=AI_PARAMS[difficulty];
-  let tx=GW/2,ty=TBL_T+50;
+  let tx=GW/2,ty=TBL_T+35;
 
   if(ball.active && ball.vy<0){
-    // Ball coming: predict where it will be
     const timeToReach=Math.max(0,(ai.y-ball.y)/Math.max(0.5,Math.abs(ball.vy)));
     tx=ball.x+ball.vx*timeToReach;
-    tx+=(Math.random()-0.5)*(1-p.accuracy)*100;
-    ty=TBL_T+30+Math.min(50,Math.abs(ball.vy)*3);
-    // Chance to deliberately miss
-    if(Math.random()<p.missChance*0.05){tx+=(Math.random()-0.5)*150}
+    tx+=(Math.random()-0.5)*(1-p.accuracy)*80;
+    // Clamp AI target to table center region mostly
+    tx=TBL_CX+(tx-TBL_CX)*0.85;
+    ty=TBL_T+25+Math.min(40,Math.abs(ball.vy)*2.5);
+    if(Math.random()<p.missChance*0.05){tx+=(Math.random()-0.5)*120}
   } else if(ball.active && ball.vy>0){
-    tx=GW/2+(Math.random()-0.5)*40;
-    ty=TBL_T+60;
+    tx=GW/2+(Math.random()-0.5)*30;
+    ty=TBL_T+45;
   } else if(!ball.active && serveSide===-1){
-    tx=GW/2+(Math.random()-0.5)*50;
-    ty=TBL_T+50;
+    tx=GW/2+(Math.random()-0.5)*40;
+    ty=TBL_T+35;
   }
 
   ai.targetX+=(tx-ai.targetX)*0.08;
@@ -348,7 +361,7 @@ function updateAI(dt){
   }
 
   ai.x=Math.max(TBL_L+PAD_W/2,Math.min(TBL_R-PAD_W/2,ai.x));
-  ai.y=Math.max(TBL_T+15,Math.min(NET_Y-PAD_H/2-5,ai.y));
+  ai.y=Math.max(TBL_T+12,Math.min(NET_Y-PAD_H/2-4,ai.y));
 
   ai.vx=(ai.x-ai.prevX)*p.hitBoost*2;
   ai.vy=(ai.y-ai.prevY)*p.hitBoost*2;
@@ -358,7 +371,7 @@ function updateAI(dt){
 function scorePoint(scorer){
   if(scorer===1)playerScore++;else aiScore++;
   sndScore();
-  spawnParticles(ball.x,ball.y,scorer===1?'#4fc3f7':'#ff7043',15,1.2);
+  spawnParticles(ball.x,ball.y,scorer===1?'#66bb6a':'#ef5350',15,1.2);
   shakeMag=4;
 
   if((playerScore>=WINNING_SCORE||aiScore>=WINNING_SCORE)&&Math.abs(playerScore-aiScore)>=2){
@@ -383,16 +396,15 @@ function update(dt){
   player.x+=(inputX-player.x)*0.22*dt;
   player.y+=(inputY-player.y)*0.22*dt;
   player.x=Math.max(TBL_L+PAD_W/2,Math.min(TBL_R-PAD_W/2,player.x));
-  player.y=Math.max(NET_Y+PAD_H/2+5,Math.min(TBL_B-15,player.y));
+  player.y=Math.max(NET_Y+PAD_H/2+4,Math.min(TBL_B-12,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
 
   updateAI(dt);
 
-  // Serve
   if(serving){doServe(dt);return}
 
-  // Move ball (NO drag, NO friction, NO slowdown ever)
+  // Move ball — NO drag, NO friction, NO slowdown
   ball.x+=ball.vx*dt;
   ball.y+=ball.vy*dt;
 
@@ -400,10 +412,8 @@ function update(dt){
   trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed});
   if(trail.length>MAX_TRAIL)trail.shift();
 
-  // === BOUNDARY CHECK: ball falls off if it leaves table sides ===
-  // Ball CAN go slightly off the side but if it goes past table edges, it's out
+  // === BOUNDARY: ball falls off ONLY if it actually leaves table sides ===
   if(ball.x-BALL_R<TBL_L || ball.x+BALL_R>TBL_R){
-    // Ball fell off the side!
     spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
     if(ball.lastHitBy===1)scorePoint(-1);
     else scorePoint(1);
@@ -415,17 +425,15 @@ function update(dt){
     const prevY=ball.y-ball.vy*dt;
     if((prevY<NET_Y&&ball.y>=NET_Y)||(prevY>NET_Y&&ball.y<=NET_Y)){
       if(ball.speed<3){
-        // Ball stopped by net
         ball.vy*=-0.3;ball.vx*=0.3;
         ball.y=ball.vy>0?NET_Y+4+BALL_R:NET_Y-4-BALL_R;
-        sndNet();spawnParticles(ball.x,NET_Y,'#fff',6);
+        sndNet();spawnParticles(ball.x,NET_Y,'#aaa',6);
         if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
         return;
       } else {
-        // Ball clips net
         ball.vy*=0.92;
         sndNet();
-        spawnParticles(ball.x,NET_Y,'rgba(255,255,255,0.4)',3);
+        spawnParticles(ball.x,NET_Y,'rgba(100,100,100,0.4)',3);
         addBounceMark(ball.x,NET_Y);
       }
     }
@@ -435,13 +443,12 @@ function update(dt){
   if(ball.vy>0 && ball.y>NET_Y) checkPaddleHit(player,true);
   if(ball.vy<0 && ball.y<NET_Y) checkPaddleHit(ai,false);
 
-  // Ball goes past top = player scores (ball fell on opponent's side and out)
-  if(ball.y<TBL_T-30){
+  // Ball past top/bottom
+  if(ball.y<TBL_T-25){
     addBounceMark(ball.x,TBL_T);
     scorePoint(1);return;
   }
-  // Ball goes past bottom = AI scores
-  if(ball.y>TBL_B+30){
+  if(ball.y>TBL_B+25){
     addBounceMark(ball.x,TBL_B);
     scorePoint(-1);return;
   }
@@ -474,94 +481,96 @@ function draw(){
   ctx.save();
   ctx.setTransform(sx,0,0,sy,shakeX*sx,shakeY*sy);
 
-  // Background
+  // Bright background
   const bgGrad=ctx.createLinearGradient(0,0,0,GH);
-  bgGrad.addColorStop(0,'#145a30');bgGrad.addColorStop(0.5,'#1a6b3c');bgGrad.addColorStop(1,'#145a30');
+  bgGrad.addColorStop(0,'#c8e6c9');bgGrad.addColorStop(0.5,'#e8f5e9');bgGrad.addColorStop(1,'#c8e6c9');
   ctx.fillStyle=bgGrad;ctx.fillRect(0,0,GW,GH);
 
   // Table shadow
-  ctx.fillStyle='rgba(0,0,0,0.3)';
-  ctx.beginPath();ctx.roundRect(TBL_L-3+5,TBL_T-3+6,TBL_W+6,TBL_H+6,10);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.1)';
+  ctx.beginPath();ctx.roundRect(TBL_L-2+4,TBL_T-2+5,TBL_W+4,TBL_H+4,8);ctx.fill();
 
   // Table border
-  ctx.fillStyle='#2c1810';
-  ctx.beginPath();ctx.roundRect(TBL_L-6,TBL_T-6,TBL_W+12,TBL_H+12,10);ctx.fill();
+  ctx.fillStyle='#5d4037';
+  ctx.beginPath();ctx.roundRect(TBL_L-5,TBL_T-5,TBL_W+10,TBL_H+10,8);ctx.fill();
 
-  // Table surface
+  // Table surface — bright blue
   const tg=ctx.createLinearGradient(TBL_L,TBL_T,TBL_L,TBL_B);
-  tg.addColorStop(0,'#0d3b66');tg.addColorStop(0.5,'#114a80');tg.addColorStop(1,'#0d3b66');
-  ctx.fillStyle=tg;ctx.beginPath();ctx.roundRect(TBL_L,TBL_T,TBL_W,TBL_H,5);ctx.fill();
+  tg.addColorStop(0,'#1565c0');tg.addColorStop(0.5,'#1e88e5');tg.addColorStop(1,'#1565c0');
+  ctx.fillStyle=tg;ctx.beginPath();ctx.roundRect(TBL_L,TBL_T,TBL_W,TBL_H,4);ctx.fill();
 
-  // Table lines
-  ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=2;
-  ctx.strokeRect(TBL_L+8,TBL_T+8,TBL_W-16,TBL_H-16);
-  ctx.beginPath();ctx.moveTo(GW/2,TBL_T+8);ctx.lineTo(GW/2,TBL_B-8);ctx.stroke();
+  // Table lines — white
+  ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=2;
+  ctx.strokeRect(TBL_L+6,TBL_T+6,TBL_W-12,TBL_H-12);
+  // Center vertical line
+  ctx.beginPath();ctx.moveTo(GW/2,TBL_T+6);ctx.lineTo(GW/2,TBL_B-6);ctx.stroke();
 
-  // Bounce marks (visual feedback)
+  // Bounce marks
   for(const bm of bounceMarks){
-    ctx.globalAlpha=bm.life*0.6;
-    ctx.strokeStyle='rgba(255,255,100,0.8)';
+    ctx.globalAlpha=bm.life*0.7;
+    ctx.strokeStyle='rgba(255,235,59,0.9)';
     ctx.lineWidth=2;
     ctx.beginPath();ctx.arc(bm.x,bm.y,bm.r,0,Math.PI*2);ctx.stroke();
-    // Inner ring
-    ctx.strokeStyle='rgba(255,255,255,0.5)';
+    ctx.strokeStyle='rgba(255,255,255,0.6)';
     ctx.beginPath();ctx.arc(bm.x,bm.y,bm.r*0.5,0,Math.PI*2);ctx.stroke();
   }
   ctx.globalAlpha=1;
 
   // Net
-  ctx.fillStyle='rgba(255,255,255,0.9)';
-  ctx.shadowColor='rgba(0,0,0,0.2)';ctx.shadowBlur=6;ctx.shadowOffsetY=2;
-  ctx.fillRect(TBL_L-10,NET_Y-3,TBL_W+20,6);
+  ctx.fillStyle='rgba(255,255,255,0.95)';
+  ctx.shadowColor='rgba(0,0,0,0.15)';ctx.shadowBlur=4;ctx.shadowOffsetY=2;
+  ctx.fillRect(TBL_L-8,NET_Y-2.5,TBL_W+16,5);
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;
-  ctx.fillStyle='#888';
-  ctx.fillRect(TBL_L-12,NET_Y-8,5,16);
-  ctx.fillRect(TBL_R+7,NET_Y-8,5,16);
-  ctx.strokeStyle='rgba(200,200,200,0.3)';ctx.lineWidth=0.5;
-  for(let x=TBL_L;x<TBL_R;x+=8){ctx.beginPath();ctx.moveTo(x,NET_Y-3);ctx.lineTo(x,NET_Y+3);ctx.stroke()}
+  // Net posts
+  ctx.fillStyle='#9e9e9e';
+  ctx.fillRect(TBL_L-10,NET_Y-7,4,14);
+  ctx.fillRect(TBL_R+6,NET_Y-7,4,14);
+  // Net mesh lines
+  ctx.strokeStyle='rgba(180,180,180,0.3)';ctx.lineWidth=0.5;
+  for(let x=TBL_L;x<TBL_R;x+=7){ctx.beginPath();ctx.moveTo(x,NET_Y-2.5);ctx.lineTo(x,NET_Y+2.5);ctx.stroke()}
 
   // Scores
-  ctx.font='800 52px Fredoka One,Nunito,sans-serif';ctx.textAlign='center';
-  ctx.fillStyle='rgba(255,255,255,0.12)';
-  ctx.fillText(aiScore,GW/2,NET_Y-60);
-  ctx.fillText(playerScore,GW/2,NET_Y+80);
+  ctx.font='800 44px Fredoka One,Nunito,sans-serif';ctx.textAlign='center';
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.fillText(aiScore,GW/2,NET_Y-45);
+  ctx.fillText(playerScore,GW/2,NET_Y+65);
 
   // Labels
-  ctx.font='700 11px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.15)';
-  ctx.fillText('AI',GW/2,TBL_T+20);ctx.fillText('YOU',GW/2,TBL_B-8);
+  ctx.font='700 10px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.2)';
+  ctx.fillText('AI',GW/2,TBL_T+16);ctx.fillText('YOU',GW/2,TBL_B-6);
 
   // Serve indicator
   if(serving){
-    ctx.font='600 12px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.5)';
-    if(serveSide===1)ctx.fillText('MOVE TO SERVE',GW/2,TBL_B+25);
-    else ctx.fillText('AI SERVING...',GW/2,TBL_T-20);
+    ctx.font='600 11px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.55)';
+    if(serveSide===1)ctx.fillText('MOVE TO SERVE',GW/2,TBL_B+18);
+    else ctx.fillText('AI SERVING...',GW/2,TBL_T-15);
   }
 
   // Trail
   for(let i=0;i<trail.length;i++){
     const t=trail[i];if(t.life<=0)continue;
-    const alpha=t.life*0.15*(Math.min(t.speed,12)/12);
+    const alpha=t.life*0.18*(Math.min(t.speed,12)/12);
     ctx.globalAlpha=alpha;
-    ctx.fillStyle='rgba(255,255,200,0.7)';
+    ctx.fillStyle='rgba(255,255,200,0.8)';
     const r=BALL_R*t.life*0.5;
     ctx.beginPath();ctx.arc(t.x,t.y,r,0,Math.PI*2);ctx.fill();
   }
   ctx.globalAlpha=1;
 
   // Ball shadow
-  ctx.fillStyle='rgba(0,0,0,0.2)';
-  ctx.beginPath();ctx.ellipse(ball.x+2,ball.y+4,BALL_R*0.9,BALL_R*0.5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.beginPath();ctx.ellipse(ball.x+2,ball.y+3,BALL_R*0.85,BALL_R*0.45,0,0,Math.PI*2);ctx.fill();
 
-  // Ball (drawn, not image)
+  // Ball
   const bg=ctx.createRadialGradient(ball.x-2,ball.y-2,1,ball.x,ball.y,BALL_R);
-  bg.addColorStop(0,'#ffffff');bg.addColorStop(0.6,'#f5f5f5');bg.addColorStop(1,'#cccccc');
+  bg.addColorStop(0,'#ffffff');bg.addColorStop(0.5,'#ffeb3b');bg.addColorStop(1,'#f9a825');
   ctx.fillStyle=bg;
   ctx.beginPath();ctx.arc(ball.x,ball.y,BALL_R,0,Math.PI*2);ctx.fill();
   // Ball highlight
-  ctx.fillStyle='rgba(255,255,255,0.6)';
-  ctx.beginPath();ctx.arc(ball.x-2,ball.y-3,BALL_R*0.35,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.7)';
+  ctx.beginPath();ctx.arc(ball.x-1.5,ball.y-2.5,BALL_R*0.3,0,Math.PI*2);ctx.fill();
 
-  // Paddles (drawn)
+  // Paddles
   drawPaddle(player.x,player.y,false);
   drawPaddle(ai.x,ai.y,true);
 
@@ -574,23 +583,23 @@ function draw(){
 
   // Speed indicator
   if(ball.active){
-    ctx.font='600 10px Nunito,sans-serif';ctx.textAlign='right';
-    ctx.fillStyle='rgba(255,255,255,0.25)';
-    ctx.fillText('Speed: '+ball.speed.toFixed(1),TBL_R-5,TBL_B+22);
+    ctx.font='600 9px Nunito,sans-serif';ctx.textAlign='right';
+    ctx.fillStyle='rgba(255,255,255,0.3)';
+    ctx.fillText('Speed: '+ball.speed.toFixed(1),TBL_R-4,TBL_B+16);
   }
 
   ctx.restore();
 }
 
 function drawPaddle(x,y,isAI){
-  const color=isAI?'#e74c3c':'#2980b9';
-  const dark=isAI?'#c0392b':'#1f6dad';
-  const rubber=isAI?'#ff6b6b':'#5dade2';
-  const rw=PAD_W,rh=PAD_H,r=6;
+  const color=isAI?'#e53935':'#43a047';
+  const dark=isAI?'#c62828':'#2e7d32';
+  const rubber=isAI?'#ef5350':'#66bb6a';
+  const rw=PAD_W,rh=PAD_H,r=5;
 
   // Shadow
-  ctx.fillStyle='rgba(0,0,0,0.15)';
-  ctx.beginPath();ctx.roundRect(x-rw/2+3,y-rh/2+3,rw,rh,r);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.12)';
+  ctx.beginPath();ctx.roundRect(x-rw/2+2,y-rh/2+2,rw,rh,r);ctx.fill();
 
   // Paddle face
   const g=ctx.createLinearGradient(x-rw/2,y-rh/2,x+rw/2,y+rh/2);
@@ -598,25 +607,24 @@ function drawPaddle(x,y,isAI){
   ctx.fillStyle=g;
   ctx.beginPath();ctx.roundRect(x-rw/2,y-rh/2,rw,rh,r);ctx.fill();
 
-  // Rubber texture lines
-  ctx.strokeStyle=dark;ctx.lineWidth=0.5;
-  for(let i=0;i<5;i++){
-    const ly=y-rh/2+6+i*(rh-12)/4;
-    ctx.beginPath();ctx.moveTo(x-rw/2+4,ly);ctx.lineTo(x+rw/2-4,ly);ctx.stroke();
+  // Rubber texture
+  ctx.strokeStyle=dark;ctx.lineWidth=0.4;
+  for(let i=0;i<4;i++){
+    const ly=y-rh/2+5+i*(rh-10)/3;
+    ctx.beginPath();ctx.moveTo(x-rw/2+3,ly);ctx.lineTo(x+rw/2-3,ly);ctx.stroke();
   }
 
-  // Edge border
-  ctx.strokeStyle=dark;ctx.lineWidth=1.5;
+  // Border
+  ctx.strokeStyle=dark;ctx.lineWidth=1.2;
   ctx.beginPath();ctx.roundRect(x-rw/2,y-rh/2,rw,rh,r);ctx.stroke();
 
   // Handle
-  ctx.fillStyle='#8B5E3C';
-  const hw=8,hh=16;
-  const hy=isAI?y-rh/2-hh+3:y+rh/2-3;
+  ctx.fillStyle='#a1887f';
+  const hw=7,hh=14;
+  const hy=isAI?y-rh/2-hh+2:y+rh/2-2;
   ctx.beginPath();ctx.roundRect(x-hw/2,hy,hw,hh,3);ctx.fill();
-  // Handle grip
-  ctx.fillStyle='#6d4c2a';
-  ctx.beginPath();ctx.roundRect(x-hw/2+1,hy+3,hw-2,hh-6,2);ctx.fill();
+  ctx.fillStyle='#795548';
+  ctx.beginPath();ctx.roundRect(x-hw/2+1,hy+2,hw-2,hh-4,2);ctx.fill();
 }
 
 // ===== UI =====
