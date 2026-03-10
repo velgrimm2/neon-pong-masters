@@ -72,8 +72,7 @@ h1{
 }
 .diff-btn:hover{background:rgba(255,255,255,0.3);box-shadow:none}
 .diff-btn.selected{
-  background:#fff;
-  border-color:#fff;color:#e8b730;
+  background:#fff;border-color:#fff;color:#e8b730;
   box-shadow:0 3px 12px rgba(0,0,0,0.15);
 }
 
@@ -108,7 +107,7 @@ h1{
       <button class="btn diff-btn" data-diff="2">Hard</button>
     </div>
     <button class="btn" id="play-btn">PLAY</button>
-    <div class="controls-hint">Drag to move paddle &middot; P to pause</div>
+    <div class="controls-hint">Drag to move paddle anywhere &middot; P to pause</div>
   </div>
   <div class="screen" id="end-screen">
     <div class="winner-text" id="winner-text"></div>
@@ -140,66 +139,75 @@ const canvas=document.getElementById('gc');
 const ctx=canvas.getContext('2d');
 let W,H,scale;
 
-// Vertical orientation (portrait)
 function resize(){
-  const ar=3/4,vw=window.innerWidth,vh=window.innerHeight;
+  const ar=9/16,vw=window.innerWidth,vh=window.innerHeight;
   if(vw/vh>ar){H=vh;W=H*ar}else{W=vw;H=W/ar}
   W=Math.floor(W);H=Math.floor(H);
-  canvas.width=W;canvas.height=H;scale=W/600;
+  canvas.width=W;canvas.height=H;scale=W/450;
 }
 resize();
 window.addEventListener('resize',resize);
 
-// ===== CONSTANTS (vertical: 600w x 800h) =====
-const GW=600,GH=800,WINNING_SCORE=10;
-const PW=90,PH=16,BALL_R=12,BALL_START=4.5,BALL_MAX=11,BALL_ACCEL=0.12;
-const PAD_Y_TOP=60,PAD_Y_BOT=GH-60;
+// ===== CONSTANTS =====
+const GW=450,GH=800,WINNING_SCORE=10;
+const PW=70,PH=14,BALL_R=10,BALL_START=5,BALL_MAX=12,BALL_ACCEL=0.15;
+
+// Table boundaries (wide but short-ish)
+const TBL_L=25,TBL_R=GW-25,TBL_T=80,TBL_B=GH-80;
+const TBL_MID=(TBL_T+TBL_B)/2;
 
 // ===== COLORS =====
 const COL_BG='#e8b730';
 const COL_TABLE='#e87d5a';
-const COL_TABLE_DARK='#d66a48';
 const COL_BORDER='#1a1a1a';
-const COL_NET='#fff';
-const COL_BALL='#fff';
 const COL_SHADOW='rgba(0,0,0,0.18)';
-const COL_SCORE='rgba(255,240,220,0.35)';
+const COL_SCORE='rgba(255,230,200,0.3)';
 
 // ===== STATE =====
 let difficulty=1;
-const AI_SPEEDS=[2.8,5,8.5],AI_ERRORS=[60,25,5];
+const AI_SPEEDS=[2.5,4.5,8],AI_ERRORS=[55,20,4];
 let gameState='menu',shakeX=0,shakeY=0,shakeMag=0;
 let playerScore=0,aiScore=0;
-let playerX=300,aiX=300,aiTargetX=300;
+
+// Paddles: free movement in their half
+let playerX=GW/2,playerY=TBL_B-60;
+let aiX=GW/2,aiY=TBL_T+60,aiTargetX=GW/2,aiTargetY=TBL_T+60;
+
 let ballX,ballY,ballVX,ballVY,ballSpeed;
+let ballInAir=false; // ball is travelling over the net
 const trail=[],MAX_TRAIL=12;
 const particles=[];
 
 function resetBall(dir){
-  ballX=300;ballY=400;ballSpeed=BALL_START;
-  const a=(Math.random()*0.7-0.35);
+  ballX=GW/2;ballY=TBL_MID;ballSpeed=BALL_START;
+  const a=(Math.random()*0.5-0.25);
   ballVY=Math.cos(a)*ballSpeed*(dir||1);
   ballVX=Math.sin(a)*ballSpeed;
-  trail.length=0;
+  trail.length=0;ballInAir=false;
 }
 function resetGame(){
-  playerScore=0;aiScore=0;playerX=300;aiX=300;aiTargetX=300;
+  playerScore=0;aiScore=0;
+  playerX=GW/2;playerY=TBL_B-60;
+  aiX=GW/2;aiY=TBL_T+60;aiTargetX=GW/2;aiTargetY=TBL_T+60;
   resetBall(1);particles.length=0;shakeMag=0;
 }
 
-// ===== CONTROLS =====
-let mouseX=300;
+// ===== CONTROLS (both X and Y) =====
+let mouseX=GW/2,mouseY=TBL_B-60;
 canvas.addEventListener('mousemove',e=>{
   const r=canvas.getBoundingClientRect();
   mouseX=((e.clientX-r.left)/r.width)*GW;
+  mouseY=((e.clientY-r.top)/r.height)*GH;
 });
 canvas.addEventListener('touchstart',e=>{e.preventDefault();initAudio();
   const r=canvas.getBoundingClientRect();
   mouseX=((e.touches[0].clientX-r.left)/r.width)*GW;
+  mouseY=((e.touches[0].clientY-r.top)/r.height)*GH;
 },{passive:false});
 canvas.addEventListener('touchmove',e=>{e.preventDefault();
   const r=canvas.getBoundingClientRect();
   mouseX=((e.touches[0].clientX-r.left)/r.width)*GW;
+  mouseY=((e.touches[0].clientY-r.top)/r.height)*GH;
 },{passive:false});
 document.addEventListener('keydown',e=>{
   if(e.key==='p'||e.key==='P'){
@@ -219,25 +227,34 @@ function spawnParticles(x,y,color,count){
 // ===== AI =====
 function updateAI(dt){
   const spd=AI_SPEEDS[difficulty]*dt,err=AI_ERRORS[difficulty];
+  // Predict where ball will arrive
   if(ballVY<0){
-    const t=(PAD_Y_TOP-ballY)/Math.min(-0.1,ballVY);
-    aiTargetX=ballX+ballVX*t+(Math.random()-0.5)*err;
+    const timeToReach=(aiY-ballY)/Math.max(Math.abs(ballVY),0.5);
+    aiTargetX=ballX+ballVX*timeToReach+(Math.random()-0.5)*err;
+    // Move forward/back to intercept
+    aiTargetY=Math.max(TBL_T+20,Math.min(TBL_MID-30, TBL_T+40+Math.abs(ballVY)*3));
+  } else {
+    // Ball going away, return to center-ish
+    aiTargetX=GW/2+(Math.random()-0.5)*30;
+    aiTargetY=TBL_T+70;
   }
-  const diff=aiTargetX-aiX;
-  if(Math.abs(diff)>2)aiX+=Math.sign(diff)*Math.min(Math.abs(diff),spd);
-  aiX=Math.max(PW/2+40,Math.min(GW-PW/2-40,aiX));
-}
 
-// Table boundaries
-const TBL_L=40,TBL_R=GW-40,TBL_T=50,TBL_B=GH-50;
+  const dx=aiTargetX-aiX,dy=aiTargetY-aiY;
+  if(Math.abs(dx)>2)aiX+=Math.sign(dx)*Math.min(Math.abs(dx),spd);
+  if(Math.abs(dy)>2)aiY+=Math.sign(dy)*Math.min(Math.abs(dy),spd*0.7);
+  aiX=Math.max(TBL_L+PW/2,Math.min(TBL_R-PW/2,aiX));
+  aiY=Math.max(TBL_T+15,Math.min(TBL_MID-20,aiY));
+}
 
 // ===== PHYSICS =====
 function update(dt){
   if(gameState!=='playing')return;
 
-  // Player (bottom)
-  playerX+=(mouseX-playerX)*0.14*dt;
-  playerX=Math.max(PW/2+TBL_L,Math.min(TBL_R-PW/2,playerX));
+  // Player moves freely in bottom half
+  playerX+=(mouseX-playerX)*0.18*dt;
+  playerY+=(mouseY-playerY)*0.18*dt;
+  playerX=Math.max(TBL_L+PW/2,Math.min(TBL_R-PW/2,playerX));
+  playerY=Math.max(TBL_MID+20,Math.min(TBL_B-15,playerY));
 
   updateAI(dt);
 
@@ -248,35 +265,43 @@ function update(dt){
   trail.push({x:ballX,y:ballY,life:1});
   if(trail.length>MAX_TRAIL)trail.shift();
 
-  // Wall bounce (left/right)
+  // Wall bounce (left/right sides of table)
   if(ballX-BALL_R<TBL_L){ballX=TBL_L+BALL_R;ballVX=-ballVX;sndWall();spawnParticles(TBL_L,ballY,'rgba(255,255,255,0.6)',4)}
   if(ballX+BALL_R>TBL_R){ballX=TBL_R-BALL_R;ballVX=-ballVX;sndWall();spawnParticles(TBL_R,ballY,'rgba(255,255,255,0.6)',4)}
 
-  // Player paddle (bottom)
-  if(ballVY>0&&ballY+BALL_R>PAD_Y_BOT-PH/2&&ballY+BALL_R<PAD_Y_BOT+PH/2+5&&ballX>playerX-PW/2-BALL_R&&ballX<playerX+PW/2+BALL_R){
+  // Player paddle collision (bottom half)
+  if(ballVY>0&&ballY+BALL_R>playerY-PH/2&&ballY<playerY+PH/2&&ballX>playerX-PW/2-BALL_R&&ballX<playerX+PW/2+BALL_R){
     const hp=(ballX-playerX)/(PW/2);
     ballSpeed=Math.min(ballSpeed+BALL_ACCEL,BALL_MAX);
-    const ang=hp*Math.PI/3;
-    ballVX=Math.sin(ang)*ballSpeed;ballVY=-Math.cos(ang)*ballSpeed;
-    ballY=PAD_Y_BOT-PH/2-BALL_R;
-    sndHit();spawnParticles(ballX,ballY,'#e87d5a',6);
-    shakeMag=Math.abs(hp)*3+1.5;
+    const ang=hp*Math.PI/4;
+    ballVX=Math.sin(ang)*ballSpeed;
+    ballVY=-Math.cos(ang)*ballSpeed;
+    ballY=playerY-PH/2-BALL_R;
+    sndHit();spawnParticles(ballX,ballY,'#e84878',8);
+    shakeMag=Math.abs(hp)*2+1;
   }
 
-  // AI paddle (top)
-  if(ballVY<0&&ballY-BALL_R<PAD_Y_TOP+PH/2&&ballY-BALL_R>PAD_Y_TOP-PH/2-5&&ballX>aiX-PW/2-BALL_R&&ballX<aiX+PW/2+BALL_R){
+  // AI paddle collision (top half)
+  if(ballVY<0&&ballY-BALL_R<aiY+PH/2&&ballY>aiY-PH/2&&ballX>aiX-PW/2-BALL_R&&ballX<aiX+PW/2+BALL_R){
     const hp=(ballX-aiX)/(PW/2);
     ballSpeed=Math.min(ballSpeed+BALL_ACCEL,BALL_MAX);
-    const ang=hp*Math.PI/3;
-    ballVX=Math.sin(ang)*ballSpeed;ballVY=Math.cos(ang)*ballSpeed;
-    ballY=PAD_Y_TOP+PH/2+BALL_R;
-    sndHit();spawnParticles(ballX,ballY,'#4ab8a1',6);
-    shakeMag=Math.abs(hp)*3+1.5;
+    const ang=hp*Math.PI/4;
+    ballVX=Math.sin(ang)*ballSpeed;
+    ballVY=Math.cos(ang)*ballSpeed;
+    ballY=aiY+PH/2+BALL_R;
+    sndHit();spawnParticles(ballX,ballY,'#2ab89e',8);
+    shakeMag=Math.abs(hp)*2+1;
   }
 
-  // Scoring
-  if(ballY>GH+20){aiScore++;sndScore();spawnParticles(ballX,GH,'#4ab8a1',10);checkWin();resetBall(-1)}
-  if(ballY<-20){playerScore++;sndScore();spawnParticles(ballX,0,'#e87d5a',10);checkWin();resetBall(1)}
+  // Scoring: ball goes past top = player scores, past bottom = AI scores
+  if(ballY<TBL_T-30){
+    playerScore++;sndScore();spawnParticles(ballX,TBL_T,'#e84878',12);
+    checkWin();resetBall(1);
+  }
+  if(ballY>TBL_B+30){
+    aiScore++;sndScore();spawnParticles(ballX,TBL_B,'#2ab89e',12);
+    checkWin();resetBall(-1);
+  }
 
   // Shake decay
   if(shakeMag>0){
@@ -309,60 +334,61 @@ function draw(){
   ctx.fillStyle=COL_BG;
   ctx.fillRect(0,0,GW,GH);
 
-  // Table with border
-  const tbPad=6;
+  // Table border (black)
+  const bp=7;
   ctx.fillStyle=COL_BORDER;
-  ctx.beginPath();
-  ctx.roundRect(TBL_L-tbPad,TBL_T-tbPad,TBL_R-TBL_L+tbPad*2,TBL_B-TBL_T+tbPad*2,12);
-  ctx.fill();
+  ctx.beginPath();ctx.roundRect(TBL_L-bp,TBL_T-bp,TBL_R-TBL_L+bp*2,TBL_B-TBL_T+bp*2,14);ctx.fill();
 
-  // Table surface
+  // Table surface (orange)
   ctx.fillStyle=COL_TABLE;
-  ctx.beginPath();
-  ctx.roundRect(TBL_L,TBL_T,TBL_R-TBL_L,TBL_B-TBL_T,8);
-  ctx.fill();
-
-  // Center net (horizontal white bar)
-  ctx.fillStyle='#fff';
-  ctx.shadowColor='rgba(0,0,0,0.1)';ctx.shadowBlur=6;ctx.shadowOffsetY=2;
-  ctx.fillRect(TBL_L-4,GH/2-4,TBL_R-TBL_L+8,8);
-  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  ctx.beginPath();ctx.roundRect(TBL_L,TBL_T,TBL_R-TBL_L,TBL_B-TBL_T,8);ctx.fill();
 
   // Center line (vertical, subtle)
-  ctx.fillStyle='rgba(255,230,200,0.25)';
+  ctx.fillStyle='rgba(255,220,190,0.22)';
   ctx.fillRect(GW/2-2,TBL_T,4,TBL_B-TBL_T);
 
-  // Scores on table
-  ctx.font='800 80px Fredoka One,Nunito,sans-serif';ctx.textAlign='center';
+  // Net (horizontal white bar at middle)
+  ctx.fillStyle='#fff';
+  ctx.shadowColor='rgba(0,0,0,0.12)';ctx.shadowBlur=8;ctx.shadowOffsetY=2;
+  ctx.fillRect(TBL_L-6,TBL_MID-4,(TBL_R-TBL_L)+12,8);
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+
+  // Scores on each half
+  ctx.font='800 72px Fredoka One,Nunito,sans-serif';ctx.textAlign='center';
   ctx.fillStyle=COL_SCORE;
-  ctx.fillText(aiScore,GW/2,GH/2-60);
-  ctx.fillText(playerScore,GW/2,GH/2+110);
+  ctx.fillText(aiScore,GW/2,TBL_MID-80);
+  ctx.fillText(playerScore,GW/2,TBL_MID+100);
+
+  // Labels
+  ctx.font='700 13px Nunito,sans-serif';
+  ctx.fillStyle='rgba(255,220,190,0.2)';
+  ctx.fillText('AI',GW/2,TBL_T+22);
+  ctx.fillText('YOU',GW/2,TBL_B-10);
 
   // Trail
   for(let i=0;i<trail.length;i++){
     const t=trail[i];if(t.life<=0)continue;
-    ctx.globalAlpha=t.life*0.15;
+    ctx.globalAlpha=t.life*0.12;
     ctx.fillStyle='rgba(0,0,0,0.3)';
-    ctx.beginPath();ctx.arc(t.x,t.y,BALL_R*t.life*0.6,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(t.x,t.y,BALL_R*t.life*0.5,0,Math.PI*2);ctx.fill();
   }
   ctx.globalAlpha=1;
 
   // Ball shadow
   ctx.fillStyle=COL_SHADOW;
-  ctx.beginPath();ctx.ellipse(ballX+3,ballY+4,BALL_R,BALL_R*0.7,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(ballX+3,ballY+5,BALL_R*0.9,BALL_R*0.6,0,0,Math.PI*2);ctx.fill();
 
   // Ball
-  const ballGrad=ctx.createRadialGradient(ballX-3,ballY-3,1,ballX,ballY,BALL_R);
-  ballGrad.addColorStop(0,'#ffffff');ballGrad.addColorStop(1,'#e0e0e0');
-  ctx.fillStyle=ballGrad;
+  const bg=ctx.createRadialGradient(ballX-2,ballY-2,1,ballX,ballY,BALL_R);
+  bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#ddd');
+  ctx.fillStyle=bg;
   ctx.beginPath();ctx.arc(ballX,ballY,BALL_R,0,Math.PI*2);ctx.fill();
-  // Ball outline
-  ctx.strokeStyle='rgba(0,0,0,0.12)';ctx.lineWidth=1.5;
+  ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=1;
   ctx.beginPath();ctx.arc(ballX,ballY,BALL_R,0,Math.PI*2);ctx.stroke();
 
-  // Draw paddles as rackets
-  drawRacket(playerX,PAD_Y_BOT,'#e84878','#c73060',false);
-  drawRacket(aiX,PAD_Y_TOP,'#2ab89e','#1e9a82',true);
+  // Paddles (rackets)
+  drawRacket(playerX,playerY,'#e84878','#c73060',false);
+  drawRacket(aiX,aiY,'#2ab89e','#1e9a82',true);
 
   // Particles
   for(const p of particles){
@@ -375,13 +401,12 @@ function draw(){
 }
 
 function drawRacket(x,y,c1,c2,isTop){
-  // Paddle head (rounded rect)
-  const rw=PW,rh=PH+8,r=10;
-  const ry=isTop?y-rh/2:y-rh/2;
-  
+  const rw=PW,rh=PH+10,r=10;
+  const ry=y-rh/2;
+
   // Shadow
-  ctx.fillStyle='rgba(0,0,0,0.15)';
-  ctx.beginPath();ctx.roundRect(x-rw/2+2,ry+3,rw,rh,r);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.13)';
+  ctx.beginPath();ctx.roundRect(x-rw/2+3,ry+4,rw,rh,r);ctx.fill();
 
   // Racket face
   const g=ctx.createLinearGradient(x-rw/2,ry,x+rw/2,ry+rh);
@@ -389,14 +414,18 @@ function drawRacket(x,y,c1,c2,isTop){
   ctx.fillStyle=g;
   ctx.beginPath();ctx.roundRect(x-rw/2,ry,rw,rh,r);ctx.fill();
 
+  // Edge highlight
+  ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.roundRect(x-rw/2,ry,rw,rh,r);ctx.stroke();
+
   // Handle
-  const hw=10,hh=18;
-  const handleY=isTop?ry-hh+4:ry+rh-4;
+  const hw=8,hh=16;
+  const hx=isTop?x+rw/2+2:x+rw/2+2;
+  const hy=y-hh/2;
   ctx.fillStyle='#8B5E3C';
-  ctx.beginPath();ctx.roundRect(x-hw/2,handleY,hw,hh,4);ctx.fill();
-  // Handle shadow
+  ctx.beginPath();ctx.roundRect(hx,hy,hw,hh,3);ctx.fill();
   ctx.fillStyle='#6B4226';
-  ctx.beginPath();ctx.roundRect(x-hw/2+2,handleY,hw-4,hh,3);ctx.fill();
+  ctx.beginPath();ctx.roundRect(hx+2,hy+1,hw-4,hh-2,2);ctx.fill();
 }
 
 // ===== UI =====
