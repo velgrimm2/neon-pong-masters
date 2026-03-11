@@ -138,7 +138,7 @@ let serveTimer=0;
 let shakeX=0,shakeY=0,shakeMag=0;
 
 // Ball
-let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0};
+let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0};
 
 // Bounce markers
 const bounceMarks=[];
