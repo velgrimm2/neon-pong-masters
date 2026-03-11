@@ -216,7 +216,7 @@ function resetBall(server){
   serveSide=server;
   serveTimer=0;
   ball.speed=BASE_SPEED;
-  ball.vx=0;ball.vy=0;
+  ball.vx=0;ball.vy=0;ball.spin=0;
   ball.lastHitBy=0;
   if(server===1){
     ball.x=player.x;ball.y=player.y-20;
