@@ -276,16 +276,14 @@ function doServe(dt){
   }
 }
 
-// ===== PADDLE HIT =====
+// ===== PADDLE HIT (circle vs circle) =====
 function checkPaddleHit(paddle,isPlayer){
   if(isPlayer && ball.vy<0) return false;
   if(!isPlayer && ball.vy>0) return false;
 
-  const px=paddle.x-PAD_W/2,py=paddle.y-PAD_H/2;
-  const cx=Math.max(px,Math.min(ball.x,px+PAD_W));
-  const cy=Math.max(py,Math.min(ball.y,py+PAD_H));
-  const dx=ball.x-cx,dy=ball.y-cy;
-  if(dx*dx+dy*dy>BALL_R*BALL_R) return false;
+  const dx=ball.x-paddle.x,dy=ball.y-paddle.y;
+  const dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist>PAD_R+BALL_R) return false;
 
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
@@ -293,27 +291,17 @@ function checkPaddleHit(paddle,isPlayer){
   const speedBoost=Math.min(2,padSpeed*0.2);
   ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,ball.speed+speedBoost));
 
-  // === CENTER BIAS: ball mostly goes straight, only strong side swipes push it out ===
-  const hitOffsetX=(ball.x-paddle.x)/(PAD_W/2); // -1 to 1
-  
-  // Only apply significant sideways force if paddle is moving fast sideways
+  // Center bias
+  const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   let sideMultiplier;
-  if(sideForce>4){
-    // Strong swipe toward boundary — allow ball to go wide
-    sideMultiplier=0.35;
-  } else if(sideForce>2){
-    // Medium swipe — slight angle
-    sideMultiplier=0.15;
-  } else {
-    // Gentle or no side movement — ball goes mostly straight
-    sideMultiplier=0.05;
-  }
+  if(sideForce>4){sideMultiplier=0.35}
+  else if(sideForce>2){sideMultiplier=0.15}
+  else{sideMultiplier=0.05}
   
   let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.08;
   let newVY=(isPlayer?-1:1)*ball.speed;
 
-  // Normalize to ball.speed
   const mag=Math.sqrt(newVX*newVX+newVY*newVY);
   if(mag>0){newVX=(newVX/mag)*ball.speed;newVY=(newVY/mag)*ball.speed;}
 
@@ -323,11 +311,14 @@ function checkPaddleHit(paddle,isPlayer){
   ball.lastHitBy=isPlayer?1:-1;
 
   // Push ball out of paddle
-  if(isPlayer){ball.y=paddle.y-PAD_H/2-BALL_R-1}
-  else{ball.y=paddle.y+PAD_H/2+BALL_R+1}
+  if(dist>0){
+    const nx=dx/dist,ny=dy/dist;
+    ball.x=paddle.x+nx*(PAD_R+BALL_R+1);
+    ball.y=paddle.y+ny*(PAD_R+BALL_R+1);
+  }
 
   sndHit(ball.speed);
-  const color=isPlayer?'#66bb6a':'#ef5350';
+  const color=isPlayer?'#e86080':'#2bbfbf';
   spawnParticles(ball.x,ball.y,color,Math.floor(4+padSpeed*2),0.5+padSpeed*0.1);
   if(padSpeed>4)shakeMag=Math.min(6,padSpeed*0.6);
 
