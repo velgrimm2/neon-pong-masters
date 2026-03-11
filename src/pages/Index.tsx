@@ -135,8 +135,8 @@ const BASE_SPEED=5.5;
 const MAX_SPEED=11;
 const WINNING_SCORE_1P=11;
 const WINNING_SCORE_2P=10;
-const SPIN_DECAY=0.97;
-const SPIN_CURVE_FORCE=0.10;
+const SPIN_DECAY=0.985; // slower decay = longer curve
+const SPIN_CURVE_FORCE=0.16; // stronger lateral pull
 const RALLY_SPEED_GAIN=0.06; // speed increase per hit during rally
 const BOUNCE_SPEED_DAMP=0.96; // slow down slightly on table/wall bounce
 const ANGLE_JITTER=0.04; // small random angle offset on bounce
@@ -415,16 +415,25 @@ function checkPaddleHit(paddle,isPlayer){
   const sideForce=Math.abs(paddle.vx);
   
   let newVX, spinVal;
-  if(sideForce<1.5){
-    newVX=hitOffsetX*ball.speed*0.05;
+  if(sideForce<1.0){
+    // Dead-straight shot
+    newVX=hitOffsetX*ball.speed*0.04;
     spinVal=0;
-  } else {
-    let sideMultiplier;
-    if(sideForce>5){sideMultiplier=0.35}
-    else if(sideForce>3){sideMultiplier=0.18}
-    else{sideMultiplier=0.08}
+  } else if(sideForce<3){
+    // Light curve
+    const sideMultiplier=0.10;
+    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.05;
+    spinVal=paddle.vx*0.25;
+  } else if(sideForce<6){
+    // Medium curve
+    const sideMultiplier=0.20;
     newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
-    spinVal=paddle.vx*0.18;
+    spinVal=paddle.vx*0.40;
+  } else {
+    // Heavy curve — strong swipe
+    const sideMultiplier=0.30;
+    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+    spinVal=paddle.vx*0.55;
   }
   
   // Smash: sharper forward angle (less side deviation)
@@ -598,11 +607,19 @@ function update(dt){
 
   if(serving){doServe(dt);return}
 
-  // Spin — smooth curve application
-  if(Math.abs(ball.spin)>0.01){
-    const curveForce=ball.spin*SPIN_CURVE_FORCE*dt;
+  // Spin — smooth curve: apply lateral acceleration that fades over time
+  if(Math.abs(ball.spin)>0.005){
+    // Quadratic-feel curve: stronger at start, eases out
+    const spinAbs=Math.abs(ball.spin);
+    const curvePower=SPIN_CURVE_FORCE * (1 + spinAbs * 0.3); // stronger spin = more pull
+    const curveForce=ball.spin*curvePower*dt;
     ball.vx+=curveForce;
+    // Gradual decay — spin fades smoothly
     ball.spin*=Math.pow(SPIN_DECAY,dt);
+    if(Math.abs(ball.spin)<0.005)ball.spin=0;
+    // Clamp lateral speed so curve doesn't go crazy
+    const maxCurveVX=ball.speed*0.55;
+    ball.vx=Math.max(-maxCurveVX,Math.min(maxCurveVX,ball.vx));
     // Re-normalize to maintain consistent speed
     const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
     if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
