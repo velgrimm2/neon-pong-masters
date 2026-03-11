@@ -1177,10 +1177,12 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   if(id)document.getElementById(id).classList.add('active');
 }
-document.getElementById('play-btn').addEventListener('click',()=>{initAudio();gameMode='1p';startGame()});
-document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();gameMode='2p';startGame()});
-document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();startGame()});
-document.getElementById('menu-btn').addEventListener('click',()=>{showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none'});
+function goToMenu(){tournament=null;showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none'}
+
+document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';startGame()});
+document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';startGame()});
+document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{startGame()}});
+document.getElementById('menu-btn').addEventListener('click',goToMenu);
 document.querySelectorAll('.diff-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
@@ -1188,6 +1190,25 @@ document.querySelectorAll('.diff-btn').forEach(btn=>{
   });
 });
 function startGame(){resetGame();gameState='playing';showScreen(null);document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='flex'}
+
+// Tournament UI wiring
+document.getElementById('tournament-btn').addEventListener('click',()=>{
+  initAudio();createTournament();showTournamentBracket();
+});
+document.getElementById('bracket-continue-btn').addEventListener('click',()=>{showMatchIntro()});
+document.getElementById('bracket-menu-btn').addEventListener('click',goToMenu);
+document.getElementById('match-start-btn').addEventListener('click',()=>{startTournamentMatch()});
+document.getElementById('tourney-advance-btn').addEventListener('click',()=>{
+  advanceTournamentRound();showTournamentBracket();
+});
+document.getElementById('tourney-replay-btn').addEventListener('click',()=>{
+  createTournament();showTournamentBracket();
+});
+document.getElementById('tourney-win-menu-btn').addEventListener('click',goToMenu);
+document.getElementById('tourney-retry-btn').addEventListener('click',()=>{
+  createTournament();showTournamentBracket();
+});
+document.getElementById('tourney-lose-menu-btn').addEventListener('click',goToMenu);
 
 // ===== LOOP =====
 let lastTime=0;
