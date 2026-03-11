@@ -131,11 +131,15 @@ const BALL_R=11;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=5.5;
-const MAX_SPEED=10;
+const MAX_SPEED=11;
 const WINNING_SCORE_1P=11;
 const WINNING_SCORE_2P=10;
-const SPIN_DECAY=0.96;
-const SPIN_CURVE_FORCE=0.12;
+const SPIN_DECAY=0.97;
+const SPIN_CURVE_FORCE=0.10;
+const RALLY_SPEED_GAIN=0.06; // speed increase per hit during rally
+const BOUNCE_SPEED_DAMP=0.96; // slow down slightly on table/wall bounce
+const ANGLE_JITTER=0.04; // small random angle offset on bounce
+const DIR_SMOOTHING=0.15; // smooth direction blend factor
 
 // ===== STATE =====
 let gameMode='1p'; // '1p' or '2p'
