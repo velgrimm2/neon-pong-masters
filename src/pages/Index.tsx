@@ -288,18 +288,21 @@ function checkPaddleHit(paddle,isPlayer){
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
   // Speed boost — capped at MAX_SPEED
-  const speedBoost=Math.min(2,padSpeed*0.2);
-  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,ball.speed+speedBoost));
+  const speedBoost=Math.min(1.5,padSpeed*0.15);
+  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,BASE_SPEED+speedBoost));
 
-  // Center bias
+  // Center bias — strong swipes push sideways but with heavy center pull
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   let sideMultiplier;
-  if(sideForce>4){sideMultiplier=0.35}
-  else if(sideForce>2){sideMultiplier=0.15}
-  else{sideMultiplier=0.05}
+  if(sideForce>5){sideMultiplier=0.3}
+  else if(sideForce>3){sideMultiplier=0.12}
+  else{sideMultiplier=0.03}
   
-  let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.08;
+  let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+  // Clamp horizontal component so ball mostly goes straight
+  const maxVX=ball.speed*0.45;
+  newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
   const mag=Math.sqrt(newVX*newVX+newVY*newVY);
@@ -307,7 +310,7 @@ function checkPaddleHit(paddle,isPlayer){
 
   ball.vx=newVX;
   ball.vy=newVY;
-  ball.spin=paddle.vx*0.18;
+  ball.spin=paddle.vx*0.15;
   ball.lastHitBy=isPlayer?1:-1;
 
   // Push ball out of paddle
@@ -390,12 +393,12 @@ function scorePoint(scorer){
 function update(dt){
   if(gameState!=='playing')return;
 
-  // Player movement
+  // Player movement — can move outside table boundaries
   player.prevX=player.x;player.prevY=player.y;
   player.x+=(inputX-player.x)*0.22*dt;
   player.y+=(inputY-player.y)*0.22*dt;
-  player.x=Math.max(TBL_L+PAD_R,Math.min(TBL_R-PAD_R,player.x));
-  player.y=Math.max(NET_Y+PAD_R+4,Math.min(TBL_B-PAD_R,player.y));
+  player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
+  player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
 
@@ -403,10 +406,13 @@ function update(dt){
 
   if(serving){doServe(dt);return}
 
-  // Apply spin curve force
+  // Apply spin curve force — but dampen to keep ball in play
   if(Math.abs(ball.spin)>0.01){
     ball.vx+=ball.spin*SPIN_CURVE_FORCE*dt;
     ball.spin*=Math.pow(SPIN_DECAY,dt);
+    // Clamp vx so spin doesn't send ball off table
+    const maxCurveVX=ball.speed*0.5;
+    ball.vx=Math.max(-maxCurveVX,Math.min(maxCurveVX,ball.vx));
     const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
     if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
   }
@@ -419,12 +425,36 @@ function update(dt){
   trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed,spin:ball.spin});
   if(trail.length>MAX_TRAIL)trail.shift();
 
-  // === BOUNDARY: ball falls off ONLY if it actually leaves table sides ===
-  if(ball.x-BALL_R<TBL_L || ball.x+BALL_R>TBL_R){
-    spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
-    if(ball.lastHitBy===1)scorePoint(-1);
-    else scorePoint(1);
-    return;
+  // === SIDE BOUNDARIES: 90% bounce, 10% fall off ===
+  if(ball.x-BALL_R<TBL_L){
+    if(Math.random()<0.1){
+      // 10% chance: ball falls off sideways
+      spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
+      if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
+      return;
+    } else {
+      // 90% chance: bounce off the side wall
+      ball.x=TBL_L+BALL_R;
+      ball.vx=Math.abs(ball.vx)*0.7;
+      ball.spin*=-0.5;
+      sndBounce();
+      addBounceMark(TBL_L,ball.y);
+      spawnParticles(TBL_L,ball.y,'rgba(255,255,255,0.5)',4,0.5);
+    }
+  }
+  if(ball.x+BALL_R>TBL_R){
+    if(Math.random()<0.1){
+      spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
+      if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
+      return;
+    } else {
+      ball.x=TBL_R-BALL_R;
+      ball.vx=-Math.abs(ball.vx)*0.7;
+      ball.spin*=-0.5;
+      sndBounce();
+      addBounceMark(TBL_R,ball.y);
+      spawnParticles(TBL_R,ball.y,'rgba(255,255,255,0.5)',4,0.5);
+    }
   }
 
   // Net collision
@@ -450,7 +480,7 @@ function update(dt){
   if(ball.vy>0 && ball.y>NET_Y) checkPaddleHit(player,true);
   if(ball.vy<0 && ball.y<NET_Y) checkPaddleHit(ai,false);
 
-  // Ball past top/bottom
+  // Ball past top/bottom — player missed
   if(ball.y<TBL_T-25){
     addBounceMark(ball.x,TBL_T);
     scorePoint(1);return;
