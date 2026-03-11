@@ -260,7 +260,7 @@ function doServe(dt){
       spawnParticles(ball.x,ball.y,'#66bb6a',6,0.6);
     }
   } else {
-    ball.x=ai.x;ball.y=ai.y+20;
+    ball.x=ai.x;ball.y=ai.y+25;
     if(serveTimer>1.0){
       serving=false;
       ball.active=true;
