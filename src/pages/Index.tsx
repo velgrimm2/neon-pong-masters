@@ -185,12 +185,25 @@ const AI_PARAMS=[
 // ===== INPUT =====
 // Player 1 input (mouse or bottom-half touch)
 let p1InputX=GW/2,p1InputY=TBL_B+20;
+let p1RawX=GW/2,p1RawY=TBL_B+20; // unsmoothed for velocity calc
 // Player 2 input (top-half touch)
 let p2InputX=GW/2,p2InputY=TBL_T-20;
+let p2RawX=GW/2,p2RawY=TBL_T-20;
 // P2 arrow key state
 let p2Keys={left:false,right:false,up:false,down:false};
 // Touch tracking
 let p1TouchId=null,p2TouchId=null;
+// Touch offset — so paddle doesn't jump to finger on first touch
+let p1TouchOffX=0,p1TouchOffY=0,p2TouchOffX=0,p2TouchOffY=0;
+
+// Adaptive lerp: close = fast snap, far = still fast but smoothed
+function adaptiveLerp(current,target,dt){
+  const diff=target-current;
+  const absDiff=Math.abs(diff);
+  // Near target: snap quickly. Far: still responsive but smoothed
+  const t=absDiff<2?1:Math.min(1,0.55*dt);
+  return current+diff*t;
+}
 
 // Mouse → always controls P1
 canvas.addEventListener('mousemove',e=>{
