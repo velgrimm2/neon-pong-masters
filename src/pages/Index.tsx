@@ -55,6 +55,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 <body>
 <canvas id="gc"></canvas>
 <div id="pause-text">PAUSED</div>
+<button id="pause-btn" onclick="togglePause()"><span class="bar"></span><span class="bar"></span></button>
 <div id="ui-overlay">
   <div class="screen active" id="start-screen">
     <h1>🏓 TABLE TENNIS</h1>
