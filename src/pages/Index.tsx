@@ -112,15 +112,15 @@ function resize(){
 resize();
 window.addEventListener('resize',resize);
 
-// ===== TABLE (compact & close) =====
-const TBL_L=30,TBL_R=GW-30,TBL_T=60,TBL_B=GH-60;
+// ===== TABLE (shallower depth) =====
+const TBL_L=40,TBL_R=GW-40,TBL_T=100,TBL_B=GH-100;
 const TBL_W=TBL_R-TBL_L,TBL_H=TBL_B-TBL_T;
 const NET_Y=(TBL_T+TBL_B)/2;
 const TBL_CX=(TBL_L+TBL_R)/2;
 
-// ===== SIZES =====
-const PAD_R=28;
-const BALL_R=8;
+// ===== SIZES (bigger) =====
+const PAD_R=34;
+const BALL_R=11;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=4;
@@ -141,7 +141,7 @@ let serveTimer=0;
 let shakeX=0,shakeY=0,shakeMag=0;
 
 // Ball
-let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0};
+let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0,bounceHeight:0,bouncePhase:0};
 
 // Bounce markers
 const bounceMarks=[];
@@ -153,9 +153,9 @@ const trail=[];const MAX_TRAIL=20;
 const particles=[];
 
 // Player
-let player={x:GW/2,y:TBL_B-35,prevX:GW/2,prevY:TBL_B-35,vx:0,vy:0};
+let player={x:GW/2,y:TBL_B+20,prevX:GW/2,prevY:TBL_B+20,vx:0,vy:0};
 // AI
-let ai={x:GW/2,y:TBL_T+35,prevX:GW/2,prevY:TBL_T+35,vx:0,vy:0,targetX:GW/2,targetY:TBL_T+35};
+let ai={x:GW/2,y:TBL_T-20,prevX:GW/2,prevY:TBL_T-20,vx:0,vy:0,targetX:GW/2,targetY:TBL_T-20};
 
 const AI_PARAMS=[
   {speed:2.5,accuracy:0.55,hitBoost:0.3,missChance:0.12},
@@ -164,7 +164,7 @@ const AI_PARAMS=[
 ];
 
 // ===== INPUT =====
-let inputX=GW/2,inputY=TBL_B-35;
+let inputX=GW/2,inputY=TBL_B+20;
 
 canvas.addEventListener('mousemove',e=>{
   const r=canvas.getBoundingClientRect();
@@ -221,18 +221,19 @@ function resetBall(server){
   serveTimer=0;
   ball.speed=BASE_SPEED;
   ball.vx=0;ball.vy=0;ball.spin=0;
+  ball.bounceHeight=0;ball.bouncePhase=0;
   ball.lastHitBy=0;
   if(server===1){
-    ball.x=player.x;ball.y=player.y-20;
+    ball.x=player.x;ball.y=player.y-25;
   } else {
-    ball.x=ai.x;ball.y=ai.y+20;
+    ball.x=ai.x;ball.y=ai.y+25;
   }
 }
 
 function resetGame(){
   playerScore=0;aiScore=0;
-  player.x=GW/2;player.y=TBL_B-35;player.prevX=GW/2;player.prevY=TBL_B-35;player.vx=0;player.vy=0;
-  ai.x=GW/2;ai.y=TBL_T+35;ai.prevX=GW/2;ai.prevY=TBL_T+35;ai.vx=0;ai.vy=0;
+  player.x=GW/2;player.y=TBL_B+20;player.prevX=GW/2;player.prevY=TBL_B+20;player.vx=0;player.vy=0;
+  ai.x=GW/2;ai.y=TBL_T-20;ai.prevX=GW/2;ai.prevY=TBL_T-20;ai.vx=0;ai.vy=0;
   particles.length=0;trail.length=0;bounceMarks.length=0;shakeMag=0;
   resetBall(1);
 }
@@ -241,7 +242,7 @@ function resetGame(){
 function doServe(dt){
   serveTimer+=dt*0.016;
   if(serveSide===1){
-    ball.x=player.x;ball.y=player.y-20;
+    ball.x=player.x;ball.y=player.y-25;
     const pSpeed=Math.sqrt(player.vx*player.vx+player.vy*player.vy);
     if(serveTimer>0.6 && pSpeed>1.5){
       serving=false;
@@ -259,7 +260,7 @@ function doServe(dt){
       spawnParticles(ball.x,ball.y,'#66bb6a',6,0.6);
     }
   } else {
-    ball.x=ai.x;ball.y=ai.y+20;
+    ball.x=ai.x;ball.y=ai.y+25;
     if(serveTimer>1.0){
       serving=false;
       ball.active=true;
@@ -294,14 +295,24 @@ function checkPaddleHit(paddle,isPlayer){
   // Center bias — strong swipes push sideways but with heavy center pull
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
-  let sideMultiplier;
-  if(sideForce>5){sideMultiplier=0.3}
-  else if(sideForce>3){sideMultiplier=0.12}
-  else{sideMultiplier=0.03}
   
-  let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
-  // Clamp horizontal component so ball mostly goes straight
-  const maxVX=ball.speed*0.45;
+  // Determine if shot is straight or curved based on paddle movement
+  let newVX, spinVal;
+  if(sideForce<1.5){
+    // Paddle barely moving sideways → straight shot
+    newVX=hitOffsetX*ball.speed*0.05;
+    spinVal=0;
+  } else {
+    // Sideways movement → curved shot
+    let sideMultiplier;
+    if(sideForce>5){sideMultiplier=0.35}
+    else if(sideForce>3){sideMultiplier=0.18}
+    else{sideMultiplier=0.08}
+    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+    spinVal=paddle.vx*0.18;
+  }
+  
+  const maxVX=ball.speed*0.5;
   newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
@@ -310,7 +321,9 @@ function checkPaddleHit(paddle,isPlayer){
 
   ball.vx=newVX;
   ball.vy=newVY;
-  ball.spin=paddle.vx*0.15;
+  ball.spin=spinVal;
+  ball.bounceHeight=8+padSpeed*1.5; // higher bounce on harder hits
+  ball.bouncePhase=0;
   ball.lastHitBy=isPlayer?1:-1;
 
   // Push ball out of paddle
@@ -331,22 +344,21 @@ function checkPaddleHit(paddle,isPlayer){
 // ===== AI =====
 function updateAI(dt){
   const p=AI_PARAMS[difficulty];
-  let tx=GW/2,ty=TBL_T+35;
+  let tx=GW/2,ty=TBL_T-20;
 
   if(ball.active && ball.vy<0){
     const timeToReach=Math.max(0,(ai.y-ball.y)/Math.max(0.5,Math.abs(ball.vy)));
     tx=ball.x+ball.vx*timeToReach;
     tx+=(Math.random()-0.5)*(1-p.accuracy)*80;
-    // Clamp AI target to table center region mostly
     tx=TBL_CX+(tx-TBL_CX)*0.85;
-    ty=TBL_T+25+Math.min(40,Math.abs(ball.vy)*2.5);
+    ty=TBL_T-10+Math.min(30,Math.abs(ball.vy)*2);
     if(Math.random()<p.missChance*0.05){tx+=(Math.random()-0.5)*120}
   } else if(ball.active && ball.vy>0){
     tx=GW/2+(Math.random()-0.5)*30;
-    ty=TBL_T+45;
+    ty=TBL_T-15;
   } else if(!ball.active && serveSide===-1){
     tx=GW/2+(Math.random()-0.5)*40;
-    ty=TBL_T+35;
+    ty=TBL_T-20;
   }
 
   ai.targetX+=(tx-ai.targetX)*0.08;
@@ -362,8 +374,8 @@ function updateAI(dt){
     ai.y+=Math.sign(ddy)*Math.min(Math.abs(ddy),spd*0.6);
   }
 
-  ai.x=Math.max(TBL_L+PAD_R,Math.min(TBL_R-PAD_R,ai.x));
-  ai.y=Math.max(TBL_T+PAD_R,Math.min(NET_Y-PAD_R-4,ai.y));
+  ai.x=Math.max(PAD_R,Math.min(GW-PAD_R,ai.x));
+  ai.y=Math.max(PAD_R,Math.min(NET_Y-PAD_R-4,ai.y));
 
   ai.vx=(ai.x-ai.prevX)*p.hitBoost*2;
   ai.vy=(ai.y-ai.prevY)*p.hitBoost*2;
@@ -393,10 +405,10 @@ function scorePoint(scorer){
 function update(dt){
   if(gameState!=='playing')return;
 
-  // Player movement — can move outside table boundaries
+  // Player movement — smooth interpolation, can move anywhere on screen
   player.prevX=player.x;player.prevY=player.y;
-  player.x+=(inputX-player.x)*0.22*dt;
-  player.y+=(inputY-player.y)*0.22*dt;
+  player.x+=(inputX-player.x)*0.28*dt;
+  player.y+=(inputY-player.y)*0.28*dt;
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
   player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
@@ -420,6 +432,12 @@ function update(dt){
   // Move ball
   ball.x+=ball.vx*dt;
   ball.y+=ball.vy*dt;
+  
+  // Bounce arc — ball bounces up and down during flight
+  if(ball.bounceHeight>0.5){
+    ball.bouncePhase+=dt*0.18;
+    ball.bounceHeight*=0.985; // slowly decay bounce height
+  }
 
   // Trail
   trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed,spin:ball.spin});
@@ -427,7 +445,7 @@ function update(dt){
 
   // === SIDE BOUNDARIES: 90% bounce, 10% fall off ===
   if(ball.x-BALL_R<TBL_L){
-    if(Math.random()<0.1){
+    if(Math.random()<0.05){
       // 10% chance: ball falls off sideways
       spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
@@ -443,7 +461,7 @@ function update(dt){
     }
   }
   if(ball.x+BALL_R>TBL_R){
-    if(Math.random()<0.1){
+    if(Math.random()<0.05){
       spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
       return;
@@ -480,12 +498,12 @@ function update(dt){
   if(ball.vy>0 && ball.y>NET_Y) checkPaddleHit(player,true);
   if(ball.vy<0 && ball.y<NET_Y) checkPaddleHit(ai,false);
 
-  // Ball past top/bottom — player missed
-  if(ball.y<TBL_T-25){
+  // Ball past top/bottom — score (ball can go outside table)
+  if(ball.y<-30){
     addBounceMark(ball.x,TBL_T);
     scorePoint(1);return;
   }
-  if(ball.y>TBL_B+25){
+  if(ball.y>GH+30){
     addBounceMark(ball.x,TBL_B);
     scorePoint(-1);return;
   }
@@ -583,18 +601,23 @@ function draw(){
   }
   ctx.globalAlpha=1;
 
-  // Ball shadow
-  ctx.fillStyle='rgba(0,0,0,0.18)';
-  ctx.beginPath();ctx.ellipse(ball.x+2,ball.y+3,BALL_R,BALL_R*0.5,0,0,Math.PI*2);ctx.fill();
+  // Ball bounce visual — make ball appear to bounce up (scale effect)
+  const bounceScale=ball.bounceHeight>0.5 ? 1+Math.abs(Math.sin(ball.bouncePhase))*ball.bounceHeight*0.015 : 1;
+  const visualR=BALL_R*bounceScale;
+  
+  // Ball shadow — spreads when ball is "high"
+  const shadowSpread=1+Math.abs(Math.sin(ball.bouncePhase||0))*(ball.bounceHeight||0)*0.02;
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.beginPath();ctx.ellipse(ball.x+3,ball.y+4,visualR*shadowSpread,visualR*0.4*shadowSpread,0,0,Math.PI*2);ctx.fill();
 
-  // Ball — white
-  const bg=ctx.createRadialGradient(ball.x-2,ball.y-2,1,ball.x,ball.y,BALL_R);
+  // Ball — white with bounce scale
+  const bg=ctx.createRadialGradient(ball.x-2,ball.y-2,1,ball.x,ball.y,visualR);
   bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#e0e0e0');
   ctx.fillStyle=bg;
-  ctx.beginPath();ctx.arc(ball.x,ball.y,BALL_R,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(ball.x,ball.y,visualR,0,Math.PI*2);ctx.fill();
   // Ball outline
-  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=0.8;
-  ctx.beginPath();ctx.arc(ball.x,ball.y,BALL_R,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(ball.x,ball.y,visualR,0,Math.PI*2);ctx.stroke();
 
   // Paddles
   drawPaddle(player.x,player.y,false);
