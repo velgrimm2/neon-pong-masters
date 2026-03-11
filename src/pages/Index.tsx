@@ -34,19 +34,19 @@ canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%
 #ui-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none}
 .screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px}
 .screen.active{display:flex}
-h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#1b5e20;text-shadow:2px 2px 0 rgba(255,255,255,0.5);margin-bottom:4px}
-.subtitle{font-size:clamp(11px,2.2vw,14px);color:rgba(27,94,32,0.5);margin-bottom:20px;letter-spacing:3px;text-transform:uppercase;font-weight:700}
-.btn{background:#43a047;border:none;color:#fff;padding:13px 44px;font-size:clamp(13px,2.8vw,17px);cursor:pointer;letter-spacing:2px;text-transform:uppercase;border-radius:50px;margin:6px;font-weight:800;box-shadow:0 4px 15px rgba(67,160,71,0.3);transition:all .2s ease;font-family:inherit}
-.btn:hover,.btn:active{transform:translateY(-2px);box-shadow:0 6px 22px rgba(67,160,71,0.4);background:#388e3c}
-.btn-secondary{background:rgba(27,94,32,0.12);color:#2e7d32;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
-.btn-secondary:hover,.btn-secondary:active{background:rgba(27,94,32,0.2)}
+h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1a;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:4px}
+.subtitle{font-size:clamp(11px,2.2vw,14px);color:rgba(90,58,26,0.5);margin-bottom:20px;letter-spacing:3px;text-transform:uppercase;font-weight:700}
+.btn{background:#e86040;border:none;color:#fff;padding:13px 44px;font-size:clamp(13px,2.8vw,17px);cursor:pointer;letter-spacing:2px;text-transform:uppercase;border-radius:50px;margin:6px;font-weight:800;box-shadow:0 4px 15px rgba(232,96,64,0.3);transition:all .2s ease;font-family:inherit}
+.btn:hover,.btn:active{transform:translateY(-2px);box-shadow:0 6px 22px rgba(232,96,64,0.4);background:#d04030}
+.btn-secondary{background:rgba(90,58,26,0.12);color:#5a3a1a;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.btn-secondary:hover,.btn-secondary:active{background:rgba(90,58,26,0.2)}
 .difficulty-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center}
-.diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(67,160,71,0.1);border:2px solid rgba(67,160,71,0.3);color:rgba(27,94,32,0.6);border-radius:50px;box-shadow:none;font-family:inherit;cursor:pointer}
-.diff-btn:hover{background:rgba(67,160,71,0.2);box-shadow:none}
-.diff-btn.selected{background:#43a047;border-color:#43a047;color:#fff;box-shadow:0 3px 12px rgba(67,160,71,0.3)}
-.winner-text{font-family:'Fredoka One',cursive;font-size:clamp(26px,6.5vw,44px);color:#1b5e20;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:18px}
-.final-score{font-size:clamp(16px,4vw,24px);color:rgba(27,94,32,0.5);margin-bottom:20px;font-weight:700}
-.controls-hint{font-size:clamp(9px,1.7vw,11px);color:rgba(27,94,32,0.35);margin-top:16px;line-height:1.7;font-weight:600}
+.diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(232,96,64,0.1);border:2px solid rgba(232,96,64,0.3);color:rgba(90,58,26,0.6);border-radius:50px;box-shadow:none;font-family:inherit;cursor:pointer}
+.diff-btn:hover{background:rgba(232,96,64,0.2);box-shadow:none}
+.diff-btn.selected{background:#e86040;border-color:#e86040;color:#fff;box-shadow:0 3px 12px rgba(232,96,64,0.3)}
+.winner-text{font-family:'Fredoka One',cursive;font-size:clamp(26px,6.5vw,44px);color:#5a3a1a;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:18px}
+.final-score{font-size:clamp(16px,4vw,24px);color:rgba(90,58,26,0.5);margin-bottom:20px;font-weight:700}
+.controls-hint{font-size:clamp(9px,1.7vw,11px);color:rgba(90,58,26,0.35);margin-top:16px;line-height:1.7;font-weight:600}
 #pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fredoka One',cursive;font-size:clamp(28px,6.5vw,50px);color:rgba(27,94,32,0.35);letter-spacing:8px;display:none;z-index:20;text-shadow:2px 2px 0 rgba(255,255,255,0.3)}
 </style>
 </head>
