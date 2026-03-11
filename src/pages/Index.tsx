@@ -601,18 +601,23 @@ function draw(){
   }
   ctx.globalAlpha=1;
 
-  // Ball shadow
-  ctx.fillStyle='rgba(0,0,0,0.18)';
-  ctx.beginPath();ctx.ellipse(ball.x+2,ball.y+3,BALL_R,BALL_R*0.5,0,0,Math.PI*2);ctx.fill();
+  // Ball bounce visual — make ball appear to bounce up (scale effect)
+  const bounceScale=ball.bounceHeight>0.5 ? 1+Math.abs(Math.sin(ball.bouncePhase))*ball.bounceHeight*0.015 : 1;
+  const visualR=BALL_R*bounceScale;
+  
+  // Ball shadow — spreads when ball is "high"
+  const shadowSpread=1+Math.abs(Math.sin(ball.bouncePhase||0))*(ball.bounceHeight||0)*0.02;
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.beginPath();ctx.ellipse(ball.x+3,ball.y+4,visualR*shadowSpread,visualR*0.4*shadowSpread,0,0,Math.PI*2);ctx.fill();
 
-  // Ball — white
-  const bg=ctx.createRadialGradient(ball.x-2,ball.y-2,1,ball.x,ball.y,BALL_R);
+  // Ball — white with bounce scale
+  const bg=ctx.createRadialGradient(ball.x-2,ball.y-2,1,ball.x,ball.y,visualR);
   bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#e0e0e0');
   ctx.fillStyle=bg;
-  ctx.beginPath();ctx.arc(ball.x,ball.y,BALL_R,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(ball.x,ball.y,visualR,0,Math.PI*2);ctx.fill();
   // Ball outline
-  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=0.8;
-  ctx.beginPath();ctx.arc(ball.x,ball.y,BALL_R,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(ball.x,ball.y,visualR,0,Math.PI*2);ctx.stroke();
 
   // Paddles
   drawPaddle(player.x,player.y,false);
