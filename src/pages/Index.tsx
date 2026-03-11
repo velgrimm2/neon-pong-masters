@@ -190,11 +190,12 @@ canvas.addEventListener('touchmove',e=>{
   inputY=((e.touches[0].clientY-r.top)/r.height)*GH;
 },{passive:false});
 
+function togglePause(){
+  if(gameState==='playing'){gameState='paused';document.getElementById('pause-text').style.display='block'}
+  else if(gameState==='paused'){gameState='playing';document.getElementById('pause-text').style.display='none'}
+}
 document.addEventListener('keydown',e=>{
-  if(e.key==='p'||e.key==='P'){
-    if(gameState==='playing'){gameState='paused';document.getElementById('pause-text').style.display='block'}
-    else if(gameState==='paused'){gameState='playing';document.getElementById('pause-text').style.display='none'}
-  }
+  if(e.key==='p'||e.key==='P')togglePause();
 });
 
 // ===== PARTICLES =====
