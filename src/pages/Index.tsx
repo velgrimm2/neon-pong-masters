@@ -153,9 +153,9 @@ const trail=[];const MAX_TRAIL=20;
 const particles=[];
 
 // Player
-let player={x:GW/2,y:TBL_B-35,prevX:GW/2,prevY:TBL_B-35,vx:0,vy:0};
+let player={x:GW/2,y:TBL_B+20,prevX:GW/2,prevY:TBL_B+20,vx:0,vy:0};
 // AI
-let ai={x:GW/2,y:TBL_T+35,prevX:GW/2,prevY:TBL_T+35,vx:0,vy:0,targetX:GW/2,targetY:TBL_T+35};
+let ai={x:GW/2,y:TBL_T-20,prevX:GW/2,prevY:TBL_T-20,vx:0,vy:0,targetX:GW/2,targetY:TBL_T-20};
 
 const AI_PARAMS=[
   {speed:2.5,accuracy:0.55,hitBoost:0.3,missChance:0.12},
