@@ -836,6 +836,29 @@ function draw(){
   }
   ctx.globalAlpha=1;
 
+  // Smash flash overlay
+  const smashAge=performance.now()-lastSmashTime;
+  if(smashAge<150){
+    const flashAlpha=(1-smashAge/150)*0.25;
+    ctx.fillStyle='rgba(255,255,200,'+flashAlpha+')';
+    ctx.fillRect(0,0,GW,GH);
+  }
+
+  // Smash trail — thicker/brighter when recent smash
+  if(smashAge<400 && trail.length>1){
+    for(let i=1;i<trail.length;i++){
+      const t=trail[i];if(t.life<=0)continue;
+      const prev=trail[i-1];
+      const alpha=t.life*0.5*(1-smashAge/400);
+      ctx.globalAlpha=alpha;
+      ctx.strokeStyle='rgba(255,240,100,0.6)';
+      ctx.lineWidth=BALL_R*t.life*1.2;
+      ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(t.x,t.y);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+
   ctx.restore();
 }
 
