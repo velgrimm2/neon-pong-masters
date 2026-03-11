@@ -415,16 +415,25 @@ function checkPaddleHit(paddle,isPlayer){
   const sideForce=Math.abs(paddle.vx);
   
   let newVX, spinVal;
-  if(sideForce<1.5){
-    newVX=hitOffsetX*ball.speed*0.05;
+  if(sideForce<1.0){
+    // Dead-straight shot
+    newVX=hitOffsetX*ball.speed*0.04;
     spinVal=0;
-  } else {
-    let sideMultiplier;
-    if(sideForce>5){sideMultiplier=0.35}
-    else if(sideForce>3){sideMultiplier=0.18}
-    else{sideMultiplier=0.08}
+  } else if(sideForce<3){
+    // Light curve
+    const sideMultiplier=0.10;
+    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.05;
+    spinVal=paddle.vx*0.25;
+  } else if(sideForce<6){
+    // Medium curve
+    const sideMultiplier=0.20;
     newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
-    spinVal=paddle.vx*0.18;
+    spinVal=paddle.vx*0.40;
+  } else {
+    // Heavy curve — strong swipe
+    const sideMultiplier=0.30;
+    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+    spinVal=paddle.vx*0.55;
   }
   
   // Smash: sharper forward angle (less side deviation)
