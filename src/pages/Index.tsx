@@ -432,6 +432,12 @@ function update(dt){
   // Move ball
   ball.x+=ball.vx*dt;
   ball.y+=ball.vy*dt;
+  
+  // Bounce arc — ball bounces up and down during flight
+  if(ball.bounceHeight>0.5){
+    ball.bouncePhase+=dt*0.18;
+    ball.bounceHeight*=0.985; // slowly decay bounce height
+  }
 
   // Trail
   trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed,spin:ball.spin});
