@@ -344,22 +344,21 @@ function checkPaddleHit(paddle,isPlayer){
 // ===== AI =====
 function updateAI(dt){
   const p=AI_PARAMS[difficulty];
-  let tx=GW/2,ty=TBL_T+35;
+  let tx=GW/2,ty=TBL_T-20;
 
   if(ball.active && ball.vy<0){
     const timeToReach=Math.max(0,(ai.y-ball.y)/Math.max(0.5,Math.abs(ball.vy)));
     tx=ball.x+ball.vx*timeToReach;
     tx+=(Math.random()-0.5)*(1-p.accuracy)*80;
-    // Clamp AI target to table center region mostly
     tx=TBL_CX+(tx-TBL_CX)*0.85;
-    ty=TBL_T+25+Math.min(40,Math.abs(ball.vy)*2.5);
+    ty=TBL_T-10+Math.min(30,Math.abs(ball.vy)*2);
     if(Math.random()<p.missChance*0.05){tx+=(Math.random()-0.5)*120}
   } else if(ball.active && ball.vy>0){
     tx=GW/2+(Math.random()-0.5)*30;
-    ty=TBL_T+45;
+    ty=TBL_T-15;
   } else if(!ball.active && serveSide===-1){
     tx=GW/2+(Math.random()-0.5)*40;
-    ty=TBL_T+35;
+    ty=TBL_T-20;
   }
 
   ai.targetX+=(tx-ai.targetX)*0.08;
