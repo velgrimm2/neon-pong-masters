@@ -461,7 +461,7 @@ function update(dt){
     }
   }
   if(ball.x+BALL_R>TBL_R){
-    if(Math.random()<0.1){
+    if(Math.random()<0.05){
       spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
       return;
