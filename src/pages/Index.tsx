@@ -185,12 +185,25 @@ const AI_PARAMS=[
 // ===== INPUT =====
 // Player 1 input (mouse or bottom-half touch)
 let p1InputX=GW/2,p1InputY=TBL_B+20;
+let p1RawX=GW/2,p1RawY=TBL_B+20; // unsmoothed for velocity calc
 // Player 2 input (top-half touch)
 let p2InputX=GW/2,p2InputY=TBL_T-20;
+let p2RawX=GW/2,p2RawY=TBL_T-20;
 // P2 arrow key state
 let p2Keys={left:false,right:false,up:false,down:false};
 // Touch tracking
 let p1TouchId=null,p2TouchId=null;
+// Touch offset — so paddle doesn't jump to finger on first touch
+let p1TouchOffX=0,p1TouchOffY=0,p2TouchOffX=0,p2TouchOffY=0;
+
+// Adaptive lerp: close = fast snap, far = still fast but smoothed
+function adaptiveLerp(current,target,dt){
+  const diff=target-current;
+  const absDiff=Math.abs(diff);
+  // Near target: snap quickly. Far: still responsive but smoothed
+  const t=absDiff<2?1:Math.min(1,0.55*dt);
+  return current+diff*t;
+}
 
 // Mouse → always controls P1
 canvas.addEventListener('mousemove',e=>{
@@ -205,7 +218,7 @@ canvas.addEventListener('mousedown',e=>{
   p1InputY=((e.clientY-r.top)/r.height)*GH;
 });
 
-// Multi-touch
+// Multi-touch with offset tracking
 canvas.addEventListener('touchstart',e=>{
   e.preventDefault();initAudio();
   const r=canvas.getBoundingClientRect();
@@ -215,12 +228,19 @@ canvas.addEventListener('touchstart',e=>{
     const gy=((t.clientY-r.top)/r.height)*GH;
     if(gameMode==='2p'){
       if(gy<GH/2 && p2TouchId===null){
-        p2TouchId=t.identifier;p2InputX=gx;p2InputY=gy;
+        p2TouchId=t.identifier;
+        // Offset so paddle doesn't teleport to finger
+        p2TouchOffX=p2.x-gx;p2TouchOffY=p2.y-gy;
+        p2InputX=p2.x;p2InputY=p2.y;
       } else if(gy>=GH/2 && p1TouchId===null){
-        p1TouchId=t.identifier;p1InputX=gx;p1InputY=gy;
+        p1TouchId=t.identifier;
+        p1TouchOffX=player.x-gx;p1TouchOffY=player.y-gy;
+        p1InputX=player.x;p1InputY=player.y;
       }
     } else {
-      p1TouchId=t.identifier;p1InputX=gx;p1InputY=gy;
+      p1TouchId=t.identifier;
+      p1TouchOffX=player.x-gx;p1TouchOffY=player.y-gy;
+      p1InputX=player.x;p1InputY=player.y;
     }
   }
 },{passive:false});
@@ -232,8 +252,8 @@ canvas.addEventListener('touchmove',e=>{
     const t=e.changedTouches[i];
     const gx=((t.clientX-r.left)/r.width)*GW;
     const gy=((t.clientY-r.top)/r.height)*GH;
-    if(t.identifier===p1TouchId){p1InputX=gx;p1InputY=gy}
-    else if(t.identifier===p2TouchId){p2InputX=gx;p2InputY=gy}
+    if(t.identifier===p1TouchId){p1InputX=gx+p1TouchOffX;p1InputY=gy+p1TouchOffY;p1RawX=gx+p1TouchOffX;p1RawY=gy+p1TouchOffY}
+    else if(t.identifier===p2TouchId){p2InputX=gx+p2TouchOffX;p2InputY=gy+p2TouchOffY;p2RawX=gx+p2TouchOffX;p2RawY=gy+p2TouchOffY}
   }
 },{passive:false});
 
@@ -241,16 +261,16 @@ canvas.addEventListener('touchend',e=>{
   e.preventDefault();
   for(let i=0;i<e.changedTouches.length;i++){
     const t=e.changedTouches[i];
-    if(t.identifier===p1TouchId)p1TouchId=null;
-    if(t.identifier===p2TouchId)p2TouchId=null;
+    if(t.identifier===p1TouchId){p1TouchId=null;p1TouchOffX=0;p1TouchOffY=0}
+    if(t.identifier===p2TouchId){p2TouchId=null;p2TouchOffX=0;p2TouchOffY=0}
   }
 },{passive:false});
 
 canvas.addEventListener('touchcancel',e=>{
   for(let i=0;i<e.changedTouches.length;i++){
     const t=e.changedTouches[i];
-    if(t.identifier===p1TouchId)p1TouchId=null;
-    if(t.identifier===p2TouchId)p2TouchId=null;
+    if(t.identifier===p1TouchId){p1TouchId=null;p1TouchOffX=0;p1TouchOffY=0}
+    if(t.identifier===p2TouchId){p2TouchId=null;p2TouchOffX=0;p2TouchOffY=0}
   }
 });
 
@@ -538,8 +558,8 @@ function updateAI(dt){
 function updateP2Human(dt){
   p2.prevX=p2.x;p2.prevY=p2.y;
 
-  // Arrow keys (desktop)
-  const keySpeed=5*dt;
+  // Arrow keys (desktop) — faster response
+  const keySpeed=6.5*dt;
   if(p2Keys.left)p2InputX-=keySpeed;
   if(p2Keys.right)p2InputX+=keySpeed;
   if(p2Keys.up)p2InputY-=keySpeed;
@@ -547,9 +567,9 @@ function updateP2Human(dt){
   p2InputX=Math.max(0,Math.min(GW,p2InputX));
   p2InputY=Math.max(0,Math.min(GH,p2InputY));
 
-  // Smooth interpolation
-  p2.x+=(p2InputX-p2.x)*0.28*dt;
-  p2.y+=(p2InputY-p2.y)*0.28*dt;
+  // Adaptive lerp for responsive follow
+  p2.x=adaptiveLerp(p2.x,p2InputX,dt);
+  p2.y=adaptiveLerp(p2.y,p2InputY,dt);
 
   // Clamp to top half
   p2.x=Math.max(PAD_R,Math.min(GW-PAD_R,p2.x));
@@ -593,10 +613,10 @@ function update(dt){
   if(smashCooldownP1>0)smashCooldownP1-=dt;
   if(smashCooldownP2>0)smashCooldownP2-=dt;
 
-  // Player 1 movement
+  // Player 1 movement — adaptive lerp for responsiveness
   player.prevX=player.x;player.prevY=player.y;
-  player.x+=(p1InputX-player.x)*0.28*dt;
-  player.y+=(p1InputY-player.y)*0.28*dt;
+  player.x=adaptiveLerp(player.x,p1InputX,dt);
+  player.y=adaptiveLerp(player.y,p1InputY,dt);
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
   player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
