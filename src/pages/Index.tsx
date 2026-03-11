@@ -558,14 +558,21 @@ function draw(){
     else ctx.fillText('AI SERVING...',GW/2,TBL_T-15);
   }
 
-  // Trail
-  for(let i=0;i<trail.length;i++){
-    const t=trail[i];if(t.life<=0)continue;
-    const alpha=t.life*0.18*(Math.min(t.speed,12)/12);
-    ctx.globalAlpha=alpha;
-    ctx.fillStyle='rgba(255,255,200,0.8)';
-    const r=BALL_R*t.life*0.5;
-    ctx.beginPath();ctx.arc(t.x,t.y,r,0,Math.PI*2);ctx.fill();
+  // Curved trail
+  if(trail.length>1){
+    for(let i=1;i<trail.length;i++){
+      const t=trail[i];if(t.life<=0)continue;
+      const prev=trail[i-1];
+      const alpha=t.life*0.25*(Math.min(t.speed,MAX_SPEED)/MAX_SPEED);
+      ctx.globalAlpha=alpha;
+      const spinShift=(t.spin||0)*2;
+      const midX=(prev.x+t.x)/2+spinShift;
+      const midY=(prev.y+t.y)/2;
+      ctx.strokeStyle='rgba(255,235,100,0.8)';
+      ctx.lineWidth=BALL_R*t.life*0.8;
+      ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.quadraticCurveTo(midX,midY,t.x,t.y);ctx.stroke();
+    }
   }
   ctx.globalAlpha=1;
 
