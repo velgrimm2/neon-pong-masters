@@ -408,12 +408,20 @@ function update(dt){
 
   if(serving){doServe(dt);return}
 
-  // Move ball — NO drag, NO friction, NO slowdown
+  // Apply spin curve force
+  if(Math.abs(ball.spin)>0.01){
+    ball.vx+=ball.spin*SPIN_CURVE_FORCE*dt;
+    ball.spin*=Math.pow(SPIN_DECAY,dt);
+    const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+    if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
+  }
+
+  // Move ball
   ball.x+=ball.vx*dt;
   ball.y+=ball.vy*dt;
 
   // Trail
-  trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed});
+  trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed,spin:ball.spin});
   if(trail.length>MAX_TRAIL)trail.shift();
 
   // === BOUNDARY: ball falls off ONLY if it actually leaves table sides ===
