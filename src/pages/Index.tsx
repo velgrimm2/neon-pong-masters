@@ -96,8 +96,20 @@ function playTone(freq,dur,type,vol){
   g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+dur);
   o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+dur);
 }
-function sndHit(power){const v=Math.min(0.08,0.02+power*0.008);playTone(400+power*50,0.06,'sine',v);if(power>5)playTone(600+power*30,0.04,'triangle',v*0.5)}
-function sndSmash(){playTone(250,0.12,'sawtooth',0.10);playTone(500,0.08,'square',0.06);setTimeout(()=>playTone(180,0.1,'triangle',0.05),30)}
+
+// Preload WAV sound effects
+const hitSound=new Audio('/sounds/ping_pong_hit.wav');
+const smashSound=new Audio('/sounds/ping_pong_smash.wav');
+hitSound.preload='auto';
+smashSound.preload='auto';
+
+function playSfx(audio,vol){
+  const s=audio.cloneNode();
+  s.volume=Math.min(1,Math.max(0,vol||0.5));
+  s.play().catch(()=>{});
+}
+function sndHit(power){const v=Math.min(1,0.3+power*0.05);playSfx(hitSound,v)}
+function sndSmash(){playSfx(smashSound,0.8)}
 function sndBounce(){playTone(900,0.025,'sine',0.05)}
 function sndNet(){playTone(150,0.08,'sine',0.03);playTone(120,0.12,'sine',0.02)}
 function sndScore(){playTone(700,0.12,'sine',0.06);setTimeout(()=>playTone(900,0.12,'sine',0.04),80)}
