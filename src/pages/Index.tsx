@@ -232,8 +232,8 @@ function resetBall(server){
 
 function resetGame(){
   playerScore=0;aiScore=0;
-  player.x=GW/2;player.y=TBL_B-35;player.prevX=GW/2;player.prevY=TBL_B-35;player.vx=0;player.vy=0;
-  ai.x=GW/2;ai.y=TBL_T+35;ai.prevX=GW/2;ai.prevY=TBL_T+35;ai.vx=0;ai.vy=0;
+  player.x=GW/2;player.y=TBL_B+20;player.prevX=GW/2;player.prevY=TBL_B+20;player.vx=0;player.vy=0;
+  ai.x=GW/2;ai.y=TBL_T-20;ai.prevX=GW/2;ai.prevY=TBL_T-20;ai.vx=0;ai.vy=0;
   particles.length=0;trail.length=0;bounceMarks.length=0;shakeMag=0;
   resetBall(1);
 }
