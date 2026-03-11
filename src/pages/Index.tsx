@@ -315,6 +315,7 @@ function checkPaddleHit(paddle,isPlayer){
 
   ball.vx=newVX;
   ball.vy=newVY;
+  ball.spin=paddle.vx*0.18;
   ball.lastHitBy=isPlayer?1:-1;
 
   // Push ball out of paddle
