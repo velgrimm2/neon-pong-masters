@@ -120,8 +120,8 @@ function resize(){
 resize();
 window.addEventListener('resize',resize);
 
-// ===== TABLE =====
-const TBL_L=40,TBL_R=GW-40,TBL_T=100,TBL_B=GH-100;
+// ===== TABLE ===== (real table ~5:9 ratio)
+const TBL_L=40,TBL_R=GW-40,TBL_T=45,TBL_B=GH-45;
 const TBL_W=TBL_R-TBL_L,TBL_H=TBL_B-TBL_T;
 const NET_Y=(TBL_T+TBL_B)/2;
 const TBL_CX=(TBL_L+TBL_R)/2;
