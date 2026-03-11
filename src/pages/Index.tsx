@@ -221,11 +221,12 @@ function resetBall(server){
   serveTimer=0;
   ball.speed=BASE_SPEED;
   ball.vx=0;ball.vy=0;ball.spin=0;
+  ball.bounceHeight=0;ball.bouncePhase=0;
   ball.lastHitBy=0;
   if(server===1){
-    ball.x=player.x;ball.y=player.y-20;
+    ball.x=player.x;ball.y=player.y-25;
   } else {
-    ball.x=ai.x;ball.y=ai.y+20;
+    ball.x=ai.x;ball.y=ai.y+25;
   }
 }
 
