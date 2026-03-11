@@ -32,22 +32,26 @@ const GAME_HTML = `<!DOCTYPE html>
 body{background:#f0c040;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Nunito',sans-serif}
 canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 #ui-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none}
-.screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px}
-.screen.active{display:flex}
+.screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px;opacity:0;transition:opacity 0.35s ease}
+.screen.active{display:flex;opacity:1}
 h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1a;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:4px}
 .subtitle{font-size:clamp(11px,2.2vw,14px);color:rgba(90,58,26,0.5);margin-bottom:20px;letter-spacing:3px;text-transform:uppercase;font-weight:700}
-.btn{background:#e86040;border:none;color:#fff;padding:13px 44px;font-size:clamp(13px,2.8vw,17px);cursor:pointer;letter-spacing:2px;text-transform:uppercase;border-radius:50px;margin:6px;font-weight:800;box-shadow:0 4px 15px rgba(232,96,64,0.3);transition:all .2s ease;font-family:inherit}
-.btn:hover,.btn:active{transform:translateY(-2px);box-shadow:0 6px 22px rgba(232,96,64,0.4);background:#d04030}
+.btn{background:#e86040;border:none;color:#fff;padding:13px 44px;font-size:clamp(13px,2.8vw,17px);cursor:pointer;letter-spacing:2px;text-transform:uppercase;border-radius:50px;margin:6px;font-weight:800;box-shadow:0 4px 15px rgba(232,96,64,0.3);transition:all .15s ease;font-family:inherit;position:relative;overflow:hidden}
+.btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 22px rgba(232,96,64,0.5);background:#d04030}
+.btn:active{transform:translateY(1px) scale(0.97);box-shadow:0 2px 8px rgba(232,96,64,0.3)}
+.btn::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,0.3);border-radius:50%;transform:translate(-50%,-50%);transition:width 0.4s,height 0.4s,opacity 0.4s}
+.btn:active::after{width:200px;height:200px;opacity:0}
 .btn-secondary{background:rgba(90,58,26,0.12);color:#5a3a1a;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
-.btn-secondary:hover,.btn-secondary:active{background:rgba(90,58,26,0.2)}
+.btn-secondary:hover{background:rgba(90,58,26,0.2);transform:translateY(-2px) scale(1.03)}
+.btn-secondary:active{transform:translateY(1px) scale(0.97)}
 .btn-2p{background:#2bbfbf;box-shadow:0 4px 15px rgba(43,191,191,0.3)}
-.btn-2p:hover,.btn-2p:active{background:#209e9e;box-shadow:0 6px 22px rgba(43,191,191,0.4)}
+.btn-2p:hover{background:#209e9e;box-shadow:0 6px 22px rgba(43,191,191,0.4)}
 .btn-tournament{background:#9b59b6;box-shadow:0 4px 15px rgba(155,89,182,0.3)}
-.btn-tournament:hover,.btn-tournament:active{background:#8e44ad;box-shadow:0 6px 22px rgba(155,89,182,0.4)}
+.btn-tournament:hover{background:#8e44ad;box-shadow:0 6px 22px rgba(155,89,182,0.4)}
 .difficulty-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center}
-.diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(232,96,64,0.1);border:2px solid rgba(232,96,64,0.3);color:rgba(90,58,26,0.6);border-radius:50px;box-shadow:none;font-family:inherit;cursor:pointer}
-.diff-btn:hover{background:rgba(232,96,64,0.2);box-shadow:none}
-.diff-btn.selected{background:#e86040;border-color:#e86040;color:#fff;box-shadow:0 3px 12px rgba(232,96,64,0.3)}
+.diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(232,96,64,0.1);border:2px solid rgba(232,96,64,0.3);color:rgba(90,58,26,0.6);border-radius:50px;box-shadow:none;font-family:inherit;cursor:pointer;transition:all .15s ease}
+.diff-btn:hover{background:rgba(232,96,64,0.2);transform:scale(1.05)}
+.diff-btn.selected{background:#e86040;border-color:#e86040;color:#fff;box-shadow:0 3px 12px rgba(232,96,64,0.3);transform:scale(1.05)}
 .winner-text{font-family:'Fredoka One',cursive;font-size:clamp(26px,6.5vw,44px);color:#5a3a1a;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:18px}
 .final-score{font-size:clamp(16px,4vw,24px);color:rgba(90,58,26,0.5);margin-bottom:20px;font-weight:700}
 .controls-hint{font-size:clamp(9px,1.7vw,11px);color:rgba(90,58,26,0.35);margin-top:16px;line-height:1.7;font-weight:600}
@@ -57,8 +61,6 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 #pause-menu-btn:active{transform:scale(0.95)}
 #pause-btn{position:absolute;top:10px;right:10px;z-index:15;width:40px;height:40px;border-radius:50%;background:#e8a040;border:3px solid #c07828;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
 #pause-btn .bar{width:4px;height:16px;background:#6d3a0a;border-radius:2px;margin:0 2px}
-
-/* Tournament styles */
 .bracket-container{width:100%;max-width:340px;margin:10px auto}
 .bracket-round{display:flex;justify-content:space-around;margin:6px 0}
 .bracket-match{background:rgba(90,58,26,0.08);border-radius:10px;padding:6px 10px;min-width:70px;font-size:clamp(9px,1.8vw,11px);font-weight:700;color:rgba(90,58,26,0.6);border:2px solid transparent;transition:all 0.2s}
@@ -81,6 +83,9 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 @keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(80px) rotate(360deg);opacity:0}}
 .confetti-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:25}
 .confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetti-fall 2s ease-in forwards}
+@keyframes score-pop{0%{transform:scale(1)}30%{transform:scale(1.6)}60%{transform:scale(0.9)}100%{transform:scale(1)}}
+@keyframes countdown-pop{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes countdown-fade{0%{transform:scale(1);opacity:1}100%{transform:scale(2);opacity:0}}
 </style>
 </head>
 <body>
@@ -91,7 +96,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 <div id="ui-overlay">
   <div class="screen active" id="start-screen">
     <h1>🏓 TABLE TENNIS</h1>
-    <div class="subtitle">R E A L I S T I C</div>
+    <div class="subtitle">A R C A D E</div>
     <div class="difficulty-row">
       <button class="btn diff-btn" data-diff="0">Easy</button>
       <button class="btn diff-btn selected" data-diff="1">Medium</button>
@@ -110,7 +115,6 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn" id="restart-btn">PLAY AGAIN</button>
     <button class="btn btn-secondary" id="menu-btn">MENU</button>
   </div>
-  <!-- Tournament Bracket Screen -->
   <div class="screen" id="bracket-screen">
     <h1 style="font-size:clamp(22px,5.5vw,36px)">🏆 TOURNAMENT</h1>
     <div class="subtitle" id="bracket-subtitle">QUARTERFINALS</div>
@@ -118,7 +122,6 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn" id="bracket-continue-btn">NEXT MATCH</button>
     <button class="btn btn-secondary" id="bracket-menu-btn">BACK TO MENU</button>
   </div>
-  <!-- Match Intro Screen -->
   <div class="screen" id="match-intro-screen">
     <div class="match-intro-round" id="match-round-label">QUARTERFINAL</div>
     <div class="match-intro-names" id="match-p1-name">YOU</div>
@@ -126,14 +129,12 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="match-intro-names" id="match-p2-name">OPPONENT</div>
     <button class="btn" id="match-start-btn">START MATCH</button>
   </div>
-  <!-- Tournament Advance Screen -->
   <div class="screen" id="tourney-advance-screen">
     <div class="winner-text">🎉 YOU ADVANCE!</div>
     <div class="final-score" id="tourney-advance-score"></div>
     <div class="match-intro-round" id="tourney-next-round"></div>
     <button class="btn" id="tourney-advance-btn">CONTINUE</button>
   </div>
-  <!-- Tournament Win Screen -->
   <div class="screen" id="tourney-win-screen">
     <div class="trophy-icon trophy-anim">🏆</div>
     <div class="winner-text">CHAMPION!</div>
@@ -142,7 +143,6 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn" id="tourney-replay-btn">PLAY AGAIN</button>
     <button class="btn btn-secondary" id="tourney-win-menu-btn">MENU</button>
   </div>
-  <!-- Tournament Lose Screen -->
   <div class="screen" id="tourney-lose-screen">
     <div class="winner-text" style="color:#c0392b">❌ ELIMINATED</div>
     <div class="final-score" id="tourney-lose-score"></div>
@@ -160,7 +160,6 @@ function initAudio(){if(!actx){actx=new AudioCtx();masterGain=actx.createGain();
 let masterGain=null;
 function dst(){return masterGain||actx.destination}
 
-// Create noise buffer for realistic ball sounds
 let noiseBuffer=null;
 function getNoiseBuffer(){
   if(noiseBuffer)return noiseBuffer;
@@ -172,102 +171,77 @@ function getNoiseBuffer(){
   return noiseBuffer;
 }
 
-// Realistic paddle hit — sharp click + body thud + slight ring
+// Rally intensity factor for audio
+let rallyIntensity=0;
+
 function sndHit(power){
   if(!actx)return;
   const t=actx.currentTime;
-  const vol=Math.min(0.5,0.15+power*0.04);
-
-  // Sharp click (noise burst through bandpass)
+  const intensityBoost=1+rallyIntensity*0.4;
+  const vol=Math.min(0.6,0.15+power*0.05)*intensityBoost;
   const nb=getNoiseBuffer();if(!nb)return;
   const ns=actx.createBufferSource();ns.buffer=nb;
   const bp=actx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2800+power*200;bp.Q.value=1.5;
   const ng=actx.createGain();ng.gain.setValueAtTime(vol*0.8,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.04);
   ns.connect(bp);bp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.05);
-
-  // Body tone — warm thud
   const o=actx.createOscillator();o.type='sine';o.frequency.setValueAtTime(280+power*30,t);o.frequency.exponentialRampToValueAtTime(120,t+0.08);
   const g=actx.createGain();g.gain.setValueAtTime(vol*0.6,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
   o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.12);
-
-  // Slight plastic ring
   const o2=actx.createOscillator();o2.type='triangle';o2.frequency.value=1400+power*100;
   const g2=actx.createGain();g2.gain.setValueAtTime(vol*0.15,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.06);
   o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.07);
 }
 
-// Powerful smash — deep impact + crack + whoosh
 function sndSmash(){
   if(!actx)return;
   const t=actx.currentTime;
-
-  // Impact crack (noise)
   const nb=getNoiseBuffer();if(!nb)return;
+  // Louder, deeper smash
   const ns=actx.createBufferSource();ns.buffer=nb;
-  const hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=1500;
-  const ng=actx.createGain();ng.gain.setValueAtTime(0.5,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.07);
-  ns.connect(hp);hp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.08);
-
-  // Deep bass thud
-  const o=actx.createOscillator();o.type='sine';o.frequency.setValueAtTime(200,t);o.frequency.exponentialRampToValueAtTime(50,t+0.15);
-  const g=actx.createGain();g.gain.setValueAtTime(0.4,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
-  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.2);
-
-  // Whoosh sweep
-  const o2=actx.createOscillator();o2.type='sawtooth';o2.frequency.setValueAtTime(3000,t);o2.frequency.exponentialRampToValueAtTime(400,t+0.12);
-  const g2=actx.createGain();g2.gain.setValueAtTime(0.08,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.12);
-  o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.14);
-
-  // Accent ping
-  const o3=actx.createOscillator();o3.type='sine';o3.frequency.value=1800;
-  const g3=actx.createGain();g3.gain.setValueAtTime(0.12,t);g3.gain.exponentialRampToValueAtTime(0.001,t+0.08);
-  o3.connect(g3);g3.connect(dst());o3.start(t);o3.stop(t+0.1);
+  const hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=1200;
+  const ng=actx.createGain();ng.gain.setValueAtTime(0.65,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.09);
+  ns.connect(hp);hp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.1);
+  // Deep sub bass
+  const o=actx.createOscillator();o.type='sine';o.frequency.setValueAtTime(180,t);o.frequency.exponentialRampToValueAtTime(35,t+0.2);
+  const g=actx.createGain();g.gain.setValueAtTime(0.55,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.28);
+  // Whoosh
+  const o2=actx.createOscillator();o2.type='sawtooth';o2.frequency.setValueAtTime(3500,t);o2.frequency.exponentialRampToValueAtTime(300,t+0.15);
+  const g2=actx.createGain();g2.gain.setValueAtTime(0.1,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+  o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.17);
+  // Impact crack
+  const o3=actx.createOscillator();o3.type='square';o3.frequency.setValueAtTime(100,t);o3.frequency.exponentialRampToValueAtTime(30,t+0.1);
+  const g3=actx.createGain();g3.gain.setValueAtTime(0.2,t);g3.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+  o3.connect(g3);g3.connect(dst());o3.start(t);o3.stop(t+0.14);
 }
 
-// Table/wall bounce — quick tap
 function sndBounce(){
   if(!actx)return;
   const t=actx.currentTime;
-  // Short noise tap
   const nb=getNoiseBuffer();if(!nb)return;
   const ns=actx.createBufferSource();ns.buffer=nb;
   const bp=actx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=4000;bp.Q.value=2;
   const ng=actx.createGain();ng.gain.setValueAtTime(0.12,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.02);
   ns.connect(bp);bp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.03);
-  // Tiny ping
   const o=actx.createOscillator();o.type='sine';o.frequency.value=2200;
   const g=actx.createGain();g.gain.setValueAtTime(0.06,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.025);
   o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.03);
 }
 
-// Net hit (unused but kept)
-function sndNet(){
-  if(!actx)return;
-  const t=actx.currentTime;
-  const nb=getNoiseBuffer();if(!nb)return;
-  const ns=actx.createBufferSource();ns.buffer=nb;
-  const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=600;
-  const ng=actx.createGain();ng.gain.setValueAtTime(0.1,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.15);
-  ns.connect(lp);lp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.18);
-}
-
-// Score point — satisfying descending chime
 function sndScore(){
   if(!actx)return;
   const t=actx.currentTime;
   const notes=[880,660];
   notes.forEach((freq,i)=>{
     const o=actx.createOscillator();o.type='sine';o.frequency.value=freq;
-    const g=actx.createGain();g.gain.setValueAtTime(0.12,t+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.2);
+    const g=actx.createGain();g.gain.setValueAtTime(0.15,t+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.2);
     o.connect(g);g.connect(dst());o.start(t+i*0.1);o.stop(t+i*0.1+0.25);
-    // Harmonic
     const o2=actx.createOscillator();o2.type='triangle';o2.frequency.value=freq*2;
-    const g2=actx.createGain();g2.gain.setValueAtTime(0.04,t+i*0.1);g2.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.15);
+    const g2=actx.createGain();g2.gain.setValueAtTime(0.05,t+i*0.1);g2.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.15);
     o2.connect(g2);g2.connect(dst());o2.start(t+i*0.1);o2.stop(t+i*0.1+0.18);
   });
 }
 
-// Win — triumphant ascending fanfare
 function sndWin(){
   if(!actx)return;
   const t=actx.currentTime;
@@ -275,22 +249,38 @@ function sndWin(){
   const durations=[0.15,0.15,0.15,0.35];
   let offset=0;
   notes.forEach((freq,i)=>{
-    // Main tone
     const o=actx.createOscillator();o.type='sine';o.frequency.value=freq;
-    const g=actx.createGain();g.gain.setValueAtTime(0.14,t+offset);g.gain.exponentialRampToValueAtTime(0.001,t+offset+durations[i]+0.1);
+    const g=actx.createGain();g.gain.setValueAtTime(0.16,t+offset);g.gain.exponentialRampToValueAtTime(0.001,t+offset+durations[i]+0.1);
     o.connect(g);g.connect(dst());o.start(t+offset);o.stop(t+offset+durations[i]+0.15);
-    // Octave shimmer
     const o2=actx.createOscillator();o2.type='triangle';o2.frequency.value=freq*2;
-    const g2=actx.createGain();g2.gain.setValueAtTime(0.05,t+offset);g2.gain.exponentialRampToValueAtTime(0.001,t+offset+durations[i]);
+    const g2=actx.createGain();g2.gain.setValueAtTime(0.06,t+offset);g2.gain.exponentialRampToValueAtTime(0.001,t+offset+durations[i]);
     o2.connect(g2);g2.connect(dst());o2.start(t+offset);o2.stop(t+offset+durations[i]+0.05);
-    // Fifth harmony on last note
     if(i===3){
       const o3=actx.createOscillator();o3.type='sine';o3.frequency.value=freq*1.5;
-      const g3=actx.createGain();g3.gain.setValueAtTime(0.08,t+offset);g3.gain.exponentialRampToValueAtTime(0.001,t+offset+0.4);
+      const g3=actx.createGain();g3.gain.setValueAtTime(0.1,t+offset);g3.gain.exponentialRampToValueAtTime(0.001,t+offset+0.4);
       o3.connect(g3);g3.connect(dst());o3.start(t+offset);o3.stop(t+offset+0.45);
     }
     offset+=durations[i];
   });
+}
+
+function sndCountdown(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  const o=actx.createOscillator();o.type='sine';o.frequency.value=660;
+  const g=actx.createGain();g.gain.setValueAtTime(0.12,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.2);
+}
+
+function sndCountdownGo(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  const o=actx.createOscillator();o.type='sine';o.frequency.value=1047;
+  const g=actx.createGain();g.gain.setValueAtTime(0.18,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.25);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.3);
+  const o2=actx.createOscillator();o2.type='triangle';o2.frequency.value=1047*2;
+  const g2=actx.createGain();g2.gain.setValueAtTime(0.06,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+  o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.25);
 }
 
 // ===== CANVAS =====
@@ -310,7 +300,7 @@ function resize(){
 resize();
 window.addEventListener('resize',resize);
 
-// ===== TABLE ===== (real table ~5:9 ratio)
+// ===== TABLE =====
 const TBL_L=40,TBL_R=GW-40,TBL_T=45,TBL_B=GH-45;
 const TBL_W=TBL_R-TBL_L,TBL_H=TBL_B-TBL_T;
 const NET_Y=(TBL_T+TBL_B)/2;
@@ -322,21 +312,21 @@ const BALL_R=11;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=5.5;
-const MAX_SPEED=11;
+const MAX_SPEED=12;
 const WINNING_SCORE_1P=11;
 const WINNING_SCORE_2P=10;
-const SPIN_DECAY=0.985; // slower decay = longer curve
-const SPIN_CURVE_FORCE=0.16; // stronger lateral pull
-const RALLY_SPEED_GAIN=0.06; // speed increase per hit during rally
-const BOUNCE_SPEED_DAMP=0.96; // slow down slightly on table/wall bounce
-const ANGLE_JITTER=0.04; // small random angle offset on bounce
-const DIR_SMOOTHING=0.15; // smooth direction blend factor
-const SMASH_THRESHOLD=7; // paddle speed to trigger smash
-const SMASH_SPEED_BOOST=3.5; // extra speed on smash
-const SMASH_COOLDOWN=90; // frames (~1.5s at 60fps)
+const SPIN_DECAY=0.985;
+const SPIN_CURVE_FORCE=0.16;
+const RALLY_SPEED_GAIN=0.06;
+const BOUNCE_SPEED_DAMP=0.96;
+const ANGLE_JITTER=0.04;
+const DIR_SMOOTHING=0.15;
+const SMASH_THRESHOLD=7;
+const SMASH_SPEED_BOOST=3.5;
+const SMASH_COOLDOWN=90;
 
-// ===== STATE =====
-let gameMode='1p'; // '1p' or '2p'
+// ===== JUICE STATE =====
+let gameMode='1p';
 let difficulty=1;
 let gameState='menu';
 let playerScore=0,opponentScore=0;
@@ -347,19 +337,48 @@ let serveTimer=0;
 // Shake
 let shakeX=0,shakeY=0,shakeMag=0;
 let smashCooldownP1=0,smashCooldownP2=0;
-let lastSmashTime=0; // for visual flash
+let lastSmashTime=0;
+
+// Slow motion
+let slowMoTimer=0;
+let slowMoFactor=1;
+
+// Camera zoom
+let cameraZoom=1;
+let targetZoom=1;
+
+// Countdown
+let countdownState=0; // 0=inactive, 3,2,1=counting, -1=GO
+let countdownTimer=0;
+
+// Score pop
+let scorePop1=0,scorePop2=0; // animation timer for score numbers
+let screenPulse=0; // screen pulse on score
+
+// Impact flashes
+const impactFlashes=[];
+
+// Speed lines
+const speedLines=[];
+
+// Paddle state
+let p1Squash=0,p2Squash=0; // squash animation
+let p1Glow=0,p2Glow=0; // glow intensity
+let p1Recoil=0,p2Recoil=0; // recoil animation
+let idleTime=0; // for idle floating
+
+// Ball squash-stretch
+let ballSquash=0; // >0 = squashed on hit, decays
 
 // Ball
 let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0,bounceHeight:0,bouncePhase:0,rallyHits:0};
 
-// Bounce markers
 const bounceMarks=[];
-
-// Trail
-const trail=[];const MAX_TRAIL=20;
-
-// Particles
+const trail=[];const MAX_TRAIL=28;
 const particles=[];
+
+// Spark particles (brighter, faster)
+const sparks=[];
 
 // Player 1 (bottom)
 let player={x:GW/2,y:TBL_B+20,prevX:GW/2,prevY:TBL_B+20,vx:0,vy:0};
@@ -373,29 +392,21 @@ const AI_PARAMS=[
 ];
 
 // ===== INPUT =====
-// Player 1 input (mouse or bottom-half touch)
 let p1InputX=GW/2,p1InputY=TBL_B+20;
-let p1RawX=GW/2,p1RawY=TBL_B+20; // unsmoothed for velocity calc
-// Player 2 input (top-half touch)
+let p1RawX=GW/2,p1RawY=TBL_B+20;
 let p2InputX=GW/2,p2InputY=TBL_T-20;
 let p2RawX=GW/2,p2RawY=TBL_T-20;
-// P2 arrow key state
 let p2Keys={left:false,right:false,up:false,down:false};
-// Touch tracking
 let p1TouchId=null,p2TouchId=null;
-// Touch offset — so paddle doesn't jump to finger on first touch
 let p1TouchOffX=0,p1TouchOffY=0,p2TouchOffX=0,p2TouchOffY=0;
 
-// Adaptive lerp: close = fast snap, far = still fast but smoothed
 function adaptiveLerp(current,target,dt){
   const diff=target-current;
   const absDiff=Math.abs(diff);
-  // Near target: snap quickly. Far: still responsive but smoothed
   const t=absDiff<2?1:Math.min(1,0.55*dt);
   return current+diff*t;
 }
 
-// Mouse → always controls P1
 canvas.addEventListener('mousemove',e=>{
   const r=canvas.getBoundingClientRect();
   p1InputX=((e.clientX-r.left)/r.width)*GW;
@@ -408,7 +419,6 @@ canvas.addEventListener('mousedown',e=>{
   p1InputY=((e.clientY-r.top)/r.height)*GH;
 });
 
-// Multi-touch with offset tracking
 canvas.addEventListener('touchstart',e=>{
   e.preventDefault();initAudio();
   const r=canvas.getBoundingClientRect();
@@ -419,7 +429,6 @@ canvas.addEventListener('touchstart',e=>{
     if(gameMode==='2p'){
       if(gy<GH/2 && p2TouchId===null){
         p2TouchId=t.identifier;
-        // Offset so paddle doesn't teleport to finger
         p2TouchOffX=p2.x-gx;p2TouchOffY=p2.y-gy;
         p2InputX=p2.x;p2InputY=p2.y;
       } else if(gy>=GH/2 && p1TouchId===null){
@@ -468,9 +477,8 @@ function togglePause(){
   if(gameState==='playing'){gameState='paused';document.getElementById('pause-text').style.display='block'}
   else if(gameState==='paused'){gameState='playing';document.getElementById('pause-text').style.display='none'}
 }
-function goToMenuFromPause(){gameState='menu';tournament=null;document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='none';showScreen('start-screen');var cv=document.getElementById('gc');var cx=cv.getContext('2d');cx.clearRect(0,0,cv.width,cv.height)}
+function goToMenuFromPause(){gameState='menu';tournament=null;document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='none';showScreen('start-screen');ctx.clearRect(0,0,canvas.width,canvas.height)}
 
-// Keyboard: P to pause, Arrow keys for P2 in 2P mode
 document.addEventListener('keydown',e=>{
   if(e.key==='p'||e.key==='P')togglePause();
   if(gameMode==='2p'){
@@ -496,7 +504,36 @@ function spawnParticles(x,y,color,count,sp){
   }
 }
 
-// ===== BOUNCE MARK =====
+// Spark burst — bright, fast, directional
+function spawnSparks(x,y,color,count,baseAngle,spread){
+  for(let i=0;i<count;i++){
+    const a=baseAngle+(Math.random()-0.5)*spread;
+    const s=Math.random()*5+3;
+    sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,color,size:Math.random()*2+1});
+  }
+}
+
+// Impact flash
+function addImpactFlash(x,y,radius,color){
+  impactFlashes.push({x,y,radius,color,life:1});
+}
+
+// Speed lines on smash
+function spawnSpeedLines(bx,by,vx,vy,count){
+  const angle=Math.atan2(vy,vx);
+  for(let i=0;i<count;i++){
+    const a=angle+Math.PI+(Math.random()-0.5)*0.6;
+    const dist=Math.random()*60+30;
+    const ox=bx+Math.cos(a+Math.PI)*dist*(Math.random()*0.5+0.5);
+    const oy=by+Math.sin(a+Math.PI)*dist*(Math.random()*0.5+0.5);
+    speedLines.push({
+      x1:ox,y1:oy,
+      x2:ox+Math.cos(a)*40,y2:oy+Math.sin(a)*40,
+      life:1,color:'rgba(255,255,200,0.6)'
+    });
+  }
+}
+
 function addBounceMark(x,y){
   bounceMarks.push({x,y,life:1,r:BALL_R});
   sndBounce();
@@ -512,6 +549,7 @@ function resetBall(server){
   ball.vx=0;ball.vy=0;ball.spin=0;
   ball.bounceHeight=0;ball.bouncePhase=0;
   ball.lastHitBy=0;ball.rallyHits=0;
+  ballSquash=0;
   if(server===1){
     ball.x=player.x;ball.y=player.y-25;
   } else {
@@ -524,7 +562,13 @@ function resetGame(){
   player.x=GW/2;player.y=TBL_B+20;player.prevX=GW/2;player.prevY=TBL_B+20;player.vx=0;player.vy=0;
   p2.x=GW/2;p2.y=TBL_T-20;p2.prevX=GW/2;p2.prevY=TBL_T-20;p2.vx=0;p2.vy=0;
   p2.targetX=GW/2;p2.targetY=TBL_T-20;
-  particles.length=0;trail.length=0;bounceMarks.length=0;shakeMag=0;
+  particles.length=0;trail.length=0;bounceMarks.length=0;sparks.length=0;
+  impactFlashes.length=0;speedLines.length=0;
+  shakeMag=0;slowMoTimer=0;slowMoFactor=1;
+  cameraZoom=1;targetZoom=1;
+  p1Squash=0;p2Squash=0;p1Glow=0;p2Glow=0;p1Recoil=0;p2Recoil=0;
+  scorePop1=0;scorePop2=0;screenPulse=0;
+  rallyIntensity=0;ballSquash=0;idleTime=0;
   p1TouchId=null;p2TouchId=null;
   p2Keys={left:false,right:false,up:false,down:false};
   resetBall(1);
@@ -548,13 +592,11 @@ function doServe(dt){
       if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
       ball.spin=player.vx*0.15;
       ball.lastHitBy=1;
-      sndHit(ball.speed);
-      spawnParticles(ball.x,ball.y,'#66bb6a',6,0.6);
+      triggerHitEffects(ball.x,ball.y,pSpeed,true,false);
     }
   } else {
     ball.x=p2.x;ball.y=p2.y+25;
     if(gameMode==='2p'){
-      // P2 human serve — same logic, needs movement
       const pSpeed=Math.sqrt(p2.vx*p2.vx+p2.vy*p2.vy);
       if(serveTimer>0.6 && pSpeed>1.5){
         serving=false;
@@ -568,11 +610,9 @@ function doServe(dt){
         if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
         ball.spin=p2.vx*0.15;
         ball.lastHitBy=-1;
-        sndHit(ball.speed);
-        spawnParticles(ball.x,ball.y,'#66bb6a',6,0.6);
+        triggerHitEffects(ball.x,ball.y,pSpeed,false,false);
       }
     } else {
-      // AI serve
       if(serveTimer>1.0){
         serving=false;
         ball.active=true;
@@ -590,9 +630,58 @@ function doServe(dt){
   }
 }
 
-// ===== PADDLE HIT (circle vs circle) =====
+// ===== HIT EFFECTS =====
+function triggerHitEffects(x,y,padSpeed,isPlayer,isSmash){
+  if(isSmash){
+    sndSmash();
+    shakeMag=Math.min(14,padSpeed*1.3);
+    lastSmashTime=performance.now();
+    // Slow motion
+    slowMoTimer=12;
+    slowMoFactor=0.3;
+    // Camera zoom punch
+    targetZoom=1.06;
+    // Impact flash
+    addImpactFlash(x,y,50,'rgba(255,255,200,0.9)');
+    addImpactFlash(x,y,30,'rgba(255,180,60,0.7)');
+    // Sparks
+    const baseAngle=isPlayer?-Math.PI/2:Math.PI/2;
+    spawnSparks(x,y,'#ffff00',20,baseAngle,Math.PI*0.8);
+    spawnSparks(x,y,'#ff8800',12,baseAngle,Math.PI*0.6);
+    spawnSparks(x,y,'#ffffff',8,baseAngle,Math.PI*0.5);
+    // Regular particles
+    const color=isPlayer?'#ff4060':'#00e0e0';
+    spawnParticles(x,y,color,15,1.5);
+    spawnParticles(x,y,'#ffff00',10,1.2);
+    // Speed lines
+    spawnSpeedLines(x,y,ball.vx,ball.vy,10);
+    // Ball squash
+    ballSquash=1;
+    // Paddle effects
+    if(isPlayer){p1Squash=1;p1Glow=1;p1Recoil=1}else{p2Squash=1;p2Glow=1;p2Recoil=1}
+  } else {
+    sndHit(ball.speed);
+    const color=isPlayer?'#e86080':'#2bbfbf';
+    const pCount=Math.floor(4+padSpeed*2);
+    spawnParticles(x,y,color,pCount,0.5+padSpeed*0.1);
+    // Small impact flash
+    if(padSpeed>3){
+      addImpactFlash(x,y,20+padSpeed*3,'rgba(255,255,255,0.5)');
+      spawnSparks(x,y,color,Math.floor(padSpeed*2),isPlayer?-Math.PI/2:Math.PI/2,Math.PI*0.6);
+    }
+    // Subtle shake on normal hits
+    if(padSpeed>4)shakeMag=Math.min(6,padSpeed*0.6);
+    // Ball squash
+    ballSquash=Math.min(1,padSpeed*0.12);
+    // Paddle squash
+    if(isPlayer){p1Squash=Math.min(1,padSpeed*0.15);if(padSpeed>5)p1Glow=padSpeed*0.1}
+    else{p2Squash=Math.min(1,padSpeed*0.15);if(padSpeed>5)p2Glow=padSpeed*0.1}
+    if(isPlayer)p1Recoil=Math.min(1,padSpeed*0.1);else p2Recoil=Math.min(1,padSpeed*0.1);
+  }
+}
+
+// ===== PADDLE HIT =====
 function checkPaddleHit(paddle,isPlayer){
-  // Directional guard: only check if ball moving toward paddle
   if(isPlayer && ball.vy<0) return false;
   if(!isPlayer && ball.vy>0) return false;
 
@@ -602,9 +691,8 @@ function checkPaddleHit(paddle,isPlayer){
   if(dist>hitDist) return false;
 
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
-  const forwardSpeed=isPlayer?-paddle.vy:paddle.vy; // how fast toward opponent
+  const forwardSpeed=isPlayer?-paddle.vy:paddle.vy;
 
-  // Detect SMASH
   const cooldownRef=isPlayer?smashCooldownP1:smashCooldownP2;
   const isSmash=padSpeed>=SMASH_THRESHOLD && forwardSpeed>2 && cooldownRef<=0;
 
@@ -612,58 +700,45 @@ function checkPaddleHit(paddle,isPlayer){
     if(isPlayer)smashCooldownP1=SMASH_COOLDOWN;else smashCooldownP2=SMASH_COOLDOWN;
   }
 
-  // Rally speed increase, capped
   ball.rallyHits++;
+  rallyIntensity=Math.min(1,ball.rallyHits*0.08);
   const rallyBoost=Math.min(3,ball.rallyHits*RALLY_SPEED_GAIN);
   const speedBoost=Math.min(2,padSpeed*0.15);
   let targetSpeed=BASE_SPEED+speedBoost+rallyBoost;
   if(isSmash)targetSpeed+=SMASH_SPEED_BOOST;
   ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,targetSpeed));
 
-  // Hit offset for angle control
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   
   let newVX, spinVal;
   if(sideForce<1.0){
-    // Dead-straight shot
     newVX=hitOffsetX*ball.speed*0.04;
     spinVal=0;
   } else if(sideForce<3){
-    // Light curve
-    const sideMultiplier=0.10;
-    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.05;
+    newVX=paddle.vx*0.10 + hitOffsetX*ball.speed*0.05;
     spinVal=paddle.vx*0.25;
   } else if(sideForce<6){
-    // Medium curve
-    const sideMultiplier=0.20;
-    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+    newVX=paddle.vx*0.20 + hitOffsetX*ball.speed*0.06;
     spinVal=paddle.vx*0.40;
   } else {
-    // Heavy curve — strong swipe
-    const sideMultiplier=0.30;
-    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+    newVX=paddle.vx*0.30 + hitOffsetX*ball.speed*0.06;
     spinVal=paddle.vx*0.55;
   }
   
-  // Smash: sharper forward angle (less side deviation)
   if(isSmash){
-    newVX*=0.4; // flatten angle — ball goes more straight
+    newVX*=0.4;
     spinVal*=0.3;
   }
 
-  // Add small jitter for variety
   newVX+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER;
-
   const maxVX=ball.speed*(isSmash?0.25:0.5);
   newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
-  // Normalize to exact speed
   const mag=Math.sqrt(newVX*newVX+newVY*newVY);
   if(mag>0){newVX=(newVX/mag)*ball.speed;newVY=(newVY/mag)*ball.speed;}
 
-  // Smooth direction blend (skip smoothing on smash for instant snap)
   if(isSmash){
     ball.vx=newVX;ball.vy=newVY;
   } else {
@@ -674,11 +749,10 @@ function checkPaddleHit(paddle,isPlayer){
   }
 
   ball.spin=spinVal;
-  ball.bounceHeight=isSmash?3:8+padSpeed*1.5; // smash = low arc
+  ball.bounceHeight=isSmash?3:8+padSpeed*1.5;
   ball.bouncePhase=0;
   ball.lastHitBy=isPlayer?1:-1;
 
-  // Push ball fully outside paddle to prevent sticking
   if(dist>0&&dist<hitDist){
     const nx=dx/dist,ny=dy/dist;
     const overlap=hitDist-dist+2;
@@ -686,21 +760,12 @@ function checkPaddleHit(paddle,isPlayer){
     ball.y+=ny*overlap;
   }
 
-  // Effects
-  if(isSmash){
-    sndSmash();
-    shakeMag=Math.min(10,padSpeed*1.0);
-    lastSmashTime=performance.now();
-    const color=isPlayer?'#ff4060':'#00e0e0';
-    spawnParticles(ball.x,ball.y,color,15,1.5);
-    spawnParticles(ball.x,ball.y,'#ffff00',8,1.0);
-  } else {
-    sndHit(ball.speed);
-    const color=isPlayer?'#e86080':'#2bbfbf';
-    spawnParticles(ball.x,ball.y,color,Math.floor(4+padSpeed*2),0.5+padSpeed*0.1);
-    if(padSpeed>4)shakeMag=Math.min(6,padSpeed*0.6);
+  // Rally zoom
+  if(ball.rallyHits>4){
+    targetZoom=1+Math.min(0.04,ball.rallyHits*0.005);
   }
 
+  triggerHitEffects(ball.x,ball.y,padSpeed,isPlayer,isSmash);
   return true;
 }
 
@@ -744,11 +809,8 @@ function updateAI(dt){
   p2.vy=(p2.y-p2.prevY)*p.hitBoost*2;
 }
 
-// ===== P2 HUMAN =====
 function updateP2Human(dt){
   p2.prevX=p2.x;p2.prevY=p2.y;
-
-  // Arrow keys (desktop) — faster response
   const keySpeed=6.5*dt;
   if(p2Keys.left)p2InputX-=keySpeed;
   if(p2Keys.right)p2InputX+=keySpeed;
@@ -756,31 +818,24 @@ function updateP2Human(dt){
   if(p2Keys.down)p2InputY+=keySpeed;
   p2InputX=Math.max(0,Math.min(GW,p2InputX));
   p2InputY=Math.max(0,Math.min(GH,p2InputY));
-
-  // Adaptive lerp for responsive follow
   p2.x=adaptiveLerp(p2.x,p2InputX,dt);
   p2.y=adaptiveLerp(p2.y,p2InputY,dt);
-
-  // Clamp to top half
   p2.x=Math.max(PAD_R,Math.min(GW-PAD_R,p2.x));
   p2.y=Math.max(PAD_R,Math.min(NET_Y-PAD_R-4,p2.y));
-
   p2.vx=p2.x-p2.prevX;
   p2.vy=p2.y-p2.prevY;
 }
 
 // ===== TOURNAMENT =====
 const AI_NAMES=['Dragon','Blaze','Shadow','Viper','Thunder','Storm','Phoenix','Hawk','Wolf','Titan','Ace','Fury','Nova','Bolt','Jet','Spike'];
-let tournament=null; // {bracket:[], round:0, matchIdx:0, stats:{wins:0,totalPoints:0}}
+let tournament=null;
 
 function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 
 function createTournament(){
   const names=shuffleArray([...AI_NAMES]).slice(0,7);
-  // bracket[0]=QF(4 matches), bracket[1]=SF(2), bracket[2]=Final(1)
   const qf=[];
   const opponents=['YOU',names[0],names[1],names[2],names[3],names[4],names[5],names[6]];
-  // Player always in slot 0
   const others=opponents.slice(1);
   shuffleArray(others);
   const seeded=['YOU',...others];
@@ -790,15 +845,10 @@ function createTournament(){
   const sf=[{p1:null,p2:null,winner:null,score1:0,score2:0},{p1:null,p2:null,winner:null,score1:0,score2:0}];
   const final_=[{p1:null,p2:null,winner:null,score1:0,score2:0}];
   tournament={bracket:[qf,sf,final_],round:0,matchIdx:-1,stats:{wins:0,totalPoints:0,pointsAgainst:0}};
-  // Find player's QF match
   for(let i=0;i<4;i++){if(qf[i].p1==='YOU'||qf[i].p2==='YOU'){tournament.matchIdx=i;break}}
 }
 
-function getTournamentDifficulty(){
-  if(!tournament)return 1;
-  return tournament.round; // 0=easy, 1=medium, 2=hard
-}
-
+function getTournamentDifficulty(){return tournament?tournament.round:1}
 function getRoundName(round){return['QUARTERFINAL','SEMIFINAL','FINAL'][round]||''}
 
 function getCurrentTourneyMatch(){
@@ -813,7 +863,6 @@ function getPlayerOpponentName(){
 }
 
 function simulateAIMatch(p1,p2){
-  // Simulate a match between two AI - random but slightly favor better seeds
   let s1=0,s2=0;
   while(s1<10&&s2<10||Math.abs(s1-s2)<2){
     if(Math.random()<0.5)s1++;else s2++;
@@ -827,7 +876,6 @@ function simulateAIMatch(p1,p2){
 function advanceTournamentRound(){
   const round=tournament.round;
   const matches=tournament.bracket[round];
-  // Fill next round
   if(round<2){
     const nextMatches=tournament.bracket[round+1];
     for(let i=0;i<matches.length;i+=2){
@@ -836,7 +884,6 @@ function advanceTournamentRound(){
       nextMatches[nIdx].p2=matches[i+1].winner;
     }
     tournament.round++;
-    // Find player's next match
     const nm=tournament.bracket[tournament.round];
     tournament.matchIdx=-1;
     for(let i=0;i<nm.length;i++){if(nm[i].p1==='YOU'||nm[i].p2==='YOU'){tournament.matchIdx=i;break}}
@@ -880,8 +927,8 @@ function renderBracket(){
 function spawnConfetti(){
   const box=document.getElementById('confetti-box');
   box.innerHTML='';
-  const colors=['#e86040','#f0c040','#2bbfbf','#9b59b6','#27ae60','#e74c3c','#3498db'];
-  for(let i=0;i<40;i++){
+  const colors=['#e86040','#f0c040','#2bbfbf','#9b59b6','#27ae60','#e74c3c','#3498db','#ff6b9d','#ffd700'];
+  for(let i=0;i<60;i++){
     const d=document.createElement('div');
     d.className='confetti';
     d.style.left=Math.random()*100+'%';
@@ -889,6 +936,8 @@ function spawnConfetti(){
     d.style.background=colors[Math.floor(Math.random()*colors.length)];
     d.style.animationDelay=(Math.random()*1.5)+'s';
     d.style.animationDuration=(1.5+Math.random()*1.5)+'s';
+    d.style.width=(6+Math.random()*6)+'px';
+    d.style.height=(6+Math.random()*6)+'px';
     box.appendChild(d);
   }
   setTimeout(()=>{box.innerHTML=''},4000);
@@ -911,10 +960,7 @@ function startTournamentMatch(){
   difficulty=getTournamentDifficulty();
   gameMode='1p';
   resetGame();
-  gameState='playing';
-  showScreen(null);
-  document.getElementById('pause-text').style.display='none';
-  document.getElementById('pause-btn').style.display='flex';
+  startCountdown();
 }
 
 function handleTournamentMatchEnd(playerWon,pScore,oScore){
@@ -928,7 +974,6 @@ function handleTournamentMatchEnd(playerWon,pScore,oScore){
     tournament.stats.wins++;
     simulateOtherMatches();
     if(tournament.round===2){
-      // WON THE TOURNAMENT!
       document.getElementById('tourney-win-score').textContent=pScore+' - '+oScore;
       document.getElementById('tourney-stats').innerHTML=
         '<span><span class="stat-val">'+tournament.stats.wins+'</span>Wins</span>'+
@@ -953,12 +998,78 @@ function handleTournamentMatchEnd(playerWon,pScore,oScore){
   }
 }
 
+// ===== COUNTDOWN =====
+function startCountdown(){
+  countdownState=3;
+  countdownTimer=0;
+  gameState='countdown';
+  showScreen(null);
+  document.getElementById('pause-btn').style.display='flex';
+  document.getElementById('pause-text').style.display='none';
+}
+
+function updateCountdown(dt){
+  countdownTimer+=dt*0.016;
+  if(countdownState>0){
+    if(countdownTimer>0.8){
+      countdownTimer=0;
+      countdownState--;
+      if(countdownState>0)sndCountdown();
+      else{countdownState=-1;sndCountdownGo()}
+    }
+  } else if(countdownState===-1){
+    if(countdownTimer>0.6){
+      countdownState=0;
+      gameState='playing';
+    }
+  }
+}
+
+function drawCountdown(){
+  const sx=scaleX,sy=scaleY;
+  ctx.save();
+  ctx.setTransform(sx,0,0,sy,0,0);
+  // Draw table behind
+  drawTable();
+  drawPaddle(player.x,player.y,false,0,0,0);
+  drawPaddle(p2.x,p2.y,true,0,0,0);
+  
+  // Countdown text
+  let text='';
+  let progress=countdownTimer/0.8;
+  if(countdownState>0){
+    text=countdownState.toString();
+  } else if(countdownState===-1){
+    text='GO!';
+    progress=countdownTimer/0.6;
+  }
+  
+  if(text){
+    const scale=progress<0.3?0.3+progress*2.3:1+(1-progress)*0.15;
+    const alpha=progress>0.7?1-(progress-0.7)/0.3:1;
+    ctx.globalAlpha=alpha;
+    ctx.font='900 '+Math.floor(80*scale)+'px Fredoka One,cursive';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=countdownState===-1?'#e86040':'#5a3a1a';
+    ctx.shadowColor='rgba(0,0,0,0.3)';ctx.shadowBlur=10;
+    ctx.fillText(text,GW/2,GH/2);
+    ctx.shadowBlur=0;
+    ctx.globalAlpha=1;
+  }
+  ctx.restore();
+}
+
 // ===== SCORE =====
 function scorePoint(scorer){
-  if(scorer===1)playerScore++;else opponentScore++;
+  if(scorer===1){playerScore++;scorePop1=1}else{opponentScore++;scorePop2=1}
   sndScore();
   spawnParticles(ball.x,ball.y,scorer===1?'#d84080':'#20a0a0',15,1.2);
-  shakeMag=4;
+  // Confetti burst on score
+  spawnSparks(ball.x,ball.y,scorer===1?'#ff6090':'#40e0e0',12,scorer===1?-Math.PI/2:Math.PI/2,Math.PI);
+  shakeMag=5;
+  screenPulse=1;
+  rallyIntensity=0;
+  targetZoom=1;
 
   const winScore=gameMode==='2p'?WINNING_SCORE_2P:WINNING_SCORE_1P;
   if((playerScore>=winScore||opponentScore>=winScore)&&Math.abs(playerScore-opponentScore)>=2){
@@ -979,7 +1090,9 @@ function scorePoint(scorer){
     }
     document.getElementById('winner-text').textContent=winText;
     document.getElementById('final-score').textContent=playerScore+' - '+opponentScore;
-    showScreen('end-screen');sndWin();return;
+    showScreen('end-screen');
+    if(playerScore>opponentScore)spawnConfetti();
+    sndWin();return;
   }
 
   const total=playerScore+opponentScore;
@@ -991,45 +1104,66 @@ function scorePoint(scorer){
 function update(dt){
   if(gameState!=='playing')return;
 
-  // Smash cooldown decay
-  if(smashCooldownP1>0)smashCooldownP1-=dt;
-  if(smashCooldownP2>0)smashCooldownP2-=dt;
+  // Slow motion
+  if(slowMoTimer>0){
+    slowMoTimer-=1;
+    slowMoFactor+=(1-slowMoFactor)*0.08;
+    if(slowMoTimer<=0)slowMoFactor=1;
+  }
+  const sDt=dt*slowMoFactor;
 
-  // Player 1 movement — adaptive lerp for responsiveness
+  // Camera zoom smooth
+  cameraZoom+=(targetZoom-cameraZoom)*0.06;
+  if(Math.abs(cameraZoom-targetZoom)<0.001)cameraZoom=targetZoom;
+  // Decay zoom back to 1
+  if(targetZoom>1)targetZoom+=(1-targetZoom)*0.02;
+
+  if(smashCooldownP1>0)smashCooldownP1-=sDt;
+  if(smashCooldownP2>0)smashCooldownP2-=sDt;
+
+  // Idle time for floating
+  idleTime+=sDt*0.02;
+
+  // Decay paddle effects
+  p1Squash*=0.85;p2Squash*=0.85;
+  p1Glow*=0.92;p2Glow*=0.92;
+  p1Recoil*=0.88;p2Recoil*=0.88;
+  ballSquash*=0.88;
+
+  // Score pop decay
+  scorePop1*=0.9;scorePop2*=0.9;
+  screenPulse*=0.92;
+
+  // Player 1 movement
   player.prevX=player.x;player.prevY=player.y;
-  player.x=adaptiveLerp(player.x,p1InputX,dt);
-  player.y=adaptiveLerp(player.y,p1InputY,dt);
+  player.x=adaptiveLerp(player.x,p1InputX,sDt);
+  player.y=adaptiveLerp(player.y,p1InputY,sDt);
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
   player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
 
-  // P2: AI or human
-  if(gameMode==='2p'){updateP2Human(dt)}else{updateAI(dt)}
+  if(gameMode==='2p'){updateP2Human(sDt)}else{updateAI(sDt)}
 
-  if(serving){doServe(dt);return}
+  if(serving){doServe(sDt);return}
 
-  // Spin — smooth curve: apply lateral acceleration that fades over time
+  // Spin curve
   if(Math.abs(ball.spin)>0.005){
-    // Quadratic-feel curve: stronger at start, eases out
     const spinAbs=Math.abs(ball.spin);
-    const curvePower=SPIN_CURVE_FORCE * (1 + spinAbs * 0.3); // stronger spin = more pull
-    const curveForce=ball.spin*curvePower*dt;
+    const curvePower=SPIN_CURVE_FORCE * (1 + spinAbs * 0.3);
+    const curveForce=ball.spin*curvePower*sDt;
     ball.vx+=curveForce;
-    // Gradual decay — spin fades smoothly
-    ball.spin*=Math.pow(SPIN_DECAY,dt);
+    ball.spin*=Math.pow(SPIN_DECAY,sDt);
     if(Math.abs(ball.spin)<0.005)ball.spin=0;
-    // Clamp lateral speed so curve doesn't go crazy
     const maxCurveVX=ball.speed*0.55;
     ball.vx=Math.max(-maxCurveVX,Math.min(maxCurveVX,ball.vx));
-    // Re-normalize to maintain consistent speed
     const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
     if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
   }
 
-  // Move ball (sub-step for smoother collision at high speed)
+  // Move ball
   const steps=ball.speed>7?2:1;
-  const subDt=dt/steps;
+  const subDt=sDt/steps;
   for(let s=0;s<steps;s++){
     ball.x+=ball.vx*subDt;
     ball.y+=ball.vy*subDt;
@@ -1037,7 +1171,7 @@ function update(dt){
   
   // Bounce arc
   if(ball.bounceHeight>0.5){
-    ball.bouncePhase+=dt*0.18;
+    ball.bouncePhase+=sDt*0.18;
     ball.bounceHeight*=0.985;
   }
 
@@ -1045,7 +1179,7 @@ function update(dt){
   trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed,spin:ball.spin});
   if(trail.length>MAX_TRAIL)trail.shift();
 
-  // Side boundaries: always bounce, never fall off
+  // Side boundaries
   if(ball.x-BALL_R<TBL_L){
     ball.x=TBL_L+BALL_R+1;
     ball.vx=Math.abs(ball.vx)*0.7;
@@ -1071,8 +1205,6 @@ function update(dt){
     spawnParticles(TBL_R,ball.y,'rgba(255,255,255,0.5)',4,0.5);
   }
 
-  // Ball passes through net freely — no net collision
-
   // Paddle collisions
   if(ball.vy>0 && ball.y>NET_Y) checkPaddleHit(player,true);
   if(ball.vy<0 && ball.y<NET_Y) checkPaddleHit(p2,false);
@@ -1091,30 +1223,41 @@ function update(dt){
   if(shakeMag>0){
     shakeX=(Math.random()-0.5)*shakeMag;
     shakeY=(Math.random()-0.5)*shakeMag;
-    shakeMag*=0.85;if(shakeMag<0.2)shakeMag=0;
+    shakeMag*=0.82;if(shakeMag<0.2)shakeMag=0;
   } else {shakeX=0;shakeY=0}
 
-  // Particles
+  // Particles update
   for(let i=particles.length-1;i>=0;i--){
-    const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=0.03*dt;
+    const p=particles[i];p.x+=p.vx*sDt;p.y+=p.vy*sDt;p.life-=0.03*sDt;
     if(p.life<=0)particles.splice(i,1);
   }
-  for(const t of trail)t.life-=0.06*dt;
+  // Sparks update (faster decay)
+  for(let i=sparks.length-1;i>=0;i--){
+    const s=sparks[i];s.x+=s.vx*sDt;s.y+=s.vy*sDt;s.vx*=0.95;s.vy*=0.95;s.life-=0.05*sDt;
+    if(s.life<=0)sparks.splice(i,1);
+  }
+  // Impact flashes
+  for(let i=impactFlashes.length-1;i>=0;i--){
+    impactFlashes[i].life-=0.08*sDt;
+    if(impactFlashes[i].life<=0)impactFlashes.splice(i,1);
+  }
+  // Speed lines
+  for(let i=speedLines.length-1;i>=0;i--){
+    speedLines[i].life-=0.06*sDt;
+    if(speedLines[i].life<=0)speedLines.splice(i,1);
+  }
 
-  // Bounce marks decay
+  for(const t of trail)t.life-=0.06*sDt;
+
   for(let i=bounceMarks.length-1;i>=0;i--){
-    bounceMarks[i].life-=0.02*dt;
-    bounceMarks[i].r+=0.3*dt;
+    bounceMarks[i].life-=0.02*sDt;
+    bounceMarks[i].r+=0.3*sDt;
     if(bounceMarks[i].life<=0)bounceMarks.splice(i,1);
   }
 }
 
 // ===== DRAW =====
-function draw(){
-  const sx=scaleX,sy=scaleY;
-  ctx.save();
-  ctx.setTransform(sx,0,0,sy,shakeX*sx,shakeY*sy);
-
+function drawTable(){
   // Background
   ctx.fillStyle='#f0c040';ctx.fillRect(0,0,GW,GH);
 
@@ -1148,12 +1291,46 @@ function draw(){
   ctx.shadowColor='rgba(0,0,0,0.2)';ctx.shadowBlur=4;ctx.shadowOffsetY=2;
   ctx.fillRect(TBL_L-8,NET_Y-4,TBL_W+16,8);
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+}
 
-  // Scores on table
-  ctx.font='800 60px Fredoka One,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+function draw(){
+  const sx=scaleX,sy=scaleY;
+  ctx.save();
+  
+  // Apply camera zoom centered
+  const zoomOffX=GW/2*(1-cameraZoom);
+  const zoomOffY=GH/2*(1-cameraZoom);
+  ctx.setTransform(sx*cameraZoom,0,0,sy*cameraZoom,(shakeX*sx+zoomOffX*sx),(shakeY*sy+zoomOffY*sy));
+
+  drawTable();
+
+  // Screen pulse overlay
+  if(screenPulse>0.01){
+    ctx.fillStyle='rgba(255,255,255,'+screenPulse*0.15+')';
+    ctx.fillRect(0,0,GW,GH);
+  }
+
+  // Scores on table with pop animation
+  const s1Scale=1+scorePop1*0.4;
+  const s2Scale=1+scorePop2*0.4;
+  
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  
+  ctx.save();
+  ctx.translate(GW/2,(TBL_T+NET_Y)/2);
+  ctx.scale(s2Scale,s2Scale);
+  ctx.font='800 60px Fredoka One,sans-serif';
   ctx.fillStyle='rgba(255,255,255,0.2)';
-  ctx.fillText(opponentScore,GW/2,(TBL_T+NET_Y)/2);
-  ctx.fillText(playerScore,GW/2,(NET_Y+TBL_B)/2);
+  ctx.fillText(opponentScore,0,0);
+  ctx.restore();
+  
+  ctx.save();
+  ctx.translate(GW/2,(NET_Y+TBL_B)/2);
+  ctx.scale(s1Scale,s1Scale);
+  ctx.font='800 60px Fredoka One,sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.2)';
+  ctx.fillText(playerScore,0,0);
+  ctx.restore();
 
   // Player labels in 2P mode
   if(gameMode==='2p'){
@@ -1166,7 +1343,7 @@ function draw(){
 
   // Serve indicator
   if(serving){
-    ctx.font='600 12px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.textBaseline='alphabetic';
+    ctx.font='600 12px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.textBaseline='alphabetic';ctx.textAlign='center';
     if(serveSide===1){
       ctx.fillText('MOVE TO SERVE',GW/2,TBL_B+22);
     } else {
@@ -1175,26 +1352,46 @@ function draw(){
     }
   }
 
+  // Speed lines
+  for(const sl of speedLines){
+    ctx.globalAlpha=sl.life*0.6;
+    ctx.strokeStyle=sl.color;
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(sl.x1,sl.y1);ctx.lineTo(sl.x2,sl.y2);ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+
   // Trail
   if(trail.length>1){
     for(let i=1;i<trail.length;i++){
       const t=trail[i];if(t.life<=0)continue;
       const prev=trail[i-1];
-      const alpha=t.life*0.25*(Math.min(t.speed,MAX_SPEED)/MAX_SPEED);
+      const speedNorm=Math.min(t.speed,MAX_SPEED)/MAX_SPEED;
+      const alpha=t.life*0.3*(0.3+speedNorm*0.7);
       ctx.globalAlpha=alpha;
       const spinShift=(t.spin||0)*2;
       const midX=(prev.x+t.x)/2+spinShift;
       const midY=(prev.y+t.y)/2;
-      ctx.strokeStyle='rgba(255,255,255,0.5)';
-      ctx.lineWidth=BALL_R*t.life*0.7;
+      // Trail color shifts with speed
+      const r=Math.floor(255-speedNorm*55);
+      const g=Math.floor(255-speedNorm*155);
+      const b=Math.floor(255-speedNorm*200);
+      ctx.strokeStyle='rgb('+r+','+g+','+b+')';
+      ctx.lineWidth=BALL_R*t.life*(0.5+speedNorm*0.6);
       ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.quadraticCurveTo(midX,midY,t.x,t.y);ctx.stroke();
     }
   }
   ctx.globalAlpha=1;
 
-  // Ball bounce visual
+  // Ball
   const bounceScale=ball.bounceHeight>0.5 ? 1+Math.abs(Math.sin(ball.bouncePhase))*ball.bounceHeight*0.015 : 1;
+  
+  // Ball squash-stretch
+  const speedNorm=ball.active?Math.min(ball.speed/MAX_SPEED,1):0;
+  const moveAngle=Math.atan2(ball.vy,ball.vx);
+  const stretchX=1+speedNorm*0.15-ballSquash*0.3;
+  const stretchY=1-speedNorm*0.1+ballSquash*0.2;
   const visualR=BALL_R*bounceScale;
   
   // Ball shadow
@@ -1202,61 +1399,139 @@ function draw(){
   ctx.fillStyle='rgba(0,0,0,0.15)';
   ctx.beginPath();ctx.ellipse(ball.x+3,ball.y+4,visualR*shadowSpread,visualR*0.4*shadowSpread,0,0,Math.PI*2);ctx.fill();
 
-  // Ball
-  const bg=ctx.createRadialGradient(ball.x-2,ball.y-2,1,ball.x,ball.y,visualR);
+  // Ball with squash-stretch
+  ctx.save();
+  ctx.translate(ball.x,ball.y);
+  if(ball.active)ctx.rotate(moveAngle);
+  ctx.scale(stretchX,stretchY);
+
+  // Motion blur effect at high speed
+  if(speedNorm>0.6){
+    const blurAlpha=(speedNorm-0.6)*0.4;
+    ctx.globalAlpha=blurAlpha;
+    ctx.fillStyle='rgba(255,255,255,0.3)';
+    ctx.beginPath();ctx.ellipse(-visualR*0.3,0,visualR*1.3,visualR*0.8,0,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  const bg=ctx.createRadialGradient(-2,-2,1,0,0,visualR);
   bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#e0e0e0');
   ctx.fillStyle=bg;
-  ctx.beginPath();ctx.arc(ball.x,ball.y,visualR,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(0,0,visualR,0,Math.PI*2);ctx.fill();
   ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.arc(ball.x,ball.y,visualR,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,visualR,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+
+  // Impact flashes
+  for(const f of impactFlashes){
+    ctx.globalAlpha=f.life*0.8;
+    const r=f.radius*(1+(1-f.life)*0.5);
+    const ig=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r);
+    ig.addColorStop(0,f.color);
+    ig.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=ig;
+    ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
 
   // Paddles
-  drawPaddle(player.x,player.y,false);
-  drawPaddle(p2.x,p2.y,true);
+  const p1Float=Math.sin(idleTime*2)*1.5;
+  const p2Float=Math.sin(idleTime*2+Math.PI)*1.5;
+  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil);
+  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil);
 
   // Particles
   for(const p of particles){
     ctx.globalAlpha=p.life*0.7;ctx.fillStyle=p.color;
     ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
   }
+  
+  // Sparks (brighter, with tail)
+  for(const s of sparks){
+    ctx.globalAlpha=s.life;
+    ctx.strokeStyle=s.color;
+    ctx.lineWidth=s.size;
+    ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(s.x,s.y);
+    ctx.lineTo(s.x-s.vx*2,s.y-s.vy*2);
+    ctx.stroke();
+    // Bright center
+    ctx.fillStyle='#fff';
+    ctx.globalAlpha=s.life*0.6;
+    ctx.beginPath();ctx.arc(s.x,s.y,s.size*0.5,0,Math.PI*2);ctx.fill();
+  }
   ctx.globalAlpha=1;
 
   // Smash flash overlay
   const smashAge=performance.now()-lastSmashTime;
-  if(smashAge<150){
-    const flashAlpha=(1-smashAge/150)*0.25;
+  if(smashAge<200){
+    const flashAlpha=(1-smashAge/200)*0.35;
     ctx.fillStyle='rgba(255,255,200,'+flashAlpha+')';
     ctx.fillRect(0,0,GW,GH);
   }
 
   // Smash trail — thicker/brighter when recent smash
-  if(smashAge<400 && trail.length>1){
+  if(smashAge<500 && trail.length>1){
     for(let i=1;i<trail.length;i++){
       const t=trail[i];if(t.life<=0)continue;
       const prev=trail[i-1];
-      const alpha=t.life*0.5*(1-smashAge/400);
+      const alpha=t.life*0.5*(1-smashAge/500);
       ctx.globalAlpha=alpha;
       ctx.strokeStyle='rgba(255,240,100,0.6)';
-      ctx.lineWidth=BALL_R*t.life*1.2;
+      ctx.lineWidth=BALL_R*t.life*1.4;
       ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(t.x,t.y);ctx.stroke();
     }
     ctx.globalAlpha=1;
   }
 
+  // Rally intensity indicator — subtle vignette glow when rally is hot
+  if(rallyIntensity>0.3){
+    const ri=rallyIntensity-0.3;
+    const vg=ctx.createRadialGradient(GW/2,GH/2,GW*0.3,GW/2,GH/2,GW*0.8);
+    vg.addColorStop(0,'rgba(255,100,50,0)');
+    vg.addColorStop(1,'rgba(255,60,20,'+ri*0.12+')');
+    ctx.fillStyle=vg;
+    ctx.fillRect(0,0,GW,GH);
+  }
+
   ctx.restore();
 }
 
-function drawPaddle(x,y,isTop){
+function drawPaddle(x,y,isTop,squash,glow,recoil){
   const faceColor=isTop?'#20a0a0':'#d84080';
   const darkColor=isTop?'#188080':'#b03068';
   const handleAngle=isTop?Math.PI*0.75:Math.PI*1.75;
   
+  // Recoil offset
+  const recoilDir=isTop?1:-1;
+  const ry=y+recoil*6*recoilDir;
+  
+  // Squash scale
+  const scX=1+squash*0.15;
+  const scY=1-squash*0.1;
+  
+  ctx.save();
+  ctx.translate(x,ry);
+  ctx.scale(scX,scY);
+  
+  // Glow effect
+  if(glow>0.05){
+    ctx.globalAlpha=glow*0.4;
+    const gg=ctx.createRadialGradient(0,0,PAD_R*0.5,0,0,PAD_R*2);
+    gg.addColorStop(0,faceColor);
+    gg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=gg;
+    ctx.beginPath();ctx.arc(0,0,PAD_R*2,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+  
   const hLen=20,hWid=7;
-  const hx=x+Math.cos(handleAngle)*PAD_R*0.7;
-  const hy=y+Math.sin(handleAngle)*PAD_R*0.7;
-  const hx2=x+Math.cos(handleAngle)*(PAD_R*0.7+hLen);
-  const hy2=y+Math.sin(handleAngle)*(PAD_R*0.7+hLen);
+  const hx=Math.cos(handleAngle)*PAD_R*0.7;
+  const hy=Math.sin(handleAngle)*PAD_R*0.7;
+  const hx2=Math.cos(handleAngle)*(PAD_R*0.7+hLen);
+  const hy2=Math.sin(handleAngle)*(PAD_R*0.7+hLen);
   
   ctx.strokeStyle='rgba(0,0,0,0.12)';ctx.lineWidth=hWid+2;ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(hx+1,hy+2);ctx.lineTo(hx2+1,hy2+2);ctx.stroke();
@@ -1267,30 +1542,37 @@ function drawPaddle(x,y,isTop){
   ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(hx2,hy2);ctx.stroke();
 
   ctx.fillStyle='rgba(0,0,0,0.12)';
-  ctx.beginPath();ctx.arc(x+2,y+2,PAD_R,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(2,2,PAD_R,0,Math.PI*2);ctx.fill();
 
-  const g=ctx.createRadialGradient(x-PAD_R*0.3,y-PAD_R*0.3,2,x,y,PAD_R);
+  const g=ctx.createRadialGradient(-PAD_R*0.3,-PAD_R*0.3,2,0,0,PAD_R);
   g.addColorStop(0,faceColor);g.addColorStop(1,darkColor);
   ctx.fillStyle=g;
-  ctx.beginPath();ctx.arc(x,y,PAD_R,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.fill();
 
   ctx.strokeStyle=darkColor;ctx.lineWidth=2;
-  ctx.beginPath();ctx.arc(x,y,PAD_R,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.stroke();
 
   ctx.fillStyle='rgba(255,255,255,0.15)';
-  ctx.beginPath();ctx.arc(x-PAD_R*0.25,y-PAD_R*0.25,PAD_R*0.5,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(-PAD_R*0.25,-PAD_R*0.25,PAD_R*0.5,0,Math.PI*2);ctx.fill();
+  
+  ctx.restore();
 }
 
 // ===== UI =====
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  if(id)document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.opacity='0'});
+  if(id){
+    const el=document.getElementById(id);
+    el.classList.add('active');
+    // Trigger fade in
+    requestAnimationFrame(()=>{el.style.opacity='1'});
+  }
 }
-function goToMenu(){tournament=null;showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';var cv=document.getElementById('gc');var cx=cv.getContext('2d');cx.clearRect(0,0,cv.width,cv.height)}
+function goToMenu(){tournament=null;showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
 
-document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';startGame()});
-document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';startGame()});
-document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{startGame()}});
+document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';resetGame();startCountdown()});
+document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';resetGame();startCountdown()});
+document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{resetGame();startCountdown()}});
 document.getElementById('menu-btn').addEventListener('click',goToMenu);
 document.querySelectorAll('.diff-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
@@ -1298,9 +1580,7 @@ document.querySelectorAll('.diff-btn').forEach(btn=>{
     btn.classList.add('selected');difficulty=parseInt(btn.dataset.diff);
   });
 });
-function startGame(){resetGame();gameState='playing';showScreen(null);document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='flex'}
 
-// Tournament UI wiring
 document.getElementById('tournament-btn').addEventListener('click',()=>{
   initAudio();createTournament();showTournamentBracket();
 });
@@ -1323,8 +1603,9 @@ document.getElementById('tourney-lose-menu-btn').addEventListener('click',goToMe
 let lastTime=0;
 function loop(time){
   const dt=Math.min((time-lastTime)/16.67,3);lastTime=time;
-  if(gameState==='playing')update(dt);
-  if(gameState==='playing'||gameState==='paused')draw();
+  if(gameState==='countdown'){updateCountdown(dt);drawCountdown()}
+  else if(gameState==='playing'){update(dt);draw()}
+  else if(gameState==='paused'){draw()}
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(t=>{lastTime=t;requestAnimationFrame(loop)});
