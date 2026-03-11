@@ -607,11 +607,19 @@ function update(dt){
 
   if(serving){doServe(dt);return}
 
-  // Spin — smooth curve application
-  if(Math.abs(ball.spin)>0.01){
-    const curveForce=ball.spin*SPIN_CURVE_FORCE*dt;
+  // Spin — smooth curve: apply lateral acceleration that fades over time
+  if(Math.abs(ball.spin)>0.005){
+    // Quadratic-feel curve: stronger at start, eases out
+    const spinAbs=Math.abs(ball.spin);
+    const curvePower=SPIN_CURVE_FORCE * (1 + spinAbs * 0.3); // stronger spin = more pull
+    const curveForce=ball.spin*curvePower*dt;
     ball.vx+=curveForce;
+    // Gradual decay — spin fades smoothly
     ball.spin*=Math.pow(SPIN_DECAY,dt);
+    if(Math.abs(ball.spin)<0.005)ball.spin=0;
+    // Clamp lateral speed so curve doesn't go crazy
+    const maxCurveVX=ball.speed*0.55;
+    ball.vx=Math.max(-maxCurveVX,Math.min(maxCurveVX,ball.vx));
     // Re-normalize to maintain consistent speed
     const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
     if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
