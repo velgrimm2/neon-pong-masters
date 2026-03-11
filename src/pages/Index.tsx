@@ -376,28 +376,34 @@ function doServe(dt){
 
 // ===== PADDLE HIT (circle vs circle) =====
 function checkPaddleHit(paddle,isPlayer){
+  // Directional guard: only check if ball moving toward paddle
   if(isPlayer && ball.vy<0) return false;
   if(!isPlayer && ball.vy>0) return false;
 
   const dx=ball.x-paddle.x,dy=ball.y-paddle.y;
   const dist=Math.sqrt(dx*dx+dy*dy);
-  if(dist>PAD_R+BALL_R) return false;
+  const hitDist=PAD_R+BALL_R;
+  if(dist>hitDist) return false;
 
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
-  // Speed boost — capped at MAX_SPEED
-  const speedBoost=Math.min(1.5,padSpeed*0.15);
-  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,BASE_SPEED+speedBoost));
+  // Rally speed increase, capped
+  ball.rallyHits++;
+  const rallyBoost=Math.min(3,ball.rallyHits*RALLY_SPEED_GAIN);
+  const speedBoost=Math.min(2,padSpeed*0.15);
+  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,BASE_SPEED+speedBoost+rallyBoost));
 
-  // Center bias
+  // Hit offset for angle control
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   
   let newVX, spinVal;
   if(sideForce<1.5){
+    // Straight shot — small offset influence
     newVX=hitOffsetX*ball.speed*0.05;
     spinVal=0;
   } else {
+    // Curved shot — paddle swipe direction matters
     let sideMultiplier;
     if(sideForce>5){sideMultiplier=0.35}
     else if(sideForce>3){sideMultiplier=0.18}
@@ -406,25 +412,36 @@ function checkPaddleHit(paddle,isPlayer){
     spinVal=paddle.vx*0.18;
   }
   
+  // Add small jitter for variety
+  newVX+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER;
+
   const maxVX=ball.speed*0.5;
   newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
+  // Normalize to exact speed
   const mag=Math.sqrt(newVX*newVX+newVY*newVY);
   if(mag>0){newVX=(newVX/mag)*ball.speed;newVY=(newVY/mag)*ball.speed;}
 
-  ball.vx=newVX;
+  // Smooth direction blend instead of instant snap
+  ball.vx=ball.vx*(1-DIR_SMOOTHING)+newVX*DIR_SMOOTHING;
+  // For vy we want full direction change to feel responsive
   ball.vy=newVY;
+  // Re-normalize after blend
+  const mag2=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+  if(mag2>0){ball.vx=(ball.vx/mag2)*ball.speed;ball.vy=(ball.vy/mag2)*ball.speed;}
+
   ball.spin=spinVal;
   ball.bounceHeight=8+padSpeed*1.5;
   ball.bouncePhase=0;
   ball.lastHitBy=isPlayer?1:-1;
 
-  // Push ball out of paddle
-  if(dist>0){
+  // Push ball fully outside paddle to prevent sticking
+  if(dist>0&&dist<hitDist){
     const nx=dx/dist,ny=dy/dist;
-    ball.x=paddle.x+nx*(PAD_R+BALL_R+1);
-    ball.y=paddle.y+ny*(PAD_R+BALL_R+1);
+    const overlap=hitDist-dist+2;
+    ball.x+=nx*overlap;
+    ball.y+=ny*overlap;
   }
 
   sndHit(ball.speed);
