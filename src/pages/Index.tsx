@@ -378,7 +378,7 @@ function scorePoint(scorer){
     const won=playerScore>aiScore;
     document.getElementById('winner-text').textContent=won?'🎉 YOU WIN!':'🤖 AI WINS!';
     document.getElementById('final-score').textContent=playerScore+' - '+aiScore;
-    showScreen('end-screen');sndWin();return;
+    showScreen('end-screen');document.getElementById('pause-btn').style.display='none';sndWin();return;
   }
 
   const total=playerScore+aiScore;
