@@ -629,7 +629,7 @@ function showScreen(id){
 }
 document.getElementById('play-btn').addEventListener('click',()=>{initAudio();startGame()});
 document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();startGame()});
-document.getElementById('menu-btn').addEventListener('click',()=>{showScreen('start-screen');gameState='menu'});
+document.getElementById('menu-btn').addEventListener('click',()=>{showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none'});
 document.querySelectorAll('.diff-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
