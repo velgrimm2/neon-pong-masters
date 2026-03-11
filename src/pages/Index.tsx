@@ -288,18 +288,21 @@ function checkPaddleHit(paddle,isPlayer){
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
   // Speed boost — capped at MAX_SPEED
-  const speedBoost=Math.min(2,padSpeed*0.2);
-  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,ball.speed+speedBoost));
+  const speedBoost=Math.min(1.5,padSpeed*0.15);
+  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,BASE_SPEED+speedBoost));
 
-  // Center bias
+  // Center bias — strong swipes push sideways but with heavy center pull
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   let sideMultiplier;
-  if(sideForce>4){sideMultiplier=0.35}
-  else if(sideForce>2){sideMultiplier=0.15}
-  else{sideMultiplier=0.05}
+  if(sideForce>5){sideMultiplier=0.3}
+  else if(sideForce>3){sideMultiplier=0.12}
+  else{sideMultiplier=0.03}
   
-  let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.08;
+  let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+  // Clamp horizontal component so ball mostly goes straight
+  const maxVX=ball.speed*0.45;
+  newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
   const mag=Math.sqrt(newVX*newVX+newVY*newVY);
@@ -307,7 +310,7 @@ function checkPaddleHit(paddle,isPlayer){
 
   ball.vx=newVX;
   ball.vy=newVY;
-  ball.spin=paddle.vx*0.18;
+  ball.spin=paddle.vx*0.15;
   ball.lastHitBy=isPlayer?1:-1;
 
   // Push ball out of paddle
