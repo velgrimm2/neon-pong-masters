@@ -285,9 +285,9 @@ function checkPaddleHit(paddle,isPlayer){
 
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
-  // Speed boost — ball never slows down
-  const speedBoost=Math.min(4,padSpeed*0.25);
-  ball.speed=Math.max(ball.speed, ball.speed+speedBoost);
+  // Speed boost — capped at MAX_SPEED
+  const speedBoost=Math.min(2,padSpeed*0.2);
+  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,ball.speed+speedBoost));
 
   // === CENTER BIAS: ball mostly goes straight, only strong side swipes push it out ===
   const hitOffsetX=(ball.x-paddle.x)/(PAD_W/2); // -1 to 1
