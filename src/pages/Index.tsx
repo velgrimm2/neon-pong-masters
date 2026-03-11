@@ -135,8 +135,8 @@ const BASE_SPEED=5.5;
 const MAX_SPEED=11;
 const WINNING_SCORE_1P=11;
 const WINNING_SCORE_2P=10;
-const SPIN_DECAY=0.97;
-const SPIN_CURVE_FORCE=0.10;
+const SPIN_DECAY=0.985; // slower decay = longer curve
+const SPIN_CURVE_FORCE=0.16; // stronger lateral pull
 const RALLY_SPEED_GAIN=0.06; // speed increase per hit during rally
 const BOUNCE_SPEED_DAMP=0.96; // slow down slightly on table/wall bounce
 const ANGLE_JITTER=0.04; // small random angle offset on bounce
