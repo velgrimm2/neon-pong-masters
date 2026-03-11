@@ -97,6 +97,7 @@ function playTone(freq,dur,type,vol){
   o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+dur);
 }
 function sndHit(power){const v=Math.min(0.08,0.02+power*0.008);playTone(400+power*50,0.06,'sine',v);if(power>5)playTone(600+power*30,0.04,'triangle',v*0.5)}
+function sndSmash(){playTone(250,0.12,'sawtooth',0.10);playTone(500,0.08,'square',0.06);setTimeout(()=>playTone(180,0.1,'triangle',0.05),30)}
 function sndBounce(){playTone(900,0.025,'sine',0.05)}
 function sndNet(){playTone(150,0.08,'sine',0.03);playTone(120,0.12,'sine',0.02)}
 function sndScore(){playTone(700,0.12,'sine',0.06);setTimeout(()=>playTone(900,0.12,'sine',0.04),80)}
