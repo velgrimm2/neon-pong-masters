@@ -405,10 +405,10 @@ function scorePoint(scorer){
 function update(dt){
   if(gameState!=='playing')return;
 
-  // Player movement — can move outside table boundaries
+  // Player movement — smooth interpolation, can move anywhere on screen
   player.prevX=player.x;player.prevY=player.y;
-  player.x+=(inputX-player.x)*0.22*dt;
-  player.y+=(inputY-player.y)*0.22*dt;
+  player.x+=(inputX-player.x)*0.28*dt;
+  player.y+=(inputY-player.y)*0.28*dt;
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
   player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
