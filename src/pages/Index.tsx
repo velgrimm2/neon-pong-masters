@@ -123,8 +123,8 @@ const PAD_R=34;
 const BALL_R=11;
 
 // ===== CONSTANTS =====
-const BASE_SPEED=4;
-const MAX_SPEED=8;
+    const BASE_SPEED=5.5;
+    const MAX_SPEED=10;
 const WINNING_SCORE=11;
 const SPIN_DECAY=0.96;
 const SPIN_CURVE_FORCE=0.12;
