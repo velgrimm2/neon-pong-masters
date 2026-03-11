@@ -113,14 +113,14 @@ resize();
 window.addEventListener('resize',resize);
 
 // ===== TABLE (compact & close) =====
-const TBL_L=20,TBL_R=GW-20,TBL_T=50,TBL_B=GH-50;
+const TBL_L=30,TBL_R=GW-30,TBL_T=60,TBL_B=GH-60;
 const TBL_W=TBL_R-TBL_L,TBL_H=TBL_B-TBL_T;
 const NET_Y=(TBL_T+TBL_B)/2;
 const TBL_CX=(TBL_L+TBL_R)/2;
 
-// ===== SIZES (closer together) =====
-const PAD_W=46,PAD_H=34;
-const BALL_R=7;
+// ===== SIZES =====
+const PAD_R=28;
+const BALL_R=8;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=4;
