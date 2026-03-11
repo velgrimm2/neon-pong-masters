@@ -1177,7 +1177,7 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   if(id)document.getElementById(id).classList.add('active');
 }
-function goToMenu(){tournament=null;showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none'}
+function goToMenu(){tournament=null;showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';var cv=document.getElementById('gc');var cx=cv.getContext('2d');cx.clearRect(0,0,cv.width,cv.height)}
 
 document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';startGame()});
 document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';startGame()});
