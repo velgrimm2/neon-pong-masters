@@ -558,8 +558,8 @@ function updateAI(dt){
 function updateP2Human(dt){
   p2.prevX=p2.x;p2.prevY=p2.y;
 
-  // Arrow keys (desktop)
-  const keySpeed=5*dt;
+  // Arrow keys (desktop) — faster response
+  const keySpeed=6.5*dt;
   if(p2Keys.left)p2InputX-=keySpeed;
   if(p2Keys.right)p2InputX+=keySpeed;
   if(p2Keys.up)p2InputY-=keySpeed;
@@ -567,9 +567,9 @@ function updateP2Human(dt){
   p2InputX=Math.max(0,Math.min(GW,p2InputX));
   p2InputY=Math.max(0,Math.min(GH,p2InputY));
 
-  // Smooth interpolation
-  p2.x+=(p2InputX-p2.x)*0.28*dt;
-  p2.y+=(p2InputY-p2.y)*0.28*dt;
+  // Adaptive lerp for responsive follow
+  p2.x=adaptiveLerp(p2.x,p2InputX,dt);
+  p2.y=adaptiveLerp(p2.y,p2InputY,dt);
 
   // Clamp to top half
   p2.x=Math.max(PAD_R,Math.min(GW-PAD_R,p2.x));
