@@ -392,12 +392,23 @@ function checkPaddleHit(paddle,isPlayer){
   if(dist>hitDist) return false;
 
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
+  const forwardSpeed=isPlayer?-paddle.vy:paddle.vy; // how fast toward opponent
+
+  // Detect SMASH
+  const cooldownRef=isPlayer?smashCooldownP1:smashCooldownP2;
+  const isSmash=padSpeed>=SMASH_THRESHOLD && forwardSpeed>2 && cooldownRef<=0;
+
+  if(isSmash){
+    if(isPlayer)smashCooldownP1=SMASH_COOLDOWN;else smashCooldownP2=SMASH_COOLDOWN;
+  }
 
   // Rally speed increase, capped
   ball.rallyHits++;
   const rallyBoost=Math.min(3,ball.rallyHits*RALLY_SPEED_GAIN);
   const speedBoost=Math.min(2,padSpeed*0.15);
-  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,BASE_SPEED+speedBoost+rallyBoost));
+  let targetSpeed=BASE_SPEED+speedBoost+rallyBoost;
+  if(isSmash)targetSpeed+=SMASH_SPEED_BOOST;
+  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,targetSpeed));
 
   // Hit offset for angle control
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
@@ -405,11 +416,9 @@ function checkPaddleHit(paddle,isPlayer){
   
   let newVX, spinVal;
   if(sideForce<1.5){
-    // Straight shot — small offset influence
     newVX=hitOffsetX*ball.speed*0.05;
     spinVal=0;
   } else {
-    // Curved shot — paddle swipe direction matters
     let sideMultiplier;
     if(sideForce>5){sideMultiplier=0.35}
     else if(sideForce>3){sideMultiplier=0.18}
@@ -418,10 +427,16 @@ function checkPaddleHit(paddle,isPlayer){
     spinVal=paddle.vx*0.18;
   }
   
+  // Smash: sharper forward angle (less side deviation)
+  if(isSmash){
+    newVX*=0.4; // flatten angle — ball goes more straight
+    spinVal*=0.3;
+  }
+
   // Add small jitter for variety
   newVX+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER;
 
-  const maxVX=ball.speed*0.5;
+  const maxVX=ball.speed*(isSmash?0.25:0.5);
   newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
@@ -429,16 +444,18 @@ function checkPaddleHit(paddle,isPlayer){
   const mag=Math.sqrt(newVX*newVX+newVY*newVY);
   if(mag>0){newVX=(newVX/mag)*ball.speed;newVY=(newVY/mag)*ball.speed;}
 
-  // Smooth direction blend instead of instant snap
-  ball.vx=ball.vx*(1-DIR_SMOOTHING)+newVX*DIR_SMOOTHING;
-  // For vy we want full direction change to feel responsive
-  ball.vy=newVY;
-  // Re-normalize after blend
-  const mag2=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
-  if(mag2>0){ball.vx=(ball.vx/mag2)*ball.speed;ball.vy=(ball.vy/mag2)*ball.speed;}
+  // Smooth direction blend (skip smoothing on smash for instant snap)
+  if(isSmash){
+    ball.vx=newVX;ball.vy=newVY;
+  } else {
+    ball.vx=ball.vx*(1-DIR_SMOOTHING)+newVX*DIR_SMOOTHING;
+    ball.vy=newVY;
+    const mag2=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+    if(mag2>0){ball.vx=(ball.vx/mag2)*ball.speed;ball.vy=(ball.vy/mag2)*ball.speed;}
+  }
 
   ball.spin=spinVal;
-  ball.bounceHeight=8+padSpeed*1.5;
+  ball.bounceHeight=isSmash?3:8+padSpeed*1.5; // smash = low arc
   ball.bouncePhase=0;
   ball.lastHitBy=isPlayer?1:-1;
 
@@ -450,10 +467,20 @@ function checkPaddleHit(paddle,isPlayer){
     ball.y+=ny*overlap;
   }
 
-  sndHit(ball.speed);
-  const color=isPlayer?'#e86080':'#2bbfbf';
-  spawnParticles(ball.x,ball.y,color,Math.floor(4+padSpeed*2),0.5+padSpeed*0.1);
-  if(padSpeed>4)shakeMag=Math.min(6,padSpeed*0.6);
+  // Effects
+  if(isSmash){
+    sndSmash();
+    shakeMag=Math.min(10,padSpeed*1.0);
+    lastSmashTime=performance.now();
+    const color=isPlayer?'#ff4060':'#00e0e0';
+    spawnParticles(ball.x,ball.y,color,15,1.5);
+    spawnParticles(ball.x,ball.y,'#ffff00',8,1.0);
+  } else {
+    sndHit(ball.speed);
+    const color=isPlayer?'#e86080':'#2bbfbf';
+    spawnParticles(ball.x,ball.y,color,Math.floor(4+padSpeed*2),0.5+padSpeed*0.1);
+    if(padSpeed>4)shakeMag=Math.min(6,padSpeed*0.6);
+  }
 
   return true;
 }
