@@ -242,15 +242,14 @@ function doServe(dt){
     if(serveTimer>0.6 && pSpeed>1.5){
       serving=false;
       ball.active=true;
-      const speedBoost=Math.min(3,pSpeed*0.3);
-      ball.speed=BASE_SPEED+speedBoost;
-      // Ball goes mostly straight up with slight paddle influence (CENTER BIAS)
-      const sideInfluence=player.vx*0.15; // reduced from 0.3 — keeps ball centered
+      const speedBoost=Math.min(2,pSpeed*0.2);
+      ball.speed=Math.min(MAX_SPEED,BASE_SPEED+speedBoost);
+      const sideInfluence=player.vx*0.15;
       ball.vx=sideInfluence;
       ball.vy=-(ball.speed);
-      // Normalize
       const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
       if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
+      ball.spin=player.vx*0.15;
       ball.lastHitBy=1;
       sndHit(ball.speed);
       spawnParticles(ball.x,ball.y,'#66bb6a',6,0.6);
