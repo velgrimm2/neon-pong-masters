@@ -359,8 +359,8 @@ function updateAI(dt){
     ai.y+=Math.sign(ddy)*Math.min(Math.abs(ddy),spd*0.6);
   }
 
-  ai.x=Math.max(TBL_L+PAD_W/2,Math.min(TBL_R-PAD_W/2,ai.x));
-  ai.y=Math.max(TBL_T+12,Math.min(NET_Y-PAD_H/2-4,ai.y));
+  ai.x=Math.max(TBL_L+PAD_R,Math.min(TBL_R-PAD_R,ai.x));
+  ai.y=Math.max(TBL_T+PAD_R,Math.min(NET_Y-PAD_R-4,ai.y));
 
   ai.vx=(ai.x-ai.prevX)*p.hitBoost*2;
   ai.vy=(ai.y-ai.prevY)*p.hitBoost*2;
