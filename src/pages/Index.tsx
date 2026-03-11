@@ -295,14 +295,24 @@ function checkPaddleHit(paddle,isPlayer){
   // Center bias — strong swipes push sideways but with heavy center pull
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
-  let sideMultiplier;
-  if(sideForce>5){sideMultiplier=0.3}
-  else if(sideForce>3){sideMultiplier=0.12}
-  else{sideMultiplier=0.03}
   
-  let newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
-  // Clamp horizontal component so ball mostly goes straight
-  const maxVX=ball.speed*0.45;
+  // Determine if shot is straight or curved based on paddle movement
+  let newVX, spinVal;
+  if(sideForce<1.5){
+    // Paddle barely moving sideways → straight shot
+    newVX=hitOffsetX*ball.speed*0.05;
+    spinVal=0;
+  } else {
+    // Sideways movement → curved shot
+    let sideMultiplier;
+    if(sideForce>5){sideMultiplier=0.35}
+    else if(sideForce>3){sideMultiplier=0.18}
+    else{sideMultiplier=0.08}
+    newVX=paddle.vx*sideMultiplier + hitOffsetX*ball.speed*0.06;
+    spinVal=paddle.vx*0.18;
+  }
+  
+  const maxVX=ball.speed*0.5;
   newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
@@ -311,7 +321,9 @@ function checkPaddleHit(paddle,isPlayer){
 
   ball.vx=newVX;
   ball.vy=newVY;
-  ball.spin=paddle.vx*0.15;
+  ball.spin=spinVal;
+  ball.bounceHeight=8+padSpeed*1.5; // higher bounce on harder hits
+  ball.bouncePhase=0;
   ball.lastHitBy=isPlayer?1:-1;
 
   // Push ball out of paddle
