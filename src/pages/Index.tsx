@@ -42,6 +42,8 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 .btn-secondary:hover,.btn-secondary:active{background:rgba(90,58,26,0.2)}
 .btn-2p{background:#2bbfbf;box-shadow:0 4px 15px rgba(43,191,191,0.3)}
 .btn-2p:hover,.btn-2p:active{background:#209e9e;box-shadow:0 6px 22px rgba(43,191,191,0.4)}
+.btn-tournament{background:#9b59b6;box-shadow:0 4px 15px rgba(155,89,182,0.3)}
+.btn-tournament:hover,.btn-tournament:active{background:#8e44ad;box-shadow:0 6px 22px rgba(155,89,182,0.4)}
 .difficulty-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center}
 .diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(232,96,64,0.1);border:2px solid rgba(232,96,64,0.3);color:rgba(90,58,26,0.6);border-radius:50px;box-shadow:none;font-family:inherit;cursor:pointer}
 .diff-btn:hover{background:rgba(232,96,64,0.2);box-shadow:none}
@@ -55,12 +57,37 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 #pause-menu-btn:active{transform:scale(0.95)}
 #pause-btn{position:absolute;top:10px;right:10px;z-index:15;width:40px;height:40px;border-radius:50%;background:#e8a040;border:3px solid #c07828;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
 #pause-btn .bar{width:4px;height:16px;background:#6d3a0a;border-radius:2px;margin:0 2px}
+
+/* Tournament styles */
+.bracket-container{width:100%;max-width:340px;margin:10px auto}
+.bracket-round{display:flex;justify-content:space-around;margin:6px 0}
+.bracket-match{background:rgba(90,58,26,0.08);border-radius:10px;padding:6px 10px;min-width:70px;font-size:clamp(9px,1.8vw,11px);font-weight:700;color:rgba(90,58,26,0.6);border:2px solid transparent;transition:all 0.2s}
+.bracket-match.current{border-color:#e86040;background:rgba(232,96,64,0.12);color:#e86040}
+.bracket-match.won{border-color:#27ae60;background:rgba(39,174,96,0.1);color:#27ae60}
+.bracket-match.lost{border-color:#c0392b;background:rgba(192,57,43,0.08);color:rgba(90,58,26,0.3);text-decoration:line-through}
+.bracket-match.pending{color:rgba(90,58,26,0.3)}
+.bracket-match .player-name{font-weight:800}
+.bracket-match .player-name.you{color:#e86040}
+.round-label{font-family:'Fredoka One',cursive;font-size:clamp(10px,2vw,13px);color:rgba(90,58,26,0.4);margin:4px 0 2px;letter-spacing:2px}
+.match-intro-round{font-size:clamp(12px,2.5vw,16px);color:rgba(90,58,26,0.5);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.match-intro-vs{font-family:'Fredoka One',cursive;font-size:clamp(28px,7vw,46px);color:#5a3a1a;margin:12px 0}
+.match-intro-names{font-size:clamp(14px,3vw,20px);font-weight:800;color:rgba(90,58,26,0.7);margin:4px 0}
+.trophy-icon{font-size:clamp(50px,12vw,80px);margin:10px 0}
+.stats-row{display:flex;gap:20px;margin:12px 0;font-size:clamp(12px,2.5vw,15px);font-weight:800;color:rgba(90,58,26,0.5)}
+.stats-row span{display:flex;flex-direction:column;align-items:center}
+.stats-row .stat-val{font-family:'Fredoka One',cursive;font-size:clamp(18px,4vw,28px);color:#5a3a1a}
+@keyframes trophy-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.trophy-anim{animation:trophy-bounce 0.8s ease-in-out infinite}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(80px) rotate(360deg);opacity:0}}
+.confetti-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:25}
+.confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetti-fall 2s ease-in forwards}
 </style>
 </head>
 <body>
 <canvas id="gc"></canvas>
 <div id="pause-text">PAUSED<br><button id="pause-menu-btn" onclick="goToMenuFromPause()">MENU</button></div>
 <button id="pause-btn" onclick="togglePause()"><span class="bar"></span><span class="bar"></span></button>
+<div id="confetti-box" class="confetti-container"></div>
 <div id="ui-overlay">
   <div class="screen active" id="start-screen">
     <h1>🏓 TABLE TENNIS</h1>
@@ -73,6 +100,8 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn" id="play-btn">SINGLE PLAYER</button>
     <div class="mode-divider">— OR —</div>
     <button class="btn btn-2p" id="play-2p-btn">2 PLAYER LOCAL</button>
+    <div class="mode-divider">— OR —</div>
+    <button class="btn btn-tournament" id="tournament-btn">🏆 TOURNAMENT</button>
     <div class="controls-hint">Move paddle to hit &middot; Faster swing = faster ball<br>P2: Arrow keys on desktop &middot; P to pause</div>
   </div>
   <div class="screen" id="end-screen">
@@ -80,6 +109,46 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="final-score" id="final-score"></div>
     <button class="btn" id="restart-btn">PLAY AGAIN</button>
     <button class="btn btn-secondary" id="menu-btn">MENU</button>
+  </div>
+  <!-- Tournament Bracket Screen -->
+  <div class="screen" id="bracket-screen">
+    <h1 style="font-size:clamp(22px,5.5vw,36px)">🏆 TOURNAMENT</h1>
+    <div class="subtitle" id="bracket-subtitle">QUARTERFINALS</div>
+    <div class="bracket-container" id="bracket-container"></div>
+    <button class="btn" id="bracket-continue-btn">NEXT MATCH</button>
+    <button class="btn btn-secondary" id="bracket-menu-btn">BACK TO MENU</button>
+  </div>
+  <!-- Match Intro Screen -->
+  <div class="screen" id="match-intro-screen">
+    <div class="match-intro-round" id="match-round-label">QUARTERFINAL</div>
+    <div class="match-intro-names" id="match-p1-name">YOU</div>
+    <div class="match-intro-vs">VS</div>
+    <div class="match-intro-names" id="match-p2-name">OPPONENT</div>
+    <button class="btn" id="match-start-btn">START MATCH</button>
+  </div>
+  <!-- Tournament Advance Screen -->
+  <div class="screen" id="tourney-advance-screen">
+    <div class="winner-text">🎉 YOU ADVANCE!</div>
+    <div class="final-score" id="tourney-advance-score"></div>
+    <div class="match-intro-round" id="tourney-next-round"></div>
+    <button class="btn" id="tourney-advance-btn">CONTINUE</button>
+  </div>
+  <!-- Tournament Win Screen -->
+  <div class="screen" id="tourney-win-screen">
+    <div class="trophy-icon trophy-anim">🏆</div>
+    <div class="winner-text">CHAMPION!</div>
+    <div class="final-score" id="tourney-win-score"></div>
+    <div class="stats-row" id="tourney-stats"></div>
+    <button class="btn" id="tourney-replay-btn">PLAY AGAIN</button>
+    <button class="btn btn-secondary" id="tourney-win-menu-btn">MENU</button>
+  </div>
+  <!-- Tournament Lose Screen -->
+  <div class="screen" id="tourney-lose-screen">
+    <div class="winner-text" style="color:#c0392b">❌ ELIMINATED</div>
+    <div class="final-score" id="tourney-lose-score"></div>
+    <div class="match-intro-round" id="tourney-lose-round"></div>
+    <button class="btn" id="tourney-retry-btn">RETRY TOURNAMENT</button>
+    <button class="btn btn-secondary" id="tourney-lose-menu-btn">MENU</button>
   </div>
 </div>
 
