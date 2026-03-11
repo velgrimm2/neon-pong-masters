@@ -50,14 +50,16 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 .final-score{font-size:clamp(16px,4vw,24px);color:rgba(90,58,26,0.5);margin-bottom:20px;font-weight:700}
 .controls-hint{font-size:clamp(9px,1.7vw,11px);color:rgba(90,58,26,0.35);margin-top:16px;line-height:1.7;font-weight:600}
 .mode-divider{font-size:clamp(11px,2vw,14px);color:rgba(90,58,26,0.3);margin:8px 0;font-weight:800;letter-spacing:4px}
-#pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fredoka One',cursive;font-size:clamp(28px,6.5vw,50px);color:rgba(90,58,26,0.5);letter-spacing:8px;display:none;z-index:20;text-shadow:2px 2px 0 rgba(255,255,255,0.3)}
+#pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fredoka One',cursive;font-size:clamp(28px,6.5vw,50px);color:rgba(90,58,26,0.5);letter-spacing:8px;display:none;z-index:20;text-shadow:2px 2px 0 rgba(255,255,255,0.3);text-align:center}
+#pause-menu-btn{margin-top:18px;font-family:'Fredoka One',cursive;font-size:clamp(14px,3vw,20px);padding:10px 32px;border-radius:14px;border:3px solid #c07828;background:linear-gradient(135deg,#f0c060,#e8a040);color:#5a3a1a;cursor:pointer;letter-spacing:2px;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:transform 0.15s}
+#pause-menu-btn:active{transform:scale(0.95)}
 #pause-btn{position:absolute;top:10px;right:10px;z-index:15;width:40px;height:40px;border-radius:50%;background:#e8a040;border:3px solid #c07828;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
 #pause-btn .bar{width:4px;height:16px;background:#6d3a0a;border-radius:2px;margin:0 2px}
 </style>
 </head>
 <body>
 <canvas id="gc"></canvas>
-<div id="pause-text">PAUSED</div>
+<div id="pause-text">PAUSED<br><button id="pause-menu-btn" onclick="goToMenuFromPause()">MENU</button></div>
 <button id="pause-btn" onclick="togglePause()"><span class="bar"></span><span class="bar"></span></button>
 <div id="ui-overlay">
   <div class="screen active" id="start-screen">
@@ -246,6 +248,7 @@ function togglePause(){
   if(gameState==='playing'){gameState='paused';document.getElementById('pause-text').style.display='block'}
   else if(gameState==='paused'){gameState='playing';document.getElementById('pause-text').style.display='none'}
 }
+function goToMenuFromPause(){gameState='menu';document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='none';showScreen('start-screen')}
 
 // Keyboard: P to pause, Arrow keys for P2 in 2P mode
 document.addEventListener('keydown',e=>{
