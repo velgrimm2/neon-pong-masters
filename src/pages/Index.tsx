@@ -580,6 +580,10 @@ function scorePoint(scorer){
 function update(dt){
   if(gameState!=='playing')return;
 
+  // Smash cooldown decay
+  if(smashCooldownP1>0)smashCooldownP1-=dt;
+  if(smashCooldownP2>0)smashCooldownP2-=dt;
+
   // Player 1 movement
   player.prevX=player.x;player.prevY=player.y;
   player.x+=(p1InputX-player.x)*0.28*dt;
