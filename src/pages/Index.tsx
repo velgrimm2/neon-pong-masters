@@ -242,7 +242,7 @@ function resetGame(){
 function doServe(dt){
   serveTimer+=dt*0.016;
   if(serveSide===1){
-    ball.x=player.x;ball.y=player.y-20;
+    ball.x=player.x;ball.y=player.y-25;
     const pSpeed=Math.sqrt(player.vx*player.vx+player.vy*player.vy);
     if(serveTimer>0.6 && pSpeed>1.5){
       serving=false;
