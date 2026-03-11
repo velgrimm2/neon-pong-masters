@@ -164,7 +164,7 @@ const AI_PARAMS=[
 ];
 
 // ===== INPUT =====
-let inputX=GW/2,inputY=TBL_B-35;
+let inputX=GW/2,inputY=TBL_B+20;
 
 canvas.addEventListener('mousemove',e=>{
   const r=canvas.getBoundingClientRect();
