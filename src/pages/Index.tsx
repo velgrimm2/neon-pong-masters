@@ -121,7 +121,10 @@ const BALL_R=7;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=4;
+const MAX_SPEED=8;
 const WINNING_SCORE=11;
+const SPIN_DECAY=0.96;
+const SPIN_CURVE_FORCE=0.12;
 
 // ===== STATE =====
 let difficulty=1;
