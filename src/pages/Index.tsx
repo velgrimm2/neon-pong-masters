@@ -141,6 +141,9 @@ const RALLY_SPEED_GAIN=0.06; // speed increase per hit during rally
 const BOUNCE_SPEED_DAMP=0.96; // slow down slightly on table/wall bounce
 const ANGLE_JITTER=0.04; // small random angle offset on bounce
 const DIR_SMOOTHING=0.15; // smooth direction blend factor
+const SMASH_THRESHOLD=7; // paddle speed to trigger smash
+const SMASH_SPEED_BOOST=3.5; // extra speed on smash
+const SMASH_COOLDOWN=90; // frames (~1.5s at 60fps)
 
 // ===== STATE =====
 let gameMode='1p'; // '1p' or '2p'
