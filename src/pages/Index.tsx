@@ -260,11 +260,12 @@ function doServe(dt){
       serving=false;
       ball.active=true;
       const p=AI_PARAMS[difficulty];
-      ball.speed=BASE_SPEED+p.hitBoost;
-      ball.vx=(Math.random()-0.5)*0.8; // AI also mostly straight
+      ball.speed=Math.min(MAX_SPEED,BASE_SPEED+p.hitBoost);
+      ball.vx=(Math.random()-0.5)*0.8;
       ball.vy=ball.speed;
       const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
       if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
+      ball.spin=(Math.random()-0.5)*1.5;
       ball.lastHitBy=-1;
       sndHit(ball.speed);
     }
