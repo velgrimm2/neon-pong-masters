@@ -445,7 +445,7 @@ function update(dt){
 
   // === SIDE BOUNDARIES: 90% bounce, 10% fall off ===
   if(ball.x-BALL_R<TBL_L){
-    if(Math.random()<0.1){
+    if(Math.random()<0.05){
       // 10% chance: ball falls off sideways
       spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
