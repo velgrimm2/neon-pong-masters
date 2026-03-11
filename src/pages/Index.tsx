@@ -295,7 +295,7 @@ function resetBall(server){
   ball.speed=BASE_SPEED;
   ball.vx=0;ball.vy=0;ball.spin=0;
   ball.bounceHeight=0;ball.bouncePhase=0;
-  ball.lastHitBy=0;
+  ball.lastHitBy=0;ball.rallyHits=0;
   if(server===1){
     ball.x=player.x;ball.y=player.y-25;
   } else {
