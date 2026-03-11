@@ -675,67 +675,33 @@ function update(dt){
   trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed,spin:ball.spin});
   if(trail.length>MAX_TRAIL)trail.shift();
 
-  // Side boundaries: 95% bounce, 5% fall off
+  // Side boundaries: always bounce, never fall off
   if(ball.x-BALL_R<TBL_L){
-    if(Math.random()<0.05){
-      spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
-      if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
-      return;
-    } else {
-      ball.x=TBL_L+BALL_R+1; // prevent sticking
-      ball.vx=Math.abs(ball.vx)*0.7;
-      ball.speed*=BOUNCE_SPEED_DAMP; // reduce speed on wall bounce
-      ball.spin*=-0.5;
-      // Add slight angle jitter
-      ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
-      const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
-      if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
-      sndBounce();
-      addBounceMark(TBL_L,ball.y);
-      spawnParticles(TBL_L,ball.y,'rgba(255,255,255,0.5)',4,0.5);
-    }
+    ball.x=TBL_L+BALL_R+1;
+    ball.vx=Math.abs(ball.vx)*0.7;
+    ball.speed*=BOUNCE_SPEED_DAMP;
+    ball.spin*=-0.5;
+    ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
+    const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+    if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
+    sndBounce();
+    addBounceMark(TBL_L,ball.y);
+    spawnParticles(TBL_L,ball.y,'rgba(255,255,255,0.5)',4,0.5);
   }
   if(ball.x+BALL_R>TBL_R){
-    if(Math.random()<0.05){
-      spawnParticles(ball.x,ball.y,'rgba(255,200,100,0.8)',10,1);
-      if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
-      return;
-    } else {
-      ball.x=TBL_R-BALL_R-1; // prevent sticking
-      ball.vx=-Math.abs(ball.vx)*0.7;
-      ball.speed*=BOUNCE_SPEED_DAMP;
-      ball.spin*=-0.5;
-      ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
-      const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
-      if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
-      sndBounce();
-      addBounceMark(TBL_R,ball.y);
-      spawnParticles(TBL_R,ball.y,'rgba(255,255,255,0.5)',4,0.5);
-    }
+    ball.x=TBL_R-BALL_R-1;
+    ball.vx=-Math.abs(ball.vx)*0.7;
+    ball.speed*=BOUNCE_SPEED_DAMP;
+    ball.spin*=-0.5;
+    ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
+    const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+    if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
+    sndBounce();
+    addBounceMark(TBL_R,ball.y);
+    spawnParticles(TBL_R,ball.y,'rgba(255,255,255,0.5)',4,0.5);
   }
 
-  // Net collision
-  if(Math.abs(ball.y-NET_Y)<4+BALL_R){
-    const prevY=ball.y-ball.vy*dt;
-    if((prevY<NET_Y&&ball.y>=NET_Y)||(prevY>NET_Y&&ball.y<=NET_Y)){
-      if(ball.speed<3){
-        ball.vy*=-0.3;ball.vx*=0.3;
-        ball.y=ball.vy>0?NET_Y+4+BALL_R:NET_Y-4-BALL_R;
-        sndNet();spawnParticles(ball.x,NET_Y,'#aaa',6);
-        if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
-        return;
-      } else {
-        ball.speed*=0.94; // net slows ball more noticeably
-        ball.vy*=0.92;
-        // Re-normalize
-        const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
-        if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
-        sndNet();
-        spawnParticles(ball.x,NET_Y,'rgba(100,100,100,0.4)',3);
-        addBounceMark(ball.x,NET_Y);
-      }
-    }
-  }
+  // Ball passes through net freely — no net collision
 
   // Paddle collisions
   if(ball.vy>0 && ball.y>NET_Y) checkPaddleHit(player,true);
