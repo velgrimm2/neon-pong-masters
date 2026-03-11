@@ -613,10 +613,10 @@ function update(dt){
   if(smashCooldownP1>0)smashCooldownP1-=dt;
   if(smashCooldownP2>0)smashCooldownP2-=dt;
 
-  // Player 1 movement
+  // Player 1 movement — adaptive lerp for responsiveness
   player.prevX=player.x;player.prevY=player.y;
-  player.x+=(p1InputX-player.x)*0.28*dt;
-  player.y+=(p1InputY-player.y)*0.28*dt;
+  player.x=adaptiveLerp(player.x,p1InputX,dt);
+  player.y=adaptiveLerp(player.y,p1InputY,dt);
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
   player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
