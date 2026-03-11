@@ -660,6 +660,190 @@ function updateP2Human(dt){
   p2.vy=p2.y-p2.prevY;
 }
 
+// ===== TOURNAMENT =====
+const AI_NAMES=['Dragon','Blaze','Shadow','Viper','Thunder','Storm','Phoenix','Hawk','Wolf','Titan','Ace','Fury','Nova','Bolt','Jet','Spike'];
+let tournament=null; // {bracket:[], round:0, matchIdx:0, stats:{wins:0,totalPoints:0}}
+
+function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+
+function createTournament(){
+  const names=shuffleArray([...AI_NAMES]).slice(0,7);
+  // bracket[0]=QF(4 matches), bracket[1]=SF(2), bracket[2]=Final(1)
+  const qf=[];
+  const opponents=['YOU',names[0],names[1],names[2],names[3],names[4],names[5],names[6]];
+  // Player always in slot 0
+  const others=opponents.slice(1);
+  shuffleArray(others);
+  const seeded=['YOU',...others];
+  for(let i=0;i<4;i++){
+    qf.push({p1:seeded[i*2],p2:seeded[i*2+1],winner:null,score1:0,score2:0});
+  }
+  const sf=[{p1:null,p2:null,winner:null,score1:0,score2:0},{p1:null,p2:null,winner:null,score1:0,score2:0}];
+  const final_=[{p1:null,p2:null,winner:null,score1:0,score2:0}];
+  tournament={bracket:[qf,sf,final_],round:0,matchIdx:-1,stats:{wins:0,totalPoints:0,pointsAgainst:0}};
+  // Find player's QF match
+  for(let i=0;i<4;i++){if(qf[i].p1==='YOU'||qf[i].p2==='YOU'){tournament.matchIdx=i;break}}
+}
+
+function getTournamentDifficulty(){
+  if(!tournament)return 1;
+  return tournament.round; // 0=easy, 1=medium, 2=hard
+}
+
+function getRoundName(round){return['QUARTERFINAL','SEMIFINAL','FINAL'][round]||''}
+
+function getCurrentTourneyMatch(){
+  if(!tournament)return null;
+  return tournament.bracket[tournament.round][tournament.matchIdx];
+}
+
+function getPlayerOpponentName(){
+  const m=getCurrentTourneyMatch();
+  if(!m)return'???';
+  return m.p1==='YOU'?m.p2:m.p1;
+}
+
+function simulateAIMatch(p1,p2){
+  // Simulate a match between two AI - random but slightly favor better seeds
+  let s1=0,s2=0;
+  while(s1<10&&s2<10||Math.abs(s1-s2)<2){
+    if(Math.random()<0.5)s1++;else s2++;
+    if(s1>=10&&s2>=10&&Math.abs(s1-s2)>=2)break;
+    if((s1>=10||s2>=10)&&Math.abs(s1-s2)>=2)break;
+    if(s1>15||s2>15)break;
+  }
+  return{winner:s1>s2?p1:p2,score1:s1,score2:s2};
+}
+
+function advanceTournamentRound(){
+  const round=tournament.round;
+  const matches=tournament.bracket[round];
+  // Fill next round
+  if(round<2){
+    const nextMatches=tournament.bracket[round+1];
+    for(let i=0;i<matches.length;i+=2){
+      const nIdx=Math.floor(i/2);
+      nextMatches[nIdx].p1=matches[i].winner;
+      nextMatches[nIdx].p2=matches[i+1].winner;
+    }
+    tournament.round++;
+    // Find player's next match
+    const nm=tournament.bracket[tournament.round];
+    tournament.matchIdx=-1;
+    for(let i=0;i<nm.length;i++){if(nm[i].p1==='YOU'||nm[i].p2==='YOU'){tournament.matchIdx=i;break}}
+  }
+}
+
+function simulateOtherMatches(){
+  const matches=tournament.bracket[tournament.round];
+  for(let i=0;i<matches.length;i++){
+    if(i===tournament.matchIdx)continue;
+    if(matches[i].winner)continue;
+    const r=simulateAIMatch(matches[i].p1,matches[i].p2);
+    matches[i].winner=r.winner;matches[i].score1=r.score1;matches[i].score2=r.score2;
+  }
+}
+
+function renderBracket(){
+  const c=document.getElementById('bracket-container');
+  let html='';
+  const roundNames=['QUARTERFINALS','SEMIFINALS','FINAL'];
+  for(let r=0;r<3;r++){
+    html+='<div class="round-label">'+roundNames[r]+'</div><div class="bracket-round">';
+    const matches=tournament.bracket[r];
+    for(let i=0;i<matches.length;i++){
+      const m=matches[i];
+      let cls='bracket-match';
+      if(r===tournament.round&&i===tournament.matchIdx&&!m.winner)cls+=' current';
+      else if(m.winner==='YOU')cls+=' won';
+      else if(m.winner&&(m.p1==='YOU'||m.p2==='YOU'))cls+=' lost';
+      else if(!m.p1)cls+=' pending';
+      const n1=m.p1?(m.p1==='YOU'?'<span class="player-name you">YOU</span>':'<span class="player-name">'+m.p1+'</span>'):'TBD';
+      const n2=m.p2?(m.p2==='YOU'?'<span class="player-name you">YOU</span>':'<span class="player-name">'+m.p2+'</span>'):'TBD';
+      const score=m.winner?(m.score1+'-'+m.score2):'';
+      html+='<div class="'+cls+'">'+n1+' vs '+n2+(score?'<br>'+score:'')+'</div>';
+    }
+    html+='</div>';
+  }
+  c.innerHTML=html;
+}
+
+function spawnConfetti(){
+  const box=document.getElementById('confetti-box');
+  box.innerHTML='';
+  const colors=['#e86040','#f0c040','#2bbfbf','#9b59b6','#27ae60','#e74c3c','#3498db'];
+  for(let i=0;i<40;i++){
+    const d=document.createElement('div');
+    d.className='confetti';
+    d.style.left=Math.random()*100+'%';
+    d.style.top=Math.random()*30+'%';
+    d.style.background=colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDelay=(Math.random()*1.5)+'s';
+    d.style.animationDuration=(1.5+Math.random()*1.5)+'s';
+    box.appendChild(d);
+  }
+  setTimeout(()=>{box.innerHTML=''},4000);
+}
+
+function showTournamentBracket(){
+  renderBracket();
+  document.getElementById('bracket-subtitle').textContent=getRoundName(tournament.round);
+  showScreen('bracket-screen');
+}
+
+function showMatchIntro(){
+  document.getElementById('match-round-label').textContent=getRoundName(tournament.round);
+  document.getElementById('match-p1-name').textContent='YOU';
+  document.getElementById('match-p2-name').textContent=getPlayerOpponentName();
+  showScreen('match-intro-screen');
+}
+
+function startTournamentMatch(){
+  difficulty=getTournamentDifficulty();
+  gameMode='1p';
+  resetGame();
+  gameState='playing';
+  showScreen(null);
+  document.getElementById('pause-text').style.display='none';
+  document.getElementById('pause-btn').style.display='flex';
+}
+
+function handleTournamentMatchEnd(playerWon,pScore,oScore){
+  const m=getCurrentTourneyMatch();
+  if(m.p1==='YOU'){m.score1=pScore;m.score2=oScore;m.winner=playerWon?'YOU':m.p2}
+  else{m.score2=pScore;m.score1=oScore;m.winner=playerWon?'YOU':m.p1}
+  tournament.stats.totalPoints+=pScore;
+  tournament.stats.pointsAgainst+=oScore;
+
+  if(playerWon){
+    tournament.stats.wins++;
+    simulateOtherMatches();
+    if(tournament.round===2){
+      // WON THE TOURNAMENT!
+      document.getElementById('tourney-win-score').textContent=pScore+' - '+oScore;
+      document.getElementById('tourney-stats').innerHTML=
+        '<span><span class="stat-val">'+tournament.stats.wins+'</span>Wins</span>'+
+        '<span><span class="stat-val">'+tournament.stats.totalPoints+'</span>Points</span>'+
+        '<span><span class="stat-val">'+tournament.stats.pointsAgainst+'</span>Against</span>';
+      showScreen('tourney-win-screen');
+      document.getElementById('pause-btn').style.display='none';
+      spawnConfetti();sndWin();
+    } else {
+      document.getElementById('tourney-advance-score').textContent=pScore+' - '+oScore;
+      document.getElementById('tourney-next-round').textContent='Next: '+getRoundName(tournament.round+1);
+      showScreen('tourney-advance-screen');
+      document.getElementById('pause-btn').style.display='none';
+      sndWin();
+    }
+  } else {
+    document.getElementById('tourney-lose-score').textContent=pScore+' - '+oScore;
+    document.getElementById('tourney-lose-round').textContent='Eliminated in '+getRoundName(tournament.round);
+    showScreen('tourney-lose-screen');
+    document.getElementById('pause-btn').style.display='none';
+    sndScore();
+  }
+}
+
 // ===== SCORE =====
 function scorePoint(scorer){
   if(scorer===1)playerScore++;else opponentScore++;
@@ -670,6 +854,14 @@ function scorePoint(scorer){
   const winScore=gameMode==='2p'?WINNING_SCORE_2P:WINNING_SCORE_1P;
   if((playerScore>=winScore||opponentScore>=winScore)&&Math.abs(playerScore-opponentScore)>=2){
     gameState='ended';
+    document.getElementById('pause-btn').style.display='none';
+
+    if(tournament){
+      const playerWon=playerScore>opponentScore;
+      handleTournamentMatchEnd(playerWon,playerScore,opponentScore);
+      return;
+    }
+
     let winText;
     if(gameMode==='2p'){
       winText=playerScore>opponentScore?'🎉 PLAYER 1 WINS!':'🎉 PLAYER 2 WINS!';
@@ -678,7 +870,7 @@ function scorePoint(scorer){
     }
     document.getElementById('winner-text').textContent=winText;
     document.getElementById('final-score').textContent=playerScore+' - '+opponentScore;
-    showScreen('end-screen');document.getElementById('pause-btn').style.display='none';sndWin();return;
+    showScreen('end-screen');sndWin();return;
   }
 
   const total=playerScore+opponentScore;
