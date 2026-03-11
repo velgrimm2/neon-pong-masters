@@ -121,7 +121,10 @@ const BALL_R=7;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=4;
+const MAX_SPEED=8;
 const WINNING_SCORE=11;
+const SPIN_DECAY=0.96;
+const SPIN_CURVE_FORCE=0.12;
 
 // ===== STATE =====
 let difficulty=1;
@@ -135,7 +138,7 @@ let serveTimer=0;
 let shakeX=0,shakeY=0,shakeMag=0;
 
 // Ball
-let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0};
+let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0};
 
 // Bounce markers
 const bounceMarks=[];
@@ -213,7 +216,7 @@ function resetBall(server){
   serveSide=server;
   serveTimer=0;
   ball.speed=BASE_SPEED;
-  ball.vx=0;ball.vy=0;
+  ball.vx=0;ball.vy=0;ball.spin=0;
   ball.lastHitBy=0;
   if(server===1){
     ball.x=player.x;ball.y=player.y-20;
@@ -239,15 +242,14 @@ function doServe(dt){
     if(serveTimer>0.6 && pSpeed>1.5){
       serving=false;
       ball.active=true;
-      const speedBoost=Math.min(3,pSpeed*0.3);
-      ball.speed=BASE_SPEED+speedBoost;
-      // Ball goes mostly straight up with slight paddle influence (CENTER BIAS)
-      const sideInfluence=player.vx*0.15; // reduced from 0.3 — keeps ball centered
+      const speedBoost=Math.min(2,pSpeed*0.2);
+      ball.speed=Math.min(MAX_SPEED,BASE_SPEED+speedBoost);
+      const sideInfluence=player.vx*0.15;
       ball.vx=sideInfluence;
       ball.vy=-(ball.speed);
-      // Normalize
       const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
       if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
+      ball.spin=player.vx*0.15;
       ball.lastHitBy=1;
       sndHit(ball.speed);
       spawnParticles(ball.x,ball.y,'#66bb6a',6,0.6);
@@ -258,11 +260,12 @@ function doServe(dt){
       serving=false;
       ball.active=true;
       const p=AI_PARAMS[difficulty];
-      ball.speed=BASE_SPEED+p.hitBoost;
-      ball.vx=(Math.random()-0.5)*0.8; // AI also mostly straight
+      ball.speed=Math.min(MAX_SPEED,BASE_SPEED+p.hitBoost);
+      ball.vx=(Math.random()-0.5)*0.8;
       ball.vy=ball.speed;
       const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
       if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
+      ball.spin=(Math.random()-0.5)*1.5;
       ball.lastHitBy=-1;
       sndHit(ball.speed);
     }
@@ -282,9 +285,9 @@ function checkPaddleHit(paddle,isPlayer){
 
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
-  // Speed boost — ball never slows down
-  const speedBoost=Math.min(4,padSpeed*0.25);
-  ball.speed=Math.max(ball.speed, ball.speed+speedBoost);
+  // Speed boost — capped at MAX_SPEED
+  const speedBoost=Math.min(2,padSpeed*0.2);
+  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,ball.speed+speedBoost));
 
   // === CENTER BIAS: ball mostly goes straight, only strong side swipes push it out ===
   const hitOffsetX=(ball.x-paddle.x)/(PAD_W/2); // -1 to 1
@@ -312,6 +315,7 @@ function checkPaddleHit(paddle,isPlayer){
 
   ball.vx=newVX;
   ball.vy=newVY;
+  ball.spin=paddle.vx*0.18;
   ball.lastHitBy=isPlayer?1:-1;
 
   // Push ball out of paddle
@@ -404,12 +408,20 @@ function update(dt){
 
   if(serving){doServe(dt);return}
 
-  // Move ball — NO drag, NO friction, NO slowdown
+  // Apply spin curve force
+  if(Math.abs(ball.spin)>0.01){
+    ball.vx+=ball.spin*SPIN_CURVE_FORCE*dt;
+    ball.spin*=Math.pow(SPIN_DECAY,dt);
+    const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+    if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
+  }
+
+  // Move ball
   ball.x+=ball.vx*dt;
   ball.y+=ball.vy*dt;
 
   // Trail
-  trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed});
+  trail.push({x:ball.x,y:ball.y,life:1,speed:ball.speed,spin:ball.spin});
   if(trail.length>MAX_TRAIL)trail.shift();
 
   // === BOUNDARY: ball falls off ONLY if it actually leaves table sides ===
@@ -546,14 +558,21 @@ function draw(){
     else ctx.fillText('AI SERVING...',GW/2,TBL_T-15);
   }
 
-  // Trail
-  for(let i=0;i<trail.length;i++){
-    const t=trail[i];if(t.life<=0)continue;
-    const alpha=t.life*0.18*(Math.min(t.speed,12)/12);
-    ctx.globalAlpha=alpha;
-    ctx.fillStyle='rgba(255,255,200,0.8)';
-    const r=BALL_R*t.life*0.5;
-    ctx.beginPath();ctx.arc(t.x,t.y,r,0,Math.PI*2);ctx.fill();
+  // Curved trail
+  if(trail.length>1){
+    for(let i=1;i<trail.length;i++){
+      const t=trail[i];if(t.life<=0)continue;
+      const prev=trail[i-1];
+      const alpha=t.life*0.25*(Math.min(t.speed,MAX_SPEED)/MAX_SPEED);
+      ctx.globalAlpha=alpha;
+      const spinShift=(t.spin||0)*2;
+      const midX=(prev.x+t.x)/2+spinShift;
+      const midY=(prev.y+t.y)/2;
+      ctx.strokeStyle='rgba(255,235,100,0.8)';
+      ctx.lineWidth=BALL_R*t.life*0.8;
+      ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.quadraticCurveTo(midX,midY,t.x,t.y);ctx.stroke();
+    }
   }
   ctx.globalAlpha=1;
 
