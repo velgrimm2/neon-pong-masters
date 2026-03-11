@@ -394,8 +394,8 @@ function update(dt){
   player.prevX=player.x;player.prevY=player.y;
   player.x+=(inputX-player.x)*0.22*dt;
   player.y+=(inputY-player.y)*0.22*dt;
-  player.x=Math.max(TBL_L+PAD_W/2,Math.min(TBL_R-PAD_W/2,player.x));
-  player.y=Math.max(NET_Y+PAD_H/2+4,Math.min(TBL_B-12,player.y));
+  player.x=Math.max(TBL_L+PAD_R,Math.min(TBL_R-PAD_R,player.x));
+  player.y=Math.max(NET_Y+PAD_R+4,Math.min(TBL_B-PAD_R,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
 
