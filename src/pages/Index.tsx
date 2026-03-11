@@ -131,11 +131,15 @@ const BALL_R=11;
 
 // ===== CONSTANTS =====
 const BASE_SPEED=5.5;
-const MAX_SPEED=10;
+const MAX_SPEED=11;
 const WINNING_SCORE_1P=11;
 const WINNING_SCORE_2P=10;
-const SPIN_DECAY=0.96;
-const SPIN_CURVE_FORCE=0.12;
+const SPIN_DECAY=0.97;
+const SPIN_CURVE_FORCE=0.10;
+const RALLY_SPEED_GAIN=0.06; // speed increase per hit during rally
+const BOUNCE_SPEED_DAMP=0.96; // slow down slightly on table/wall bounce
+const ANGLE_JITTER=0.04; // small random angle offset on bounce
+const DIR_SMOOTHING=0.15; // smooth direction blend factor
 
 // ===== STATE =====
 let gameMode='1p'; // '1p' or '2p'
@@ -150,7 +154,7 @@ let serveTimer=0;
 let shakeX=0,shakeY=0,shakeMag=0;
 
 // Ball
-let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0,bounceHeight:0,bouncePhase:0};
+let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0,bounceHeight:0,bouncePhase:0,rallyHits:0};
 
 // Bounce markers
 const bounceMarks=[];
@@ -291,7 +295,7 @@ function resetBall(server){
   ball.speed=BASE_SPEED;
   ball.vx=0;ball.vy=0;ball.spin=0;
   ball.bounceHeight=0;ball.bouncePhase=0;
-  ball.lastHitBy=0;
+  ball.lastHitBy=0;ball.rallyHits=0;
   if(server===1){
     ball.x=player.x;ball.y=player.y-25;
   } else {
@@ -372,28 +376,34 @@ function doServe(dt){
 
 // ===== PADDLE HIT (circle vs circle) =====
 function checkPaddleHit(paddle,isPlayer){
+  // Directional guard: only check if ball moving toward paddle
   if(isPlayer && ball.vy<0) return false;
   if(!isPlayer && ball.vy>0) return false;
 
   const dx=ball.x-paddle.x,dy=ball.y-paddle.y;
   const dist=Math.sqrt(dx*dx+dy*dy);
-  if(dist>PAD_R+BALL_R) return false;
+  const hitDist=PAD_R+BALL_R;
+  if(dist>hitDist) return false;
 
   const padSpeed=Math.sqrt(paddle.vx*paddle.vx+paddle.vy*paddle.vy);
 
-  // Speed boost — capped at MAX_SPEED
-  const speedBoost=Math.min(1.5,padSpeed*0.15);
-  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,BASE_SPEED+speedBoost));
+  // Rally speed increase, capped
+  ball.rallyHits++;
+  const rallyBoost=Math.min(3,ball.rallyHits*RALLY_SPEED_GAIN);
+  const speedBoost=Math.min(2,padSpeed*0.15);
+  ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,BASE_SPEED+speedBoost+rallyBoost));
 
-  // Center bias
+  // Hit offset for angle control
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   
   let newVX, spinVal;
   if(sideForce<1.5){
+    // Straight shot — small offset influence
     newVX=hitOffsetX*ball.speed*0.05;
     spinVal=0;
   } else {
+    // Curved shot — paddle swipe direction matters
     let sideMultiplier;
     if(sideForce>5){sideMultiplier=0.35}
     else if(sideForce>3){sideMultiplier=0.18}
@@ -402,25 +412,36 @@ function checkPaddleHit(paddle,isPlayer){
     spinVal=paddle.vx*0.18;
   }
   
+  // Add small jitter for variety
+  newVX+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER;
+
   const maxVX=ball.speed*0.5;
   newVX=Math.max(-maxVX,Math.min(maxVX,newVX));
   let newVY=(isPlayer?-1:1)*ball.speed;
 
+  // Normalize to exact speed
   const mag=Math.sqrt(newVX*newVX+newVY*newVY);
   if(mag>0){newVX=(newVX/mag)*ball.speed;newVY=(newVY/mag)*ball.speed;}
 
-  ball.vx=newVX;
+  // Smooth direction blend instead of instant snap
+  ball.vx=ball.vx*(1-DIR_SMOOTHING)+newVX*DIR_SMOOTHING;
+  // For vy we want full direction change to feel responsive
   ball.vy=newVY;
+  // Re-normalize after blend
+  const mag2=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+  if(mag2>0){ball.vx=(ball.vx/mag2)*ball.speed;ball.vy=(ball.vy/mag2)*ball.speed;}
+
   ball.spin=spinVal;
   ball.bounceHeight=8+padSpeed*1.5;
   ball.bouncePhase=0;
   ball.lastHitBy=isPlayer?1:-1;
 
-  // Push ball out of paddle
-  if(dist>0){
+  // Push ball fully outside paddle to prevent sticking
+  if(dist>0&&dist<hitDist){
     const nx=dx/dist,ny=dy/dist;
-    ball.x=paddle.x+nx*(PAD_R+BALL_R+1);
-    ball.y=paddle.y+ny*(PAD_R+BALL_R+1);
+    const overlap=hitDist-dist+2;
+    ball.x+=nx*overlap;
+    ball.y+=ny*overlap;
   }
 
   sndHit(ball.speed);
@@ -540,19 +561,23 @@ function update(dt){
 
   if(serving){doServe(dt);return}
 
-  // Spin
+  // Spin — smooth curve application
   if(Math.abs(ball.spin)>0.01){
-    ball.vx+=ball.spin*SPIN_CURVE_FORCE*dt;
+    const curveForce=ball.spin*SPIN_CURVE_FORCE*dt;
+    ball.vx+=curveForce;
     ball.spin*=Math.pow(SPIN_DECAY,dt);
-    const maxCurveVX=ball.speed*0.5;
-    ball.vx=Math.max(-maxCurveVX,Math.min(maxCurveVX,ball.vx));
+    // Re-normalize to maintain consistent speed
     const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
     if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
   }
 
-  // Move ball
-  ball.x+=ball.vx*dt;
-  ball.y+=ball.vy*dt;
+  // Move ball (sub-step for smoother collision at high speed)
+  const steps=ball.speed>7?2:1;
+  const subDt=dt/steps;
+  for(let s=0;s<steps;s++){
+    ball.x+=ball.vx*subDt;
+    ball.y+=ball.vy*subDt;
+  }
   
   // Bounce arc
   if(ball.bounceHeight>0.5){
@@ -571,9 +596,14 @@ function update(dt){
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
       return;
     } else {
-      ball.x=TBL_L+BALL_R;
+      ball.x=TBL_L+BALL_R+1; // prevent sticking
       ball.vx=Math.abs(ball.vx)*0.7;
+      ball.speed*=BOUNCE_SPEED_DAMP; // reduce speed on wall bounce
       ball.spin*=-0.5;
+      // Add slight angle jitter
+      ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
+      const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+      if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
       sndBounce();
       addBounceMark(TBL_L,ball.y);
       spawnParticles(TBL_L,ball.y,'rgba(255,255,255,0.5)',4,0.5);
@@ -585,9 +615,13 @@ function update(dt){
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
       return;
     } else {
-      ball.x=TBL_R-BALL_R;
+      ball.x=TBL_R-BALL_R-1; // prevent sticking
       ball.vx=-Math.abs(ball.vx)*0.7;
+      ball.speed*=BOUNCE_SPEED_DAMP;
       ball.spin*=-0.5;
+      ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
+      const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+      if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
       sndBounce();
       addBounceMark(TBL_R,ball.y);
       spawnParticles(TBL_R,ball.y,'rgba(255,255,255,0.5)',4,0.5);
@@ -605,7 +639,11 @@ function update(dt){
         if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
         return;
       } else {
+        ball.speed*=0.94; // net slows ball more noticeably
         ball.vy*=0.92;
+        // Re-normalize
+        const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+        if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
         sndNet();
         spawnParticles(ball.x,NET_Y,'rgba(100,100,100,0.4)',3);
         addBounceMark(ball.x,NET_Y);
