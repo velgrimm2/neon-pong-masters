@@ -153,36 +153,145 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 </div>
 
 <script>
-// ===== AUDIO =====
+// ===== AUDIO ENGINE =====
 const AudioCtx=window.AudioContext||window.webkitAudioContext;
 let actx=null;
-function initAudio(){if(!actx)actx=new AudioCtx()}
-function playTone(freq,dur,type,vol){
+function initAudio(){if(!actx){actx=new AudioCtx();masterGain=actx.createGain();masterGain.gain.value=0.6;masterGain.connect(actx.destination)}}
+let masterGain=null;
+function dst(){return masterGain||actx.destination}
+
+// Create noise buffer for realistic ball sounds
+let noiseBuffer=null;
+function getNoiseBuffer(){
+  if(noiseBuffer)return noiseBuffer;
+  if(!actx)return null;
+  const len=actx.sampleRate*0.5;
+  noiseBuffer=actx.createBuffer(1,len,actx.sampleRate);
+  const d=noiseBuffer.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=(Math.random()*2-1);
+  return noiseBuffer;
+}
+
+// Realistic paddle hit — sharp click + body thud + slight ring
+function sndHit(power){
   if(!actx)return;
-  const o=actx.createOscillator(),g=actx.createGain();
-  o.type=type||'sine';o.frequency.value=freq;
-  g.gain.setValueAtTime(vol||0.05,actx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+dur);
-  o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+dur);
+  const t=actx.currentTime;
+  const vol=Math.min(0.5,0.15+power*0.04);
+
+  // Sharp click (noise burst through bandpass)
+  const nb=getNoiseBuffer();if(!nb)return;
+  const ns=actx.createBufferSource();ns.buffer=nb;
+  const bp=actx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2800+power*200;bp.Q.value=1.5;
+  const ng=actx.createGain();ng.gain.setValueAtTime(vol*0.8,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.04);
+  ns.connect(bp);bp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.05);
+
+  // Body tone — warm thud
+  const o=actx.createOscillator();o.type='sine';o.frequency.setValueAtTime(280+power*30,t);o.frequency.exponentialRampToValueAtTime(120,t+0.08);
+  const g=actx.createGain();g.gain.setValueAtTime(vol*0.6,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.12);
+
+  // Slight plastic ring
+  const o2=actx.createOscillator();o2.type='triangle';o2.frequency.value=1400+power*100;
+  const g2=actx.createGain();g2.gain.setValueAtTime(vol*0.15,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+  o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.07);
 }
 
-// Preload WAV sound effects
-const hitSound=new Audio('/sounds/ping_pong_hit.wav');
-const smashSound=new Audio('/sounds/ping_pong_smash.wav');
-hitSound.preload='auto';
-smashSound.preload='auto';
+// Powerful smash — deep impact + crack + whoosh
+function sndSmash(){
+  if(!actx)return;
+  const t=actx.currentTime;
 
-function playSfx(audio,vol){
-  const s=audio.cloneNode();
-  s.volume=Math.min(1,Math.max(0,vol||0.5));
-  s.play().catch(()=>{});
+  // Impact crack (noise)
+  const nb=getNoiseBuffer();if(!nb)return;
+  const ns=actx.createBufferSource();ns.buffer=nb;
+  const hp=actx.createBiquadFilter();hp.type='highpass';hp.frequency.value=1500;
+  const ng=actx.createGain();ng.gain.setValueAtTime(0.5,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.07);
+  ns.connect(hp);hp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.08);
+
+  // Deep bass thud
+  const o=actx.createOscillator();o.type='sine';o.frequency.setValueAtTime(200,t);o.frequency.exponentialRampToValueAtTime(50,t+0.15);
+  const g=actx.createGain();g.gain.setValueAtTime(0.4,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.2);
+
+  // Whoosh sweep
+  const o2=actx.createOscillator();o2.type='sawtooth';o2.frequency.setValueAtTime(3000,t);o2.frequency.exponentialRampToValueAtTime(400,t+0.12);
+  const g2=actx.createGain();g2.gain.setValueAtTime(0.08,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+  o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.14);
+
+  // Accent ping
+  const o3=actx.createOscillator();o3.type='sine';o3.frequency.value=1800;
+  const g3=actx.createGain();g3.gain.setValueAtTime(0.12,t);g3.gain.exponentialRampToValueAtTime(0.001,t+0.08);
+  o3.connect(g3);g3.connect(dst());o3.start(t);o3.stop(t+0.1);
 }
-function sndHit(power){const v=Math.min(1,0.3+power*0.05);playSfx(hitSound,v)}
-function sndSmash(){playSfx(smashSound,0.8)}
-function sndBounce(){playTone(900,0.025,'sine',0.05)}
-function sndNet(){playTone(150,0.08,'sine',0.03);playTone(120,0.12,'sine',0.02)}
-function sndScore(){playTone(700,0.12,'sine',0.06);setTimeout(()=>playTone(900,0.12,'sine',0.04),80)}
-function sndWin(){playTone(523,0.18,'sine',0.06);setTimeout(()=>playTone(659,0.18,'sine',0.06),120);setTimeout(()=>playTone(784,0.25,'sine',0.06),240)}
+
+// Table/wall bounce — quick tap
+function sndBounce(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  // Short noise tap
+  const nb=getNoiseBuffer();if(!nb)return;
+  const ns=actx.createBufferSource();ns.buffer=nb;
+  const bp=actx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=4000;bp.Q.value=2;
+  const ng=actx.createGain();ng.gain.setValueAtTime(0.12,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.02);
+  ns.connect(bp);bp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.03);
+  // Tiny ping
+  const o=actx.createOscillator();o.type='sine';o.frequency.value=2200;
+  const g=actx.createGain();g.gain.setValueAtTime(0.06,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.025);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.03);
+}
+
+// Net hit (unused but kept)
+function sndNet(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  const nb=getNoiseBuffer();if(!nb)return;
+  const ns=actx.createBufferSource();ns.buffer=nb;
+  const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=600;
+  const ng=actx.createGain();ng.gain.setValueAtTime(0.1,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+  ns.connect(lp);lp.connect(ng);ng.connect(dst());ns.start(t);ns.stop(t+0.18);
+}
+
+// Score point — satisfying descending chime
+function sndScore(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  const notes=[880,660];
+  notes.forEach((freq,i)=>{
+    const o=actx.createOscillator();o.type='sine';o.frequency.value=freq;
+    const g=actx.createGain();g.gain.setValueAtTime(0.12,t+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.2);
+    o.connect(g);g.connect(dst());o.start(t+i*0.1);o.stop(t+i*0.1+0.25);
+    // Harmonic
+    const o2=actx.createOscillator();o2.type='triangle';o2.frequency.value=freq*2;
+    const g2=actx.createGain();g2.gain.setValueAtTime(0.04,t+i*0.1);g2.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.15);
+    o2.connect(g2);g2.connect(dst());o2.start(t+i*0.1);o2.stop(t+i*0.1+0.18);
+  });
+}
+
+// Win — triumphant ascending fanfare
+function sndWin(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  const notes=[523,659,784,1047];
+  const durations=[0.15,0.15,0.15,0.35];
+  let offset=0;
+  notes.forEach((freq,i)=>{
+    // Main tone
+    const o=actx.createOscillator();o.type='sine';o.frequency.value=freq;
+    const g=actx.createGain();g.gain.setValueAtTime(0.14,t+offset);g.gain.exponentialRampToValueAtTime(0.001,t+offset+durations[i]+0.1);
+    o.connect(g);g.connect(dst());o.start(t+offset);o.stop(t+offset+durations[i]+0.15);
+    // Octave shimmer
+    const o2=actx.createOscillator();o2.type='triangle';o2.frequency.value=freq*2;
+    const g2=actx.createGain();g2.gain.setValueAtTime(0.05,t+offset);g2.gain.exponentialRampToValueAtTime(0.001,t+offset+durations[i]);
+    o2.connect(g2);g2.connect(dst());o2.start(t+offset);o2.stop(t+offset+durations[i]+0.05);
+    // Fifth harmony on last note
+    if(i===3){
+      const o3=actx.createOscillator();o3.type='sine';o3.frequency.value=freq*1.5;
+      const g3=actx.createGain();g3.gain.setValueAtTime(0.08,t+offset);g3.gain.exponentialRampToValueAtTime(0.001,t+offset+0.4);
+      o3.connect(g3);g3.connect(dst());o3.start(t+offset);o3.stop(t+offset+0.45);
+    }
+    offset+=durations[i];
+  });
+}
 
 // ===== CANVAS =====
 const canvas=document.getElementById('gc');
