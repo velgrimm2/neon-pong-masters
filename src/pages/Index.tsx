@@ -156,6 +156,8 @@ let serveTimer=0;
 
 // Shake
 let shakeX=0,shakeY=0,shakeMag=0;
+let smashCooldownP1=0,smashCooldownP2=0;
+let lastSmashTime=0; // for visual flash
 
 // Ball
 let ball={x:GW/2,y:0,vx:0,vy:0,speed:BASE_SPEED,active:false,lastHitBy:0,spin:0,bounceHeight:0,bouncePhase:0,rallyHits:0};
