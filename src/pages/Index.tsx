@@ -370,7 +370,7 @@ function updateAI(dt){
 function scorePoint(scorer){
   if(scorer===1)playerScore++;else aiScore++;
   sndScore();
-  spawnParticles(ball.x,ball.y,scorer===1?'#66bb6a':'#ef5350',15,1.2);
+  spawnParticles(ball.x,ball.y,scorer===1?'#d84080':'#20a0a0',15,1.2);
   shakeMag=4;
 
   if((playerScore>=WINNING_SCORE||aiScore>=WINNING_SCORE)&&Math.abs(playerScore-aiScore)>=2){
