@@ -636,7 +636,7 @@ document.querySelectorAll('.diff-btn').forEach(btn=>{
     btn.classList.add('selected');difficulty=parseInt(btn.dataset.diff);
   });
 });
-function startGame(){resetGame();gameState='playing';showScreen(null);document.getElementById('pause-text').style.display='none'}
+function startGame(){resetGame();gameState='playing';showScreen(null);document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='flex'}
 
 // ===== LOOP =====
 let lastTime=0;
