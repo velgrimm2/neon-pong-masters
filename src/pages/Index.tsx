@@ -561,19 +561,23 @@ function update(dt){
 
   if(serving){doServe(dt);return}
 
-  // Spin
+  // Spin — smooth curve application
   if(Math.abs(ball.spin)>0.01){
-    ball.vx+=ball.spin*SPIN_CURVE_FORCE*dt;
+    const curveForce=ball.spin*SPIN_CURVE_FORCE*dt;
+    ball.vx+=curveForce;
     ball.spin*=Math.pow(SPIN_DECAY,dt);
-    const maxCurveVX=ball.speed*0.5;
-    ball.vx=Math.max(-maxCurveVX,Math.min(maxCurveVX,ball.vx));
+    // Re-normalize to maintain consistent speed
     const mag=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
     if(mag>0){ball.vx=(ball.vx/mag)*ball.speed;ball.vy=(ball.vy/mag)*ball.speed;}
   }
 
-  // Move ball
-  ball.x+=ball.vx*dt;
-  ball.y+=ball.vy*dt;
+  // Move ball (sub-step for smoother collision at high speed)
+  const steps=ball.speed>7?2:1;
+  const subDt=dt/steps;
+  for(let s=0;s<steps;s++){
+    ball.x+=ball.vx*subDt;
+    ball.y+=ball.vy*subDt;
+  }
   
   // Bounce arc
   if(ball.bounceHeight>0.5){
@@ -592,9 +596,14 @@ function update(dt){
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
       return;
     } else {
-      ball.x=TBL_L+BALL_R;
+      ball.x=TBL_L+BALL_R+1; // prevent sticking
       ball.vx=Math.abs(ball.vx)*0.7;
+      ball.speed*=BOUNCE_SPEED_DAMP; // reduce speed on wall bounce
       ball.spin*=-0.5;
+      // Add slight angle jitter
+      ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
+      const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+      if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
       sndBounce();
       addBounceMark(TBL_L,ball.y);
       spawnParticles(TBL_L,ball.y,'rgba(255,255,255,0.5)',4,0.5);
@@ -606,9 +615,13 @@ function update(dt){
       if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
       return;
     } else {
-      ball.x=TBL_R-BALL_R;
+      ball.x=TBL_R-BALL_R-1; // prevent sticking
       ball.vx=-Math.abs(ball.vx)*0.7;
+      ball.speed*=BOUNCE_SPEED_DAMP;
       ball.spin*=-0.5;
+      ball.vy+=(Math.random()-0.5)*ball.speed*ANGLE_JITTER*2;
+      const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+      if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
       sndBounce();
       addBounceMark(TBL_R,ball.y);
       spawnParticles(TBL_R,ball.y,'rgba(255,255,255,0.5)',4,0.5);
@@ -626,7 +639,11 @@ function update(dt){
         if(ball.lastHitBy===1)scorePoint(-1);else scorePoint(1);
         return;
       } else {
+        ball.speed*=0.94; // net slows ball more noticeably
         ball.vy*=0.92;
+        // Re-normalize
+        const m=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
+        if(m>0){ball.vx=(ball.vx/m)*ball.speed;ball.vy=(ball.vy/m)*ball.speed;}
         sndNet();
         spawnParticles(ball.x,NET_Y,'rgba(100,100,100,0.4)',3);
         addBounceMark(ball.x,NET_Y);
