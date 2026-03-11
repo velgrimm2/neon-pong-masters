@@ -359,7 +359,7 @@ function togglePause(){
   if(gameState==='playing'){gameState='paused';document.getElementById('pause-text').style.display='block'}
   else if(gameState==='paused'){gameState='playing';document.getElementById('pause-text').style.display='none'}
 }
-function goToMenuFromPause(){gameState='menu';tournament=null;document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='none';showScreen('start-screen')}
+function goToMenuFromPause(){gameState='menu';tournament=null;document.getElementById('pause-text').style.display='none';document.getElementById('pause-btn').style.display='none';showScreen('start-screen');var cv=document.getElementById('gc');var cx=cv.getContext('2d');cx.clearRect(0,0,cv.width,cv.height)}
 
 // Keyboard: P to pause, Arrow keys for P2 in 2P mode
 document.addEventListener('keydown',e=>{
