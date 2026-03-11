@@ -498,12 +498,12 @@ function update(dt){
   if(ball.vy>0 && ball.y>NET_Y) checkPaddleHit(player,true);
   if(ball.vy<0 && ball.y<NET_Y) checkPaddleHit(ai,false);
 
-  // Ball past top/bottom — player missed
-  if(ball.y<TBL_T-25){
+  // Ball past top/bottom — score (ball can go outside table)
+  if(ball.y<-30){
     addBounceMark(ball.x,TBL_T);
     scorePoint(1);return;
   }
-  if(ball.y>TBL_B+25){
+  if(ball.y>GH+30){
     addBounceMark(ball.x,TBL_B);
     scorePoint(-1);return;
   }
