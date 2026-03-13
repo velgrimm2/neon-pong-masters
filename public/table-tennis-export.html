@@ -1511,12 +1511,13 @@ function draw(){
   ctx.restore();
 }
 
-function drawPaddle(x,y,isTop,squash,glow,recoil){
+function drawPaddle(x,y,isTop,squash,glow,recoil,padVX){
   const faceColor=isTop?'#22b8c8':'#e8445a';
   const recoilDir=isTop?1:-1;
   const ry=y+recoil*6*recoilDir;
+  const tilt=Math.max(-0.26,Math.min(0.26,(padVX||0)*0.04));
   const scX=1+squash*0.15;const scY=1-squash*0.1;
-  ctx.save();ctx.translate(x,ry);ctx.scale(scX,scY);
+  ctx.save();ctx.translate(x,ry);ctx.rotate(tilt);ctx.scale(scX,scY);
   if(glow>0.05){ctx.globalAlpha=glow*0.4;const gg=ctx.createRadialGradient(0,0,PAD_R*0.5,0,0,PAD_R*2);gg.addColorStop(0,faceColor);gg.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gg;ctx.beginPath();ctx.arc(0,0,PAD_R*2,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
   const sprite=isTop?paddleSpriteP2:paddleSpriteP1;
   if(isTop){ctx.rotate(Math.PI)}
