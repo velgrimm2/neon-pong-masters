@@ -1223,7 +1223,7 @@ function updateP2Human(dt){
   p2.x=adaptiveLerp(p2.x,p2InputX,dt);
   p2.y=adaptiveLerp(p2.y,p2InputY,dt);
   p2.x=Math.max(PAD_R,Math.min(GW-PAD_R,p2.x));
-  p2.y=Math.max(PAD_R,Math.min(NET_Y-PAD_R-4,p2.y));
+  p2.y=Math.max(-PAD_R,Math.min(NET_Y-PAD_R-4,p2.y));
   p2.vx=p2.x-p2.prevX;
   p2.vy=p2.y-p2.prevY;
 }
