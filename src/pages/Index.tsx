@@ -86,6 +86,38 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 @keyframes score-pop{0%{transform:scale(1)}30%{transform:scale(1.6)}60%{transform:scale(0.9)}100%{transform:scale(1)}}
 @keyframes countdown-pop{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes countdown-fade{0%{transform:scale(1);opacity:1}100%{transform:scale(2);opacity:0}}
+.coin-display{display:flex;align-items:center;gap:6px;font-family:'Fredoka One',cursive;font-size:clamp(16px,3.5vw,22px);color:#d4a017;margin:8px 0;text-shadow:1px 1px 0 rgba(0,0,0,0.1)}
+.coin-icon{font-size:clamp(18px,4vw,26px)}
+.store-btn{background:linear-gradient(135deg,#f0c040,#d4a017);box-shadow:0 4px 15px rgba(212,160,23,0.4);color:#5a3a1a}
+.store-btn:hover{background:linear-gradient(135deg,#e8b830,#c49015);box-shadow:0 6px 22px rgba(212,160,23,0.5)}
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin:10px auto;max-height:55vh;overflow-y:auto;padding:4px}
+.ability-card{background:rgba(90,58,26,0.08);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;border:2px solid transparent;transition:all 0.2s;position:relative}
+.ability-card.owned{border-color:#27ae60;background:rgba(39,174,96,0.08)}
+.ability-card.equipped{border-color:#e86040;background:rgba(232,96,64,0.1);box-shadow:0 0 12px rgba(232,96,64,0.2)}
+.ability-card.locked{opacity:0.5}
+.ability-icon{font-size:clamp(24px,5vw,32px)}
+.ability-name{font-family:'Fredoka One',cursive;font-size:clamp(10px,2vw,13px);color:#5a3a1a}
+.ability-desc{font-size:clamp(8px,1.5vw,10px);color:rgba(90,58,26,0.5);line-height:1.3;text-align:center}
+.ability-price{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:clamp(11px,2.2vw,14px);color:#d4a017;margin:2px 0}
+.ability-status{font-size:clamp(9px,1.8vw,11px);font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+.status-owned{color:#27ae60;background:rgba(39,174,96,0.12)}
+.status-equipped{color:#e86040;background:rgba(232,96,64,0.12)}
+.ability-btn{font-family:inherit;font-size:clamp(9px,1.8vw,11px);font-weight:800;padding:5px 14px;border-radius:20px;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
+.ability-btn.buy{background:#d4a017;color:#fff;box-shadow:0 2px 8px rgba(212,160,23,0.3)}
+.ability-btn.buy:hover{transform:scale(1.05);box-shadow:0 3px 12px rgba(212,160,23,0.4)}
+.ability-btn.buy:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.ability-btn.equip{background:#e86040;color:#fff}
+.ability-btn.equip:hover{transform:scale(1.05)}
+.ability-btn.unequip{background:rgba(90,58,26,0.12);color:#5a3a1a}
+.ability-btn.unequip:hover{transform:scale(1.05)}
+.equip-slots{display:flex;gap:8px;margin:8px 0;align-items:center}
+.equip-slot{width:40px;height:40px;border-radius:12px;border:2px dashed rgba(90,58,26,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(90,58,26,0.04)}
+.equip-slot.filled{border-style:solid;border-color:#e86040;background:rgba(232,96,64,0.08)}
+.slots-label{font-size:clamp(10px,2vw,12px);font-weight:700;color:rgba(90,58,26,0.4);letter-spacing:2px}
+@keyframes coin-float{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-40px) scale(1.2)}}
+.coin-float-anim{position:absolute;font-family:'Fredoka One',cursive;color:#d4a017;animation:coin-float 1.2s ease-out forwards;pointer-events:none;z-index:30;white-space:nowrap}
+@keyframes purchase-flash{0%{opacity:0.6}100%{opacity:0}}
+.store-coin-display{font-family:'Fredoka One',cursive;font-size:clamp(18px,4vw,24px);color:#d4a017;margin:4px 0;display:flex;align-items:center;justify-content:center;gap:6px}
 </style>
 </head>
 <body>
