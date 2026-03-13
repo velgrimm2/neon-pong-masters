@@ -1956,6 +1956,8 @@ document.querySelectorAll('.diff-btn').forEach(btn=>{
 
 document.getElementById('store-btn').addEventListener('click',()=>{initAudio();renderStore();showScreen('store-screen')});
 document.getElementById('store-back-btn').addEventListener('click',()=>{updateMenuCoins();showScreen('start-screen')});
+document.getElementById('help-btn').addEventListener('click',()=>{showScreen('help-screen')});
+document.getElementById('help-back-btn').addEventListener('click',()=>{showScreen('start-screen')});
 
 document.getElementById('tournament-btn').addEventListener('click',()=>{
   initAudio();createTournament();showTournamentBracket();
