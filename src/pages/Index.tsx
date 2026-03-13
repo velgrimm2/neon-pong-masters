@@ -679,12 +679,52 @@ function sndCountdownGo(){
   o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.25);
 }
 
-// ===== PADDLE IMAGE =====
-const paddleImg=new Image();
-paddleImg.src='images/paddle.png';
-let paddleImgLoaded=false;
-paddleImg.onload=()=>{paddleImgLoaded=true};
-const PAD_IMG_W=80,PAD_IMG_H=120;
+// ===== PADDLE SPRITE CANVAS (cartoon style like reference) =====
+const PAD_IMG_W=80,PAD_IMG_H=110;
+
+function createPaddleSprite(faceColor,faceHighlight,faceDark,outlineColor){
+  const c=document.createElement('canvas');
+  c.width=PAD_IMG_W;c.height=PAD_IMG_H;
+  const cx=c.getContext('2d');
+  const headCX=PAD_IMG_W/2, headCY=38, headRX=34, headRY=34;
+  const hW=12, hH=32;
+  const hx=headCX-hW/2, hy=headCY+headRY-6;
+
+  // Handle shadow
+  cx.fillStyle='rgba(0,0,0,0.15)';
+  cx.beginPath();cx.roundRect(hx+3,hy+3,hW,hH,4);cx.fill();
+  // Handle
+  cx.fillStyle='#c8956c';
+  cx.beginPath();cx.roundRect(hx,hy,hW,hH,4);cx.fill();
+  cx.fillStyle='#dba67a';
+  cx.beginPath();cx.roundRect(hx+2,hy+2,hW-4,hH-4,3);cx.fill();
+
+  // Head shadow
+  cx.fillStyle='rgba(0,0,0,0.18)';
+  cx.beginPath();cx.ellipse(headCX+2,headCY+3,headRX,headRY,0,0,Math.PI*2);cx.fill();
+  // Head dark side
+  cx.fillStyle=faceDark;
+  cx.beginPath();cx.ellipse(headCX,headCY,headRX,headRY,0,0,Math.PI*2);cx.fill();
+  // Head main color
+  const hg=cx.createRadialGradient(headCX-8,headCY-8,4,headCX,headCY,headRX);
+  hg.addColorStop(0,faceHighlight);hg.addColorStop(0.7,faceColor);hg.addColorStop(1,faceDark);
+  cx.fillStyle=hg;
+  cx.beginPath();cx.ellipse(headCX,headCY,headRX-2,headRY-2,0,0,Math.PI*2);cx.fill();
+  // Outline
+  cx.strokeStyle=outlineColor;cx.lineWidth=3;
+  cx.beginPath();cx.ellipse(headCX,headCY,headRX,headRY,0,0,Math.PI*2);cx.stroke();
+  // Shine
+  cx.fillStyle='rgba(255,255,255,0.25)';
+  cx.beginPath();cx.ellipse(headCX-10,headCY-12,10,7,-0.4,0,Math.PI*2);cx.fill();
+  // Handle outline
+  cx.strokeStyle=outlineColor;cx.lineWidth=2.5;
+  cx.beginPath();cx.roundRect(hx,hy,hW,hH,4);cx.stroke();
+
+  return c;
+}
+
+const paddleSpriteP1=createPaddleSprite('#e8445a','#ff7088','#b02040','#3a1520');
+const paddleSpriteP2=createPaddleSprite('#22b8c8','#50e0e8','#0a8898','#0a3038');
 
 // ===== CANVAS =====
 const canvas=document.getElementById('gc');
