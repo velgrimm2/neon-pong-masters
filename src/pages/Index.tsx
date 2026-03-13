@@ -250,6 +250,7 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
 <canvas id="gc"></canvas>
 <div id="pause-text">PAUSED<br><button id="pause-menu-btn" onclick="goToMenuFromPause()">MENU</button></div>
 <button id="pause-btn" onclick="togglePause()"><span class="bar"></span><span class="bar"></span></button>
+<button id="theme-toggle" onclick="toggleTheme()">🌙</button>
 <div id="confetti-box" class="confetti-container"></div>
 <div id="tutorial-overlay">
   <div class="tut-card">
