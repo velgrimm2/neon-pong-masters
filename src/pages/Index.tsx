@@ -697,7 +697,7 @@ resize();
 window.addEventListener('resize',resize);
 
 // ===== TABLE =====
-const TBL_L=40,TBL_R=GW-40,TBL_T=50,TBL_B=GH-50;
+const TBL_L=40,TBL_R=GW-40,TBL_T=10,TBL_B=GH-10;
 const TBL_W=TBL_R-TBL_L,TBL_H=TBL_B-TBL_T;
 const NET_Y=(TBL_T+TBL_B)/2;
 const TBL_CX=(TBL_L+TBL_R)/2;
@@ -1205,7 +1205,7 @@ function updateAI(dt){
   }
 
   p2.x=Math.max(PAD_R,Math.min(GW-PAD_R,p2.x));
-  p2.y=Math.max(PAD_R,Math.min(NET_Y-PAD_R-4,p2.y));
+p2.y=Math.max(-PAD_R,Math.min(NET_Y-PAD_R-4,p2.y));
 
   p2.vx=(p2.x-p2.prevX)*p.hitBoost*2;
   p2.vy=(p2.y-p2.prevY)*p.hitBoost*2;
@@ -1223,7 +1223,7 @@ function updateP2Human(dt){
   p2.x=adaptiveLerp(p2.x,p2InputX,dt);
   p2.y=adaptiveLerp(p2.y,p2InputY,dt);
   p2.x=Math.max(PAD_R,Math.min(GW-PAD_R,p2.x));
-  p2.y=Math.max(PAD_R,Math.min(NET_Y-PAD_R-4,p2.y));
+  p2.y=Math.max(-PAD_R,Math.min(NET_Y-PAD_R-4,p2.y));
   p2.vx=p2.x-p2.prevX;
   p2.vy=p2.y-p2.prevY;
 }
@@ -1575,7 +1575,7 @@ function update(dt){
   player.x=adaptiveLerp(player.x,p1InputX,sDt*speedMult);
   player.y=adaptiveLerp(player.y,p1InputY,sDt*speedMult);
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
-  player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
+  player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH+PAD_R,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
 
