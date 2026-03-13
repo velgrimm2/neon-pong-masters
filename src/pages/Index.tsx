@@ -889,8 +889,21 @@ function checkPaddleHit(paddle,isPlayer){
   const rallyBoost=Math.min(3,ball.rallyHits*RALLY_SPEED_GAIN);
   const speedBoost=Math.min(2,padSpeed*0.15);
   let targetSpeed=BASE_SPEED+speedBoost+rallyBoost;
-  if(isSmash)targetSpeed+=SMASH_SPEED_BOOST;
+  let smashBoost=SMASH_SPEED_BOOST;
+  if(isSmash&&isPlayer&&hasAbility('power_smash'))smashBoost*=1.4;
+  if(isSmash)targetSpeed+=smashBoost;
   ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,targetSpeed));
+
+  // Coin rewards: smash bonus
+  if(isSmash&&isPlayer)earnCoins(15,'Smash!');
+  // Rally coin bonus (every 5 rallies)
+  if(isPlayer&&ball.rallyHits>0&&ball.rallyHits%5===0)earnCoins(10,'Rally x'+ball.rallyHits);
+
+  // Multi-ball chance
+  if(isPlayer&&hasAbility('multi_ball')&&Math.random()<0.15&&multiBalls.length<2){
+    multiBalls.push({x:ball.x,y:ball.y,vx:ball.vx*0.8+(Math.random()-0.5)*2,vy:ball.vy*0.9,speed:ball.speed*0.85,life:3,spin:ball.spin*0.5});
+    spawnSparks(ball.x,ball.y,'#a855f7',10,isPlayer?-Math.PI/2:Math.PI/2,Math.PI);
+  }
 
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
