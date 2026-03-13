@@ -1413,6 +1413,7 @@ function startCountdown(){
   gameState='countdown';
   showScreen(null);
   document.getElementById('pause-btn').style.display='flex';
+  document.getElementById('theme-toggle').style.display='none';
   document.getElementById('pause-text').style.display='none';
 }
 
