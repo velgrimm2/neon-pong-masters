@@ -1576,6 +1576,36 @@ function draw(){
     ctx.fillText('PLAYER 2',GW/2,18);
   }
 
+  // Coin HUD
+  ctx.font='800 14px Fredoka One,cursive';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillStyle='rgba(212,160,23,0.8)';
+  ctx.fillText('🪙 '+storeData.coins,8,6);
+
+  // Equipped ability icons
+  if(storeData.equipped.length>0){
+    ctx.font='14px sans-serif';ctx.textAlign='right';ctx.textBaseline='top';
+    const eqText=storeData.equipped.map(id=>{const a=ABILITIES.find(ab=>ab.id===id);return a?a.icon:''}).join(' ');
+    ctx.fillText(eqText,GW-8,6);
+  }
+
+  // Shield indicator
+  if(hasAbility('shield_block')&&!shieldUsedThisMatch){
+    ctx.font='600 10px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.fillStyle='rgba(96,192,255,0.6)';
+    ctx.fillText('🛡️ SHIELD READY',GW/2,GH-4);
+  }
+
+  // Multi-balls rendering
+  for(const mb of multiBalls){
+    ctx.globalAlpha=mb.life*0.7;
+    ctx.fillStyle='#a855f7';
+    ctx.beginPath();ctx.arc(mb.x,mb.y,BALL_R*0.8,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=mb.life*0.3;
+    ctx.fillStyle='#d8b4fe';
+    ctx.beginPath();ctx.arc(mb.x-2,mb.y-2,BALL_R*0.4,0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
   // Serve indicator
   if(serving){
     ctx.font='600 12px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.textBaseline='alphabetic';ctx.textAlign='center';
