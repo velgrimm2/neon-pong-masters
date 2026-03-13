@@ -26,122 +26,191 @@ const GAME_HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Table Tennis</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
+:root{
+  --bg:#1a1a2e;--bg2:#16213e;--surface:rgba(255,255,255,0.06);--surface2:rgba(255,255,255,0.1);
+  --text:#e8e8f0;--text2:rgba(232,232,240,0.6);--text3:rgba(232,232,240,0.35);
+  --accent:#6c63ff;--accent2:#8b83ff;--accent-glow:rgba(108,99,255,0.3);
+  --green:#34d399;--green-bg:rgba(52,211,153,0.12);
+  --red:#f87171;--red-bg:rgba(248,113,113,0.12);
+  --orange:#fb923c;--orange-bg:rgba(251,146,60,0.12);
+  --gold:#fbbf24;--gold-bg:rgba(251,191,36,0.12);
+  --cyan:#22d3ee;--cyan-bg:rgba(34,211,238,0.12);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.12);
+  --radius:16px;--radius-sm:10px;--radius-full:50px;
+  --shadow:0 8px 32px rgba(0,0,0,0.3);--shadow-sm:0 4px 16px rgba(0,0,0,0.2);
+  --font:'Plus Jakarta Sans',sans-serif;--font-display:'Outfit',sans-serif;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#f0c040;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Nunito',sans-serif}
+body{background:var(--bg);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:var(--font)}
 canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
-.help-screen{max-height:70vh;overflow-y:auto;width:90%;max-width:360px}
-.help-section{background:rgba(90,58,26,0.07);border-radius:14px;padding:12px 14px;margin:8px 0;text-align:left}
-.help-section h3{font-family:'Fredoka One',cursive;font-size:clamp(13px,2.8vw,16px);color:#5a3a1a;margin-bottom:6px}
-.help-section p,.help-section li{font-size:clamp(10px,2vw,12px);color:rgba(90,58,26,0.7);line-height:1.5;font-weight:600}
-.help-section ul{list-style:none;padding:0}
-.help-section li{padding:3px 0;display:flex;gap:6px;align-items:flex-start}
-.help-section li .emoji{flex-shrink:0;font-size:14px}
-.ability-card-help{background:rgba(232,96,64,0.08);border-radius:10px;padding:8px 10px;margin:4px 0}
-.ability-card-help .ability-name{font-weight:800;color:#e86040;font-size:clamp(11px,2.2vw,13px)}
-.ability-card-help .ability-how{font-size:clamp(9px,1.8vw,11px);color:rgba(90,58,26,0.6);margin-top:2px}
+
+/* Overlay */
 #ui-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none}
-.screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px;opacity:0;transition:opacity 0.35s ease}
-.screen.active{display:flex;opacity:1}
-h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1a;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:4px}
-.subtitle{font-size:clamp(11px,2.2vw,14px);color:rgba(90,58,26,0.5);margin-bottom:20px;letter-spacing:3px;text-transform:uppercase;font-weight:700}
-.btn{background:#e86040;border:none;color:#fff;padding:13px 44px;font-size:clamp(13px,2.8vw,17px);cursor:pointer;letter-spacing:2px;text-transform:uppercase;border-radius:50px;margin:6px;font-weight:800;box-shadow:0 4px 15px rgba(232,96,64,0.3);transition:all .15s ease;font-family:inherit;position:relative;overflow:hidden}
-.btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 22px rgba(232,96,64,0.5);background:#d04030}
-.btn:active{transform:translateY(1px) scale(0.97);box-shadow:0 2px 8px rgba(232,96,64,0.3)}
-.btn::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,0.3);border-radius:50%;transform:translate(-50%,-50%);transition:width 0.4s,height 0.4s,opacity 0.4s}
-.btn:active::after{width:200px;height:200px;opacity:0}
-.btn-secondary{background:rgba(90,58,26,0.12);color:#5a3a1a;box-shadow:0 4px 12px rgba(0,0,0,0.06)}
-.btn-secondary:hover{background:rgba(90,58,26,0.2);transform:translateY(-2px) scale(1.03)}
-.btn-secondary:active{transform:translateY(1px) scale(0.97)}
-.btn-2p{background:#2bbfbf;box-shadow:0 4px 15px rgba(43,191,191,0.3)}
-.btn-2p:hover{background:#209e9e;box-shadow:0 6px 22px rgba(43,191,191,0.4)}
-.btn-tournament{background:#9b59b6;box-shadow:0 4px 15px rgba(155,89,182,0.3)}
-.btn-tournament:hover{background:#8e44ad;box-shadow:0 6px 22px rgba(155,89,182,0.4)}
-.difficulty-row{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center}
-.diff-btn{padding:9px 22px;font-size:clamp(10px,1.9vw,13px);background:rgba(232,96,64,0.1);border:2px solid rgba(232,96,64,0.3);color:rgba(90,58,26,0.6);border-radius:50px;box-shadow:none;font-family:inherit;cursor:pointer;transition:all .15s ease}
-.diff-btn:hover{background:rgba(232,96,64,0.2);transform:scale(1.05)}
-.diff-btn.selected{background:#e86040;border-color:#e86040;color:#fff;box-shadow:0 3px 12px rgba(232,96,64,0.3);transform:scale(1.05)}
-.winner-text{font-family:'Fredoka One',cursive;font-size:clamp(26px,6.5vw,44px);color:#5a3a1a;text-shadow:2px 2px 0 rgba(255,255,255,0.4);margin-bottom:18px}
-.final-score{font-size:clamp(16px,4vw,24px);color:rgba(90,58,26,0.5);margin-bottom:20px;font-weight:700}
-.controls-hint{font-size:clamp(9px,1.7vw,11px);color:rgba(90,58,26,0.35);margin-top:16px;line-height:1.7;font-weight:600}
-.mode-divider{font-size:clamp(11px,2vw,14px);color:rgba(90,58,26,0.3);margin:8px 0;font-weight:800;letter-spacing:4px}
-#pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fredoka One',cursive;font-size:clamp(28px,6.5vw,50px);color:rgba(90,58,26,0.5);letter-spacing:8px;display:none;z-index:20;text-shadow:2px 2px 0 rgba(255,255,255,0.3);text-align:center}
-#pause-menu-btn{margin-top:18px;font-family:'Fredoka One',cursive;font-size:clamp(14px,3vw,20px);padding:10px 32px;border-radius:14px;border:3px solid #c07828;background:linear-gradient(135deg,#f0c060,#e8a040);color:#5a3a1a;cursor:pointer;letter-spacing:2px;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:transform 0.15s}
+
+/* Screen transitions */
+.screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:20px;max-width:400px;width:92%;opacity:0;transform:translateY(12px) scale(0.97);transition:opacity 0.4s cubic-bezier(0.4,0,0.2,1),transform 0.4s cubic-bezier(0.4,0,0.2,1)}
+.screen.active{display:flex;opacity:1;transform:translateY(0) scale(1)}
+
+/* Panel card background */
+.panel{background:linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow);width:100%}
+
+/* Typography */
+h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--text);font-weight:800;margin-bottom:4px;letter-spacing:-0.5px}
+.subtitle{font-size:clamp(11px,2.2vw,13px);color:var(--text3);margin-bottom:20px;letter-spacing:4px;text-transform:uppercase;font-weight:700}
+
+/* Buttons */
+.btn{background:var(--accent);border:none;color:#fff;padding:14px 36px;font-size:clamp(13px,2.8vw,15px);cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;border-radius:var(--radius-full);margin:5px;font-weight:700;box-shadow:0 4px 20px var(--accent-glow);transition:all 0.25s cubic-bezier(0.4,0,0.2,1);font-family:var(--font);position:relative;overflow:hidden;width:100%;max-width:280px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--accent-glow);background:var(--accent2)}
+.btn:active{transform:translateY(1px) scale(0.98);box-shadow:0 2px 10px var(--accent-glow)}
+
+.btn-secondary{background:var(--surface2);color:var(--text);box-shadow:none}
+.btn-secondary:hover{background:rgba(255,255,255,0.15);box-shadow:none;transform:translateY(-1px)}
+.btn-secondary:active{background:rgba(255,255,255,0.08);transform:translateY(0)}
+
+.btn-2p{background:var(--cyan);box-shadow:0 4px 20px rgba(34,211,238,0.25)}
+.btn-2p:hover{background:#3ee0f0;box-shadow:0 8px 30px rgba(34,211,238,0.35)}
+
+.btn-tournament{background:var(--purple);box-shadow:0 4px 20px rgba(167,139,250,0.25)}
+.btn-tournament:hover{background:#b79dff;box-shadow:0 8px 30px rgba(167,139,250,0.35)}
+
+.store-btn{background:linear-gradient(135deg,var(--gold),var(--orange));box-shadow:0 4px 20px rgba(251,191,36,0.25);color:#1a1a2e}
+.store-btn:hover{box-shadow:0 8px 30px rgba(251,191,36,0.35)}
+
+/* Mode divider */
+.mode-divider{font-size:clamp(10px,1.8vw,12px);color:var(--text3);margin:4px 0;font-weight:700;letter-spacing:3px}
+
+/* Controls hint */
+.controls-hint{font-size:clamp(9px,1.7vw,11px);color:var(--text3);margin-top:18px;line-height:1.8;font-weight:600}
+
+/* Difficulty buttons */
+.difficulty-row{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap;justify-content:center}
+.diff-btn{padding:10px 24px;font-size:clamp(11px,2vw,13px);background:var(--surface);border:2px solid rgba(255,255,255,0.1);color:var(--text2);border-radius:var(--radius-full);box-shadow:none;font-family:var(--font);cursor:pointer;transition:all .2s ease;font-weight:700;width:auto;max-width:none}
+.diff-btn:hover{background:var(--surface2);border-color:rgba(255,255,255,0.2);transform:scale(1.05)}
+.diff-btn.selected{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 16px var(--accent-glow);transform:scale(1.05)}
+
+/* Winner/Score */
+.winner-text{font-family:var(--font-display);font-size:clamp(24px,6vw,40px);color:var(--text);font-weight:800;margin-bottom:14px}
+.final-score{font-size:clamp(15px,3.5vw,22px);color:var(--text2);margin-bottom:18px;font-weight:700}
+
+/* Coin display */
+.coin-display{display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:clamp(16px,3.5vw,22px);color:var(--gold);margin:10px 0}
+.coin-icon{font-size:clamp(18px,4vw,24px)}
+
+/* Pause */
+#pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-display);font-size:clamp(28px,6.5vw,48px);color:var(--text);letter-spacing:6px;display:none;z-index:20;text-align:center}
+#pause-menu-btn{margin-top:18px;font-family:var(--font);font-size:clamp(13px,2.5vw,16px);padding:12px 32px;border-radius:var(--radius-full);border:none;background:var(--surface2);color:var(--text);cursor:pointer;letter-spacing:2px;font-weight:700;box-shadow:var(--shadow-sm);transition:all 0.2s}
 #pause-menu-btn:active{transform:scale(0.95)}
-#pause-btn{position:absolute;top:10px;right:10px;z-index:15;width:40px;height:40px;border-radius:50%;background:#e8a040;border:3px solid #c07828;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-#pause-btn .bar{width:4px;height:16px;background:#6d3a0a;border-radius:2px;margin:0 2px}
+#pause-btn{position:absolute;top:12px;right:12px;z-index:15;width:42px;height:42px;border-radius:50%;background:var(--surface2);border:1px solid rgba(255,255,255,0.1);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:all 0.2s}
+#pause-btn:hover{background:rgba(255,255,255,0.15)}
+#pause-btn .bar{width:3px;height:14px;background:var(--text);border-radius:2px;margin:0 2px}
+
+/* Tournament bracket */
 .bracket-container{width:100%;max-width:340px;margin:10px auto}
 .bracket-round{display:flex;justify-content:space-around;margin:6px 0}
-.bracket-match{background:rgba(90,58,26,0.08);border-radius:10px;padding:6px 10px;min-width:70px;font-size:clamp(9px,1.8vw,11px);font-weight:700;color:rgba(90,58,26,0.6);border:2px solid transparent;transition:all 0.2s}
-.bracket-match.current{border-color:#e86040;background:rgba(232,96,64,0.12);color:#e86040}
-.bracket-match.won{border-color:#27ae60;background:rgba(39,174,96,0.1);color:#27ae60}
-.bracket-match.lost{border-color:#c0392b;background:rgba(192,57,43,0.08);color:rgba(90,58,26,0.3);text-decoration:line-through}
-.bracket-match.pending{color:rgba(90,58,26,0.3)}
+.bracket-match{background:var(--surface);border-radius:var(--radius-sm);padding:8px 12px;min-width:70px;font-size:clamp(9px,1.8vw,11px);font-weight:700;color:var(--text2);border:1.5px solid transparent;transition:all 0.25s}
+.bracket-match.current{border-color:var(--accent);background:rgba(108,99,255,0.1);color:var(--accent2)}
+.bracket-match.won{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.bracket-match.lost{border-color:var(--red);background:var(--red-bg);color:var(--text3);text-decoration:line-through}
+.bracket-match.pending{color:var(--text3)}
 .bracket-match .player-name{font-weight:800}
-.bracket-match .player-name.you{color:#e86040}
-.round-label{font-family:'Fredoka One',cursive;font-size:clamp(10px,2vw,13px);color:rgba(90,58,26,0.4);margin:4px 0 2px;letter-spacing:2px}
-.match-intro-round{font-size:clamp(12px,2.5vw,16px);color:rgba(90,58,26,0.5);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
-.match-intro-vs{font-family:'Fredoka One',cursive;font-size:clamp(28px,7vw,46px);color:#5a3a1a;margin:12px 0}
-.match-intro-names{font-size:clamp(14px,3vw,20px);font-weight:800;color:rgba(90,58,26,0.7);margin:4px 0}
+.bracket-match .player-name.you{color:var(--accent2)}
+.round-label{font-family:var(--font-display);font-size:clamp(10px,2vw,13px);color:var(--text3);margin:4px 0 2px;letter-spacing:2px}
+
+/* Match intro */
+.match-intro-round{font-size:clamp(12px,2.5vw,15px);color:var(--text2);font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.match-intro-vs{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--text);margin:10px 0;font-weight:900}
+.match-intro-names{font-size:clamp(14px,3vw,20px);font-weight:800;color:var(--text2);margin:4px 0}
+
+/* Trophy */
 .trophy-icon{font-size:clamp(50px,12vw,80px);margin:10px 0}
-.stats-row{display:flex;gap:20px;margin:12px 0;font-size:clamp(12px,2.5vw,15px);font-weight:800;color:rgba(90,58,26,0.5)}
-.stats-row span{display:flex;flex-direction:column;align-items:center}
-.stats-row .stat-val{font-family:'Fredoka One',cursive;font-size:clamp(18px,4vw,28px);color:#5a3a1a}
-@keyframes trophy-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-.trophy-anim{animation:trophy-bounce 0.8s ease-in-out infinite}
-@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(80px) rotate(360deg);opacity:0}}
+@keyframes trophy-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.trophy-anim{animation:trophy-bounce 1s ease-in-out infinite}
+.stats-row{display:flex;gap:24px;margin:14px 0;font-size:clamp(12px,2.5vw,15px);font-weight:700;color:var(--text2)}
+.stats-row span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.stats-row .stat-val{font-family:var(--font-display);font-size:clamp(18px,4vw,28px);color:var(--text)}
+
+/* Confetti */
 .confetti-container{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:25}
-.confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:confetti-fall 2s ease-in forwards}
+.confetti{position:absolute;width:8px;height:8px;border-radius:2px}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(80px) rotate(360deg);opacity:0}}
+.confetti{animation:confetti-fall 2s ease-in forwards}
+
+/* Score animations */
 @keyframes score-pop{0%{transform:scale(1)}30%{transform:scale(1.6)}60%{transform:scale(0.9)}100%{transform:scale(1)}}
 @keyframes countdown-pop{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes countdown-fade{0%{transform:scale(1);opacity:1}100%{transform:scale(2);opacity:0}}
-.coin-display{display:flex;align-items:center;gap:6px;font-family:'Fredoka One',cursive;font-size:clamp(16px,3.5vw,22px);color:#d4a017;margin:8px 0;text-shadow:1px 1px 0 rgba(0,0,0,0.1)}
-.coin-icon{font-size:clamp(18px,4vw,26px)}
-.store-btn{background:linear-gradient(135deg,#f0c040,#d4a017);box-shadow:0 4px 15px rgba(212,160,23,0.4);color:#5a3a1a}
-.store-btn:hover{background:linear-gradient(135deg,#e8b830,#c49015);box-shadow:0 6px 22px rgba(212,160,23,0.5)}
-.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin:10px auto;max-height:55vh;overflow-y:auto;padding:4px}
-.ability-card{background:rgba(90,58,26,0.08);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;border:2px solid transparent;transition:all 0.2s;position:relative}
-.ability-card.owned{border-color:#27ae60;background:rgba(39,174,96,0.08)}
-.ability-card.equipped{border-color:#e86040;background:rgba(232,96,64,0.1);box-shadow:0 0 12px rgba(232,96,64,0.2)}
-.ability-card.locked{opacity:0.5}
-.ability-icon{font-size:clamp(24px,5vw,32px)}
-.ability-name{font-family:'Fredoka One',cursive;font-size:clamp(10px,2vw,13px);color:#5a3a1a}
-.ability-desc{font-size:clamp(8px,1.5vw,10px);color:rgba(90,58,26,0.5);line-height:1.3;text-align:center}
-.ability-price{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:clamp(11px,2.2vw,14px);color:#d4a017;margin:2px 0}
-.ability-status{font-size:clamp(9px,1.8vw,11px);font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px}
-.status-owned{color:#27ae60;background:rgba(39,174,96,0.12)}
-.status-equipped{color:#e86040;background:rgba(232,96,64,0.12)}
-.ability-btn{font-family:inherit;font-size:clamp(9px,1.8vw,11px);font-weight:800;padding:5px 14px;border-radius:20px;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
-.ability-btn.buy{background:#d4a017;color:#fff;box-shadow:0 2px 8px rgba(212,160,23,0.3)}
-.ability-btn.buy:hover{transform:scale(1.05);box-shadow:0 3px 12px rgba(212,160,23,0.4)}
-.ability-btn.buy:disabled{opacity:0.4;cursor:not-allowed;transform:none}
-.ability-btn.equip{background:#e86040;color:#fff}
+
+/* Store */
+.store-coin-display{font-family:var(--font-display);font-size:clamp(18px,4vw,24px);color:var(--gold);margin:6px 0;display:flex;align-items:center;justify-content:center;gap:8px}
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin:12px auto;max-height:50vh;overflow-y:auto;padding:4px}
+.store-grid::-webkit-scrollbar{width:4px}
+.store-grid::-webkit-scrollbar-track{background:transparent}
+.store-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+
+.ability-card{background:var(--surface);border-radius:var(--radius);padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;border:1.5px solid rgba(255,255,255,0.06);transition:all 0.25s;position:relative}
+.ability-card:hover{background:var(--surface2);border-color:rgba(255,255,255,0.12)}
+.ability-card.owned{border-color:var(--green);background:var(--green-bg)}
+.ability-card.equipped{border-color:var(--accent);background:rgba(108,99,255,0.1);box-shadow:0 0 20px var(--accent-glow)}
+.ability-card.locked{opacity:0.45}
+.ability-icon{font-size:clamp(26px,5.5vw,34px)}
+.ability-name{font-family:var(--font-display);font-size:clamp(10px,2vw,13px);color:var(--text);font-weight:700}
+.ability-desc{font-size:clamp(8px,1.6vw,10px);color:var(--text3);line-height:1.4;text-align:center}
+.ability-price{display:flex;align-items:center;gap:4px;font-family:var(--font-display);font-size:clamp(11px,2.2vw,14px);color:var(--gold);margin:3px 0}
+.ability-status{font-size:clamp(9px,1.8vw,11px);font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px}
+.status-owned{color:var(--green);background:var(--green-bg)}
+.status-equipped{color:var(--accent2);background:rgba(108,99,255,0.12)}
+.ability-btn{font-family:var(--font);font-size:clamp(9px,1.8vw,11px);font-weight:700;padding:6px 16px;border-radius:20px;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s}
+.ability-btn.buy{background:var(--gold);color:#1a1a2e;box-shadow:0 2px 10px rgba(251,191,36,0.2)}
+.ability-btn.buy:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(251,191,36,0.3)}
+.ability-btn.buy:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+.ability-btn.equip{background:var(--accent);color:#fff}
 .ability-btn.equip:hover{transform:scale(1.05)}
-.ability-btn.unequip{background:rgba(90,58,26,0.12);color:#5a3a1a}
+.ability-btn.unequip{background:var(--surface2);color:var(--text)}
 .ability-btn.unequip:hover{transform:scale(1.05)}
-.equip-slots{display:flex;gap:8px;margin:8px 0;align-items:center}
-.equip-slot{width:40px;height:40px;border-radius:12px;border:2px dashed rgba(90,58,26,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(90,58,26,0.04)}
-.equip-slot.filled{border-style:solid;border-color:#e86040;background:rgba(232,96,64,0.08)}
-.slots-label{font-size:clamp(10px,2vw,12px);font-weight:700;color:rgba(90,58,26,0.4);letter-spacing:2px}
+.equip-slots{display:flex;gap:10px;margin:10px 0;align-items:center}
+.equip-slot{width:44px;height:44px;border-radius:var(--radius-sm);border:2px dashed rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--surface);transition:all 0.2s}
+.equip-slot.filled{border-style:solid;border-color:var(--accent);background:rgba(108,99,255,0.08)}
+.slots-label{font-size:clamp(10px,2vw,12px);font-weight:700;color:var(--text3);letter-spacing:2px}
+
+/* Coin float animation */
 @keyframes coin-float{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-40px) scale(1.2)}}
-.coin-float-anim{position:absolute;font-family:'Fredoka One',cursive;color:#d4a017;animation:coin-float 1.2s ease-out forwards;pointer-events:none;z-index:30;white-space:nowrap}
-@keyframes purchase-flash{0%{opacity:0.6}100%{opacity:0}}
-.store-coin-display{font-family:'Fredoka One',cursive;font-size:clamp(18px,4vw,24px);color:#d4a017;margin:4px 0;display:flex;align-items:center;justify-content:center;gap:6px}
-#tutorial-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column;padding:16px;overflow-y:auto}
+.coin-float-anim{position:absolute;font-family:var(--font-display);color:var(--gold);animation:coin-float 1.2s ease-out forwards;pointer-events:none;z-index:30;white-space:nowrap}
+
+/* Help screen */
+.help-screen{max-height:65vh;overflow-y:auto;width:100%;max-width:360px;padding-right:4px}
+.help-screen::-webkit-scrollbar{width:4px}
+.help-screen::-webkit-scrollbar-track{background:transparent}
+.help-screen::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+.help-section{background:var(--surface);border-radius:var(--radius);padding:14px 16px;margin:8px 0;text-align:left;border:1px solid rgba(255,255,255,0.05)}
+.help-section h3{font-family:var(--font-display);font-size:clamp(13px,2.8vw,16px);color:var(--text);margin-bottom:8px;font-weight:700}
+.help-section p,.help-section li{font-size:clamp(10px,2vw,12px);color:var(--text2);line-height:1.6;font-weight:600}
+.help-section ul{list-style:none;padding:0}
+.help-section li{padding:4px 0;display:flex;gap:8px;align-items:flex-start}
+.help-section li .emoji{flex-shrink:0;font-size:14px}
+.ability-card-help{background:rgba(108,99,255,0.06);border-radius:var(--radius-sm);padding:10px 12px;margin:6px 0;border:1px solid rgba(108,99,255,0.1)}
+.ability-card-help .ability-name{font-weight:800;color:var(--accent2);font-size:clamp(11px,2.2vw,13px)}
+.ability-card-help .ability-how{font-size:clamp(9px,1.8vw,11px);color:var(--text2);margin-top:3px}
+
+/* Tutorial overlay */
+#tutorial-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column;padding:16px;overflow-y:auto}
 #tutorial-overlay.active{display:flex}
-.tut-card{background:linear-gradient(145deg,#fff8e1,#fff3cd);border-radius:20px;padding:20px 18px;max-width:340px;width:90%;max-height:80vh;overflow-y:auto;position:relative;box-shadow:0 8px 40px rgba(0,0,0,0.4)}
-.tut-title{font-family:'Fredoka One',cursive;font-size:clamp(18px,4.5vw,26px);color:#5a3a1a;text-align:center;margin-bottom:4px}
-.tut-sub{font-size:clamp(10px,2vw,12px);color:rgba(90,58,26,0.5);text-align:center;margin-bottom:14px;font-weight:700;letter-spacing:2px}
-.tut-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(90,58,26,0.08)}
-.tut-step:last-child{border-bottom:none}
-.tut-step-icon{font-size:clamp(20px,5vw,28px);flex-shrink:0;width:36px;text-align:center}
-.tut-step-text{font-size:clamp(11px,2.2vw,13px);color:rgba(90,58,26,0.75);line-height:1.5;font-weight:600}
-.tut-step-text b{color:#5a3a1a}
-.tut-start-btn{font-family:'Fredoka One',cursive;font-size:clamp(14px,3vw,18px);padding:12px 40px;border-radius:50px;border:none;background:#e86040;color:#fff;cursor:pointer;letter-spacing:2px;box-shadow:0 4px 15px rgba(232,96,64,0.4);margin-top:16px;transition:all 0.15s;display:block;margin-left:auto;margin-right:auto}
-.tut-start-btn:active{transform:scale(0.95)}
-@keyframes tut-fade-in{0%{opacity:0;transform:scale(0.9) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-.tut-card{animation:tut-fade-in 0.4s ease-out}
+.tut-card{background:linear-gradient(145deg,rgba(255,255,255,0.1),rgba(255,255,255,0.04));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius);padding:24px 20px;max-width:360px;width:92%;max-height:80vh;overflow-y:auto;position:relative;box-shadow:var(--shadow)}
+@keyframes tut-fade-in{0%{opacity:0;transform:scale(0.92) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.tut-card{animation:tut-fade-in 0.5s cubic-bezier(0.4,0,0.2,1)}
+.tut-title{font-family:var(--font-display);font-size:clamp(20px,5vw,28px);color:var(--text);text-align:center;margin-bottom:4px;font-weight:800}
+.tut-sub{font-size:clamp(10px,2vw,12px);color:var(--text3);text-align:center;margin-bottom:16px;font-weight:700;letter-spacing:3px}
+.tut-step{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.tut-step:last-of-type{border-bottom:none}
+.tut-step-icon{font-size:clamp(20px,5vw,26px);flex-shrink:0;width:36px;text-align:center}
+.tut-step-text{font-size:clamp(11px,2.2vw,13px);color:var(--text2);line-height:1.6;font-weight:600}
+.tut-step-text b{color:var(--text)}
+.tut-start-btn{font-family:var(--font);font-size:clamp(13px,2.8vw,16px);padding:14px 36px;border-radius:var(--radius-full);border:none;background:var(--accent);color:#fff;cursor:pointer;letter-spacing:2px;font-weight:700;box-shadow:0 4px 20px var(--accent-glow);margin-top:18px;transition:all 0.25s;display:block;margin-left:auto;margin-right:auto;text-transform:uppercase}
+.tut-start-btn:active{transform:scale(0.96)}
+
+/* Purchase flash */
+@keyframes purchase-flash{0%{opacity:0.6}100%{opacity:0}}
 </style>
 </head>
 <body>
@@ -164,145 +233,149 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 </div>
 <div id="ui-overlay">
   <div class="screen active" id="start-screen">
-    <h1>🏓 TABLE TENNIS</h1>
-    <div class="subtitle">A R C A D E</div>
-    <div class="coin-display" id="menu-coins"><span class="coin-icon">🪙</span><span id="menu-coin-count">0</span></div>
-    <button class="btn" id="play-btn">SINGLE PLAYER</button>
-    <div class="mode-divider">— OR —</div>
-    <button class="btn btn-2p" id="play-2p-btn">2 PLAYER LOCAL</button>
-    <div class="mode-divider">— OR —</div>
-    <button class="btn btn-tournament" id="tournament-btn">🏆 TOURNAMENT</button>
-    <button class="btn store-btn" id="store-btn">🛒 STORE</button>
-    <button class="btn btn-secondary" id="help-btn">❓ HOW TO PLAY</button>
-    <div class="controls-hint">Move paddle to hit &middot; Faster swing = faster ball<br>P2: Arrow keys on desktop &middot; P to pause</div>
+    <div class="panel">
+      <h1>🏓 Ping Pong</h1>
+      <div class="subtitle">A R C A D E</div>
+      <div class="coin-display" id="menu-coins" style="justify-content:center"><span class="coin-icon">🪙</span><span id="menu-coin-count">0</span></div>
+      <button class="btn" id="play-btn">Play</button>
+      <button class="btn btn-2p" id="play-2p-btn">2 Player Local</button>
+      <button class="btn btn-tournament" id="tournament-btn">🏆 Tournament</button>
+      <div style="display:flex;gap:8px;width:100%;max-width:280px;margin:4px auto">
+        <button class="btn store-btn" id="store-btn" style="flex:1;padding:12px 0">🛒 Store</button>
+        <button class="btn btn-secondary" id="help-btn" style="flex:1;padding:12px 0">❓ Help</button>
+      </div>
+      <div class="controls-hint">Drag to move paddle · Faster swing = faster ball<br>P2: Arrow keys · P to pause</div>
+    </div>
   </div>
   <div class="screen" id="difficulty-screen">
-    <h1 style="font-size:clamp(22px,5.5vw,36px)">⚡ SELECT DIFFICULTY</h1>
-    <div class="subtitle" id="diff-mode-label">SINGLE PLAYER</div>
-    <div class="difficulty-row" style="margin:20px 0">
-      <button class="btn diff-btn" data-diff="0">Easy</button>
-      <button class="btn diff-btn selected" data-diff="1">Medium</button>
-      <button class="btn diff-btn" data-diff="2">Hard</button>
+    <div class="panel">
+      <h1 style="font-size:clamp(22px,5.5vw,34px)">Select Difficulty</h1>
+      <div class="subtitle" id="diff-mode-label">SINGLE PLAYER</div>
+      <div class="difficulty-row" style="margin:16px 0">
+        <button class="btn diff-btn" data-diff="0">Easy</button>
+        <button class="btn diff-btn selected" data-diff="1">Medium</button>
+        <button class="btn diff-btn" data-diff="2">Hard</button>
+      </div>
+      <button class="btn" id="diff-start-btn">Start Game</button>
+      <button class="btn btn-secondary" id="diff-back-btn">← Back</button>
     </div>
-    <button class="btn" id="diff-start-btn">START GAME</button>
-    <button class="btn btn-secondary" id="diff-back-btn">← BACK</button>
   </div>
   <div class="screen" id="help-screen">
-    <h1 style="font-size:clamp(20px,5vw,32px)">❓ HOW TO PLAY</h1>
-    <div class="help-screen">
-      <div class="help-section">
-        <h3>🎮 Basic Controls</h3>
-        <ul>
-          <li><span class="emoji">📱</span> <span><b>Mobile:</b> Drag your finger to move your paddle anywhere in your half of the table</span></li>
-          <li><span class="emoji">🖱️</span> <span><b>Desktop:</b> Move your mouse to control the paddle. Player 2 uses Arrow keys</span></li>
-          <li><span class="emoji">⏸️</span> <span><b>Pause:</b> Press P on keyboard or tap the pause button</span></li>
-        </ul>
-      </div>
-      <div class="help-section">
-        <h3>🏓 How to Score</h3>
-        <ul>
-          <li><span class="emoji">🎯</span> <span>Hit the ball past your opponent to score a point</span></li>
-          <li><span class="emoji">🏆</span> <span>First to 7 points wins the match</span></li>
-          <li><span class="emoji">💨</span> <span>Swing your paddle faster for a faster, harder-to-return shot</span></li>
-          <li><span class="emoji">↩️</span> <span>Swipe sideways while hitting to add curve spin to the ball</span></li>
-        </ul>
-      </div>
-      <div class="help-section">
-        <h3>💥 Smash Shots</h3>
-        <ul>
-          <li><span class="emoji">⚡</span> <span>Swipe your paddle forward quickly when hitting the ball to trigger a <b>smash shot</b></span></li>
-          <li><span class="emoji">🔥</span> <span>Smashes send the ball much faster and are harder to return</span></li>
-          <li><span class="emoji">⏱️</span> <span>Smash has a <b>3.5 second cooldown</b> — watch the bar below your paddle</span></li>
-        </ul>
-      </div>
-      <div class="help-section">
-        <h3>🪙 Earning Coins</h3>
-        <ul>
-          <li><span class="emoji">✅</span> <span><b>+20</b> coins per point scored</span></li>
-          <li><span class="emoji">💥</span> <span><b>+15</b> coins per smash shot</span></li>
-          <li><span class="emoji">🔁</span> <span><b>+10</b> coins every 5-hit rally</span></li>
-          <li><span class="emoji">🏆</span> <span><b>+50–250</b> coins for tournament progress</span></li>
-        </ul>
-      </div>
-      <div class="help-section">
-        <h3>🛒 Store Abilities</h3>
-        <p style="margin-bottom:6px">Buy abilities in the Store, then <b>equip up to 2</b> at a time. Here's how each one works:</p>
-        <div class="ability-card-help">
-          <div class="ability-name">💥 Power Smash — 500 coins</div>
-          <div class="ability-how">Your smash shots become <b>40% stronger</b> with epic visual effects — slow motion, screen shake, sparks, and speed lines. Smash by swiping forward fast. Cooldown bar appears below your paddle when equipped.</div>
+    <div class="panel" style="padding:20px 16px">
+      <h1 style="font-size:clamp(20px,5vw,30px)">How to Play</h1>
+      <div class="help-screen">
+        <div class="help-section">
+          <h3>🎮 Controls</h3>
+          <ul>
+            <li><span class="emoji">📱</span><span><b>Mobile:</b> Drag to move your paddle in your half</span></li>
+            <li><span class="emoji">🖱️</span><span><b>Desktop:</b> Mouse controls. P2 uses Arrow keys</span></li>
+            <li><span class="emoji">⏸️</span><span><b>Pause:</b> P key or pause button</span></li>
+          </ul>
         </div>
-        <div class="ability-card-help">
-          <div class="ability-name">🌀 Curve Boost — 400 coins</div>
-          <div class="ability-how">Increases your curve spin by <b>50%</b>. Swipe <b>left or right</b> while hitting the ball to bend its path. Great for tricky angles your opponent can't predict!</div>
+        <div class="help-section">
+          <h3>🏓 Scoring</h3>
+          <ul>
+            <li><span class="emoji">🎯</span><span>Hit the ball past opponent to score</span></li>
+            <li><span class="emoji">🏆</span><span>First to 7 points wins</span></li>
+            <li><span class="emoji">💨</span><span>Faster swing = faster shot</span></li>
+            <li><span class="emoji">↩️</span><span>Swipe sideways for curve spin</span></li>
+          </ul>
         </div>
-        <div class="ability-card-help">
-          <div class="ability-name">⚡ Speed Boost — 450 coins</div>
-          <div class="ability-how">Your paddle moves <b>25% faster</b>, making it easier to reach and return difficult shots. Works automatically once equipped — just move normally.</div>
+        <div class="help-section">
+          <h3>💥 Smash Shots</h3>
+          <ul>
+            <li><span class="emoji">⚡</span><span>Swipe forward fast for a <b>smash shot</b></span></li>
+            <li><span class="emoji">🔥</span><span>Smashes are faster and harder to return</span></li>
+            <li><span class="emoji">⏱️</span><span><b>3.5s cooldown</b> — watch the bar indicator</span></li>
+          </ul>
         </div>
-        <div class="ability-card-help">
-          <div class="ability-name">🛡️ Shield Block — 600 coins</div>
-          <div class="ability-how">Automatically <b>saves one goal per match</b>. If the ball gets past you, the shield bounces it back once. Resets each new match.</div>
+        <div class="help-section">
+          <h3>🪙 Earning Coins</h3>
+          <ul>
+            <li><span class="emoji">✅</span><span><b>+20</b> per point scored</span></li>
+            <li><span class="emoji">💥</span><span><b>+15</b> per smash shot</span></li>
+            <li><span class="emoji">🔁</span><span><b>+10</b> every 5-hit rally</span></li>
+            <li><span class="emoji">🏆</span><span><b>+50–250</b> tournament progress</span></li>
+          </ul>
         </div>
-        <div class="ability-card-help">
-          <div class="ability-name">🎱 Multi Ball — 800 coins</div>
-          <div class="ability-how">Every hit has a <b>15% chance</b> to spawn an extra ball! Creates chaos your opponent has to deal with. Extra balls score points too.</div>
+        <div class="help-section">
+          <h3>🛒 Abilities</h3>
+          <p style="margin-bottom:8px">Buy in Store, equip up to 2:</p>
+          <div class="ability-card-help"><div class="ability-name">💥 Power Smash — 500</div><div class="ability-how">+40% smash power with visual effects. 3.5s cooldown.</div></div>
+          <div class="ability-card-help"><div class="ability-name">🌀 Curve Boost — 400</div><div class="ability-how">+50% curve spin. Swipe sideways to bend shots.</div></div>
+          <div class="ability-card-help"><div class="ability-name">⚡ Speed Boost — 450</div><div class="ability-how">+25% paddle speed. Automatic when equipped.</div></div>
+          <div class="ability-card-help"><div class="ability-name">🛡️ Shield Block — 600</div><div class="ability-how">Auto-save one goal per match.</div></div>
+          <div class="ability-card-help"><div class="ability-name">🎱 Multi Ball — 800</div><div class="ability-how">15% chance to spawn extra ball on hit.</div></div>
         </div>
       </div>
+      <button class="btn btn-secondary" id="help-back-btn" style="margin-top:12px">← Back</button>
     </div>
-    <button class="btn btn-secondary" id="help-back-btn" style="margin-top:12px">BACK TO MENU</button>
-  </div>
   </div>
   <div class="screen" id="end-screen">
-    <div class="winner-text" id="winner-text"></div>
-    <div class="final-score" id="final-score"></div>
-    <div class="coin-display" id="end-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="end-coin-amount">0</span> coins earned!</div>
-    <button class="btn" id="restart-btn">PLAY AGAIN</button>
-    <button class="btn btn-secondary" id="menu-btn">MENU</button>
+    <div class="panel">
+      <div class="winner-text" id="winner-text"></div>
+      <div class="final-score" id="final-score"></div>
+      <div class="coin-display" id="end-coins-earned" style="display:none;justify-content:center"><span class="coin-icon">🪙</span> +<span id="end-coin-amount">0</span> earned!</div>
+      <button class="btn" id="restart-btn">Play Again</button>
+      <button class="btn btn-secondary" id="menu-btn">Menu</button>
+    </div>
   </div>
   <div class="screen" id="bracket-screen">
-    <h1 style="font-size:clamp(22px,5.5vw,36px)">🏆 TOURNAMENT</h1>
-    <div class="subtitle" id="bracket-subtitle">QUARTERFINALS</div>
-    <div class="bracket-container" id="bracket-container"></div>
-    <button class="btn" id="bracket-continue-btn">NEXT MATCH</button>
-    <button class="btn btn-secondary" id="bracket-menu-btn">BACK TO MENU</button>
+    <div class="panel">
+      <h1 style="font-size:clamp(22px,5.5vw,34px)">🏆 Tournament</h1>
+      <div class="subtitle" id="bracket-subtitle">QUARTERFINALS</div>
+      <div class="bracket-container" id="bracket-container"></div>
+      <button class="btn" id="bracket-continue-btn">Next Match</button>
+      <button class="btn btn-secondary" id="bracket-menu-btn">← Menu</button>
+    </div>
   </div>
   <div class="screen" id="match-intro-screen">
-    <div class="match-intro-round" id="match-round-label">QUARTERFINAL</div>
-    <div class="match-intro-names" id="match-p1-name">YOU</div>
-    <div class="match-intro-vs">VS</div>
-    <div class="match-intro-names" id="match-p2-name">OPPONENT</div>
-    <button class="btn" id="match-start-btn">START MATCH</button>
+    <div class="panel">
+      <div class="match-intro-round" id="match-round-label">QUARTERFINAL</div>
+      <div class="match-intro-names" id="match-p1-name">YOU</div>
+      <div class="match-intro-vs">VS</div>
+      <div class="match-intro-names" id="match-p2-name">OPPONENT</div>
+      <button class="btn" id="match-start-btn">Start Match</button>
+    </div>
   </div>
   <div class="screen" id="tourney-advance-screen">
-    <div class="winner-text">🎉 YOU ADVANCE!</div>
-    <div class="final-score" id="tourney-advance-score"></div>
-    <div class="match-intro-round" id="tourney-next-round"></div>
-    <div class="coin-display" id="advance-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="advance-coin-amount">0</span></div>
-    <button class="btn" id="tourney-advance-btn">CONTINUE</button>
+    <div class="panel">
+      <div class="winner-text">🎉 You Advance!</div>
+      <div class="final-score" id="tourney-advance-score"></div>
+      <div class="match-intro-round" id="tourney-next-round"></div>
+      <div class="coin-display" id="advance-coins-earned" style="display:none;justify-content:center"><span class="coin-icon">🪙</span> +<span id="advance-coin-amount">0</span></div>
+      <button class="btn" id="tourney-advance-btn">Continue</button>
+    </div>
   </div>
   <div class="screen" id="tourney-win-screen">
-    <div class="trophy-icon trophy-anim">🏆</div>
-    <div class="winner-text">CHAMPION!</div>
-    <div class="final-score" id="tourney-win-score"></div>
-    <div class="stats-row" id="tourney-stats"></div>
-    <div class="coin-display" id="champ-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="champ-coin-amount">0</span></div>
-    <button class="btn" id="tourney-replay-btn">PLAY AGAIN</button>
-    <button class="btn btn-secondary" id="tourney-win-menu-btn">MENU</button>
+    <div class="panel">
+      <div class="trophy-icon trophy-anim">🏆</div>
+      <div class="winner-text">Champion!</div>
+      <div class="final-score" id="tourney-win-score"></div>
+      <div class="stats-row" id="tourney-stats" style="justify-content:center"></div>
+      <div class="coin-display" id="champ-coins-earned" style="display:none;justify-content:center"><span class="coin-icon">🪙</span> +<span id="champ-coin-amount">0</span></div>
+      <button class="btn" id="tourney-replay-btn">Play Again</button>
+      <button class="btn btn-secondary" id="tourney-win-menu-btn">Menu</button>
+    </div>
   </div>
   <div class="screen" id="tourney-lose-screen">
-    <div class="winner-text" style="color:#c0392b">❌ ELIMINATED</div>
-    <div class="final-score" id="tourney-lose-score"></div>
-    <div class="match-intro-round" id="tourney-lose-round"></div>
-    <div class="coin-display" id="lose-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="lose-coin-amount">0</span></div>
-    <button class="btn" id="tourney-retry-btn">RETRY TOURNAMENT</button>
-    <button class="btn btn-secondary" id="tourney-lose-menu-btn">MENU</button>
+    <div class="panel">
+      <div class="winner-text" style="color:var(--red)">Eliminated</div>
+      <div class="final-score" id="tourney-lose-score"></div>
+      <div class="match-intro-round" id="tourney-lose-round"></div>
+      <div class="coin-display" id="lose-coins-earned" style="display:none;justify-content:center"><span class="coin-icon">🪙</span> +<span id="lose-coin-amount">0</span></div>
+      <button class="btn" id="tourney-retry-btn">Retry Tournament</button>
+      <button class="btn btn-secondary" id="tourney-lose-menu-btn">Menu</button>
+    </div>
   </div>
   <div class="screen" id="store-screen">
-    <h1 style="font-size:clamp(22px,5.5vw,36px)">🛒 STORE</h1>
-    <div class="store-coin-display"><span class="coin-icon">🪙</span><span id="store-coin-count">0</span></div>
-    <div class="equip-slots"><span class="slots-label">EQUIPPED:</span><div class="equip-slot" id="equip-slot-0"></div><div class="equip-slot" id="equip-slot-1"></div></div>
-    <div class="store-grid" id="store-grid"></div>
-    <button class="btn btn-secondary" id="store-back-btn">BACK</button>
+    <div class="panel" style="padding:20px 16px">
+      <h1 style="font-size:clamp(22px,5.5vw,34px)">🛒 Store</h1>
+      <div class="store-coin-display"><span class="coin-icon">🪙</span><span id="store-coin-count">0</span></div>
+      <div class="equip-slots" style="justify-content:center"><span class="slots-label">EQUIPPED:</span><div class="equip-slot" id="equip-slot-0"></div><div class="equip-slot" id="equip-slot-1"></div></div>
+      <div class="store-grid" id="store-grid"></div>
+      <button class="btn btn-secondary" id="store-back-btn">← Back</button>
+    </div>
   </div>
 </div>
 
