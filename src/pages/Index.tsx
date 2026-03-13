@@ -1712,15 +1712,11 @@ function drawTable(){
   const tableSurface=cs.getPropertyValue('--table-surface').trim()||'#1e4a7a';
   const netColor=cs.getPropertyValue('--net-color').trim()||'rgba(255,255,255,0.95)';
   const centerLine=cs.getPropertyValue('--center-line').trim()||'rgba(255,255,255,0.2)';
-  ctx.fillStyle=canvasBg;ctx.fillRect(0,0,GW,GH);
+  ctx.clearRect(0,0,GW,GH);
 
-  // Table shadow
-  ctx.fillStyle='rgba(0,0,0,0.3)';
-  ctx.beginPath();ctx.roundRect(TBL_L-2+3,TBL_T-2+4,TBL_W+4,TBL_H+4,6);ctx.fill();
-
-  // Table border
-  ctx.fillStyle=tableBorder;
-  ctx.beginPath();ctx.roundRect(TBL_L-8,TBL_T-8,TBL_W+16,TBL_H+16,6);ctx.fill();
+  // Table surface (full canvas)
+  ctx.fillStyle=tableSurface;
+  ctx.fillRect(0,0,GW,GH);
 
   // Table surface
   ctx.fillStyle=tableSurface;
