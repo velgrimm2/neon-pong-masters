@@ -697,7 +697,7 @@ resize();
 window.addEventListener('resize',resize);
 
 // ===== TABLE =====
-const TBL_L=40,TBL_R=GW-40,TBL_T=10,TBL_B=GH-10;
+const TBL_L=40,TBL_R=GW-40,TBL_T=50,TBL_B=GH-50;
 const TBL_W=TBL_R-TBL_L,TBL_H=TBL_B-TBL_T;
 const NET_Y=(TBL_T+TBL_B)/2;
 const TBL_CX=(TBL_L+TBL_R)/2;
