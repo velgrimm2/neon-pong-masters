@@ -2018,8 +2018,9 @@ function draw(){
 }
 
 function drawPaddle(x,y,isTop,squash,glow,recoil){
-  const faceColor=isTop?'#22d3ee':'#a78bfa';
-  const darkColor=isTop?'#0ea5c0':'#7c5fd6';
+  const cs=getComputedStyle(document.body);
+  const faceColor=isTop?(cs.getPropertyValue('--p2-color').trim()||'#22d3ee'):(cs.getPropertyValue('--p1-color').trim()||'#a78bfa');
+  const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#0ea5c0'):(cs.getPropertyValue('--p1-dark').trim()||'#7c5fd6');
   const handleAngle=isTop?Math.PI*0.75:Math.PI*1.75;
   
   // Recoil offset
