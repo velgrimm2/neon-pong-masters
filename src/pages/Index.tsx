@@ -1898,10 +1898,12 @@ function draw(){
   }
 
   const bg=ctx.createRadialGradient(-2,-2,1,0,0,visualR);
-  bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#e0e0e0');
+  bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#cccccc');
   ctx.fillStyle=bg;
+  ctx.shadowColor='rgba(255,255,255,0.6)';ctx.shadowBlur=12;
   ctx.beginPath();ctx.arc(0,0,visualR,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;
+  ctx.shadowBlur=0;
+  ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.arc(0,0,visualR,0,Math.PI*2);ctx.stroke();
   ctx.restore();
 
