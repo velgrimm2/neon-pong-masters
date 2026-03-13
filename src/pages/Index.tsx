@@ -1295,7 +1295,7 @@ function renderBracket(){
 function spawnConfetti(){
   const box=document.getElementById('confetti-box');
   box.innerHTML='';
-  const colors=['#e86040','#f0c040','#2bbfbf','#9b59b6','#27ae60','#e74c3c','#3498db','#ff6b9d','#ffd700'];
+  const colors=['#6c63ff','#22d3ee','#a78bfa','#34d399','#fbbf24','#fb923c','#f87171','#8b83ff'];
   for(let i=0;i<60;i++){
     const d=document.createElement('div');
     d.className='confetti';
