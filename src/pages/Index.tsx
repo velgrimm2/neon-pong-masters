@@ -31,6 +31,16 @@ const GAME_HTML = `<!DOCTYPE html>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#f0c040;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Nunito',sans-serif}
 canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.help-screen{max-height:70vh;overflow-y:auto;width:90%;max-width:360px}
+.help-section{background:rgba(90,58,26,0.07);border-radius:14px;padding:12px 14px;margin:8px 0;text-align:left}
+.help-section h3{font-family:'Fredoka One',cursive;font-size:clamp(13px,2.8vw,16px);color:#5a3a1a;margin-bottom:6px}
+.help-section p,.help-section li{font-size:clamp(10px,2vw,12px);color:rgba(90,58,26,0.7);line-height:1.5;font-weight:600}
+.help-section ul{list-style:none;padding:0}
+.help-section li{padding:3px 0;display:flex;gap:6px;align-items:flex-start}
+.help-section li .emoji{flex-shrink:0;font-size:14px}
+.ability-card-help{background:rgba(232,96,64,0.08);border-radius:10px;padding:8px 10px;margin:4px 0}
+.ability-card-help .ability-name{font-weight:800;color:#e86040;font-size:clamp(11px,2.2vw,13px)}
+.ability-card-help .ability-how{font-size:clamp(9px,1.8vw,11px);color:rgba(90,58,26,0.6);margin-top:2px}
 #ui-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none}
 .screen{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:auto;padding:24px;opacity:0;transition:opacity 0.35s ease}
 .screen.active{display:flex;opacity:1}
