@@ -1357,14 +1357,26 @@ function update(dt){
   scorePop1*=0.9;scorePop2*=0.9;
   screenPulse*=0.92;
 
-  // Player 1 movement
+  // Player 1 movement (speed boost ability)
+  const speedMult=hasAbility('speed_boost')?1.25:1;
   player.prevX=player.x;player.prevY=player.y;
-  player.x=adaptiveLerp(player.x,p1InputX,sDt);
-  player.y=adaptiveLerp(player.y,p1InputY,sDt);
+  player.x=adaptiveLerp(player.x,p1InputX,sDt*speedMult);
+  player.y=adaptiveLerp(player.y,p1InputY,sDt*speedMult);
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
   player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
+
+  // Update multi-balls
+  for(let i=multiBalls.length-1;i>=0;i--){
+    const mb=multiBalls[i];
+    mb.x+=mb.vx*sDt;mb.y+=mb.vy*sDt;mb.life-=0.01*sDt;
+    if(mb.x<TBL_L+5||mb.x>TBL_R-5)mb.vx*=-0.7;
+    if(mb.y<-30||mb.y>GH+30||mb.life<=0){
+      if(mb.y<-30)spawnParticles(mb.x,TBL_T,'#a855f7',6,0.8);
+      multiBalls.splice(i,1);
+    }
+  }
 
   if(gameMode==='2p'){updateP2Human(sDt)}else{updateAI(sDt)}
 
