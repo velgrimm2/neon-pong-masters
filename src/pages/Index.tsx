@@ -278,6 +278,7 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
         <button class="btn store-btn" id="store-btn" style="flex:1;padding:12px 0">🛒 Store</button>
         <button class="btn btn-secondary" id="help-btn" style="flex:1;padding:12px 0">❓ Help</button>
       </div>
+      <button class="btn btn-secondary" id="download-btn" style="max-width:280px;padding:10px 0;font-size:clamp(10px,2vw,12px)">📥 Download Game</button>
       <div class="controls-hint">Drag to move paddle · Faster swing = faster ball<br>P2: Arrow keys · P to pause</div>
     </div>
   </div>
@@ -2156,6 +2157,13 @@ document.getElementById('store-btn').addEventListener('click',()=>{initAudio();r
 document.getElementById('store-back-btn').addEventListener('click',()=>{updateMenuCoins();showScreen('start-screen')});
 document.getElementById('help-btn').addEventListener('click',()=>{showScreen('help-screen')});
 document.getElementById('help-back-btn').addEventListener('click',()=>{showScreen('start-screen')});
+
+document.getElementById('download-btn').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.href='/table-tennis-export.html';
+  a.download='table-tennis.html';
+  a.click();
+});
 
 document.getElementById('tournament-btn').addEventListener('click',()=>{
   initAudio();createTournament();showTournamentBracket();
