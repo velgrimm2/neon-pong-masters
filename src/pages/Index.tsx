@@ -1458,7 +1458,8 @@ function drawCountdown(){
     ctx.globalAlpha=alpha;
     ctx.font='900 '+Math.floor(80*scale)+'px Outfit,sans-serif';
     ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=countdownState===-1?'#6c63ff':'#e8e8f0';
+    ctx.fillStyle=countdownState===-1?getComputedStyle(document.body).getPropertyValue('--accent').trim():'var(--text)';
+    if(ctx.fillStyle.startsWith('var')){ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text').trim()||'#e8e8f0'}
     ctx.shadowColor='rgba(0,0,0,0.3)';ctx.shadowBlur=10;
     ctx.fillText(text,GW/2,GH/2);
     ctx.shadowBlur=0;
