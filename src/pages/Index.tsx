@@ -2158,6 +2158,16 @@ document.getElementById('store-back-btn').addEventListener('click',()=>{updateMe
 document.getElementById('help-btn').addEventListener('click',()=>{showScreen('help-screen')});
 document.getElementById('help-back-btn').addEventListener('click',()=>{showScreen('start-screen')});
 
+document.getElementById('download-btn').addEventListener('click',()=>{
+  const html=document.documentElement.outerHTML;
+  const blob=new Blob(['<!DOCTYPE html>'+html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='table-tennis.html';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+});
+
 document.getElementById('tournament-btn').addEventListener('click',()=>{
   initAudio();createTournament();showTournamentBracket();
 });
