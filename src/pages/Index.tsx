@@ -1487,8 +1487,8 @@ function drawCountdown(){
   ctx.setTransform(sx,0,0,sy,0,0);
   // Draw table behind
   drawTable();
-  drawPaddle(player.x,player.y,false,0,0,0);
-  drawPaddle(p2.x,p2.y,true,0,0,0);
+  drawPaddle(player.x,player.y,false,0,0,0,0);
+  drawPaddle(p2.x,p2.y,true,0,0,0,0);
   
   // Countdown text
   let text='';
