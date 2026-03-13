@@ -80,7 +80,7 @@ canvas{display:block;position:absolute;top:50%;left:50%;transform:translate(-50%
 .screen.active{display:flex;opacity:1;transform:translateY(0) scale(1)}
 
 /* Panel card background */
-.panel{background:linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow);width:100%}
+.panel{background:var(--panel-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--panel-border);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow);width:100%}
 
 /* Typography */
 h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--text);font-weight:800;margin-bottom:4px;letter-spacing:-0.5px}
