@@ -278,6 +278,7 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
         <button class="btn store-btn" id="store-btn" style="flex:1;padding:12px 0">🛒 Store</button>
         <button class="btn btn-secondary" id="help-btn" style="flex:1;padding:12px 0">❓ Help</button>
       </div>
+      <button class="btn btn-secondary" id="download-btn" style="max-width:280px;padding:10px 0;font-size:clamp(10px,2vw,12px)">📥 Download Game</button>
       <div class="controls-hint">Drag to move paddle · Faster swing = faster ball<br>P2: Arrow keys · P to pause</div>
     </div>
   </div>
