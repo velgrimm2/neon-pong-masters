@@ -86,6 +86,38 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 @keyframes score-pop{0%{transform:scale(1)}30%{transform:scale(1.6)}60%{transform:scale(0.9)}100%{transform:scale(1)}}
 @keyframes countdown-pop{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes countdown-fade{0%{transform:scale(1);opacity:1}100%{transform:scale(2);opacity:0}}
+.coin-display{display:flex;align-items:center;gap:6px;font-family:'Fredoka One',cursive;font-size:clamp(16px,3.5vw,22px);color:#d4a017;margin:8px 0;text-shadow:1px 1px 0 rgba(0,0,0,0.1)}
+.coin-icon{font-size:clamp(18px,4vw,26px)}
+.store-btn{background:linear-gradient(135deg,#f0c040,#d4a017);box-shadow:0 4px 15px rgba(212,160,23,0.4);color:#5a3a1a}
+.store-btn:hover{background:linear-gradient(135deg,#e8b830,#c49015);box-shadow:0 6px 22px rgba(212,160,23,0.5)}
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin:10px auto;max-height:55vh;overflow-y:auto;padding:4px}
+.ability-card{background:rgba(90,58,26,0.08);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;border:2px solid transparent;transition:all 0.2s;position:relative}
+.ability-card.owned{border-color:#27ae60;background:rgba(39,174,96,0.08)}
+.ability-card.equipped{border-color:#e86040;background:rgba(232,96,64,0.1);box-shadow:0 0 12px rgba(232,96,64,0.2)}
+.ability-card.locked{opacity:0.5}
+.ability-icon{font-size:clamp(24px,5vw,32px)}
+.ability-name{font-family:'Fredoka One',cursive;font-size:clamp(10px,2vw,13px);color:#5a3a1a}
+.ability-desc{font-size:clamp(8px,1.5vw,10px);color:rgba(90,58,26,0.5);line-height:1.3;text-align:center}
+.ability-price{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:clamp(11px,2.2vw,14px);color:#d4a017;margin:2px 0}
+.ability-status{font-size:clamp(9px,1.8vw,11px);font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+.status-owned{color:#27ae60;background:rgba(39,174,96,0.12)}
+.status-equipped{color:#e86040;background:rgba(232,96,64,0.12)}
+.ability-btn{font-family:inherit;font-size:clamp(9px,1.8vw,11px);font-weight:800;padding:5px 14px;border-radius:20px;border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s}
+.ability-btn.buy{background:#d4a017;color:#fff;box-shadow:0 2px 8px rgba(212,160,23,0.3)}
+.ability-btn.buy:hover{transform:scale(1.05);box-shadow:0 3px 12px rgba(212,160,23,0.4)}
+.ability-btn.buy:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.ability-btn.equip{background:#e86040;color:#fff}
+.ability-btn.equip:hover{transform:scale(1.05)}
+.ability-btn.unequip{background:rgba(90,58,26,0.12);color:#5a3a1a}
+.ability-btn.unequip:hover{transform:scale(1.05)}
+.equip-slots{display:flex;gap:8px;margin:8px 0;align-items:center}
+.equip-slot{width:40px;height:40px;border-radius:12px;border:2px dashed rgba(90,58,26,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(90,58,26,0.04)}
+.equip-slot.filled{border-style:solid;border-color:#e86040;background:rgba(232,96,64,0.08)}
+.slots-label{font-size:clamp(10px,2vw,12px);font-weight:700;color:rgba(90,58,26,0.4);letter-spacing:2px}
+@keyframes coin-float{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-40px) scale(1.2)}}
+.coin-float-anim{position:absolute;font-family:'Fredoka One',cursive;color:#d4a017;animation:coin-float 1.2s ease-out forwards;pointer-events:none;z-index:30;white-space:nowrap}
+@keyframes purchase-flash{0%{opacity:0.6}100%{opacity:0}}
+.store-coin-display{font-family:'Fredoka One',cursive;font-size:clamp(18px,4vw,24px);color:#d4a017;margin:4px 0;display:flex;align-items:center;justify-content:center;gap:6px}
 </style>
 </head>
 <body>
@@ -97,6 +129,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
   <div class="screen active" id="start-screen">
     <h1>🏓 TABLE TENNIS</h1>
     <div class="subtitle">A R C A D E</div>
+    <div class="coin-display" id="menu-coins"><span class="coin-icon">🪙</span><span id="menu-coin-count">0</span></div>
     <div class="difficulty-row">
       <button class="btn diff-btn" data-diff="0">Easy</button>
       <button class="btn diff-btn selected" data-diff="1">Medium</button>
@@ -107,11 +140,13 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn btn-2p" id="play-2p-btn">2 PLAYER LOCAL</button>
     <div class="mode-divider">— OR —</div>
     <button class="btn btn-tournament" id="tournament-btn">🏆 TOURNAMENT</button>
+    <button class="btn store-btn" id="store-btn">🛒 STORE</button>
     <div class="controls-hint">Move paddle to hit &middot; Faster swing = faster ball<br>P2: Arrow keys on desktop &middot; P to pause</div>
   </div>
   <div class="screen" id="end-screen">
     <div class="winner-text" id="winner-text"></div>
     <div class="final-score" id="final-score"></div>
+    <div class="coin-display" id="end-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="end-coin-amount">0</span> coins earned!</div>
     <button class="btn" id="restart-btn">PLAY AGAIN</button>
     <button class="btn btn-secondary" id="menu-btn">MENU</button>
   </div>
@@ -133,6 +168,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="winner-text">🎉 YOU ADVANCE!</div>
     <div class="final-score" id="tourney-advance-score"></div>
     <div class="match-intro-round" id="tourney-next-round"></div>
+    <div class="coin-display" id="advance-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="advance-coin-amount">0</span></div>
     <button class="btn" id="tourney-advance-btn">CONTINUE</button>
   </div>
   <div class="screen" id="tourney-win-screen">
@@ -140,6 +176,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="winner-text">CHAMPION!</div>
     <div class="final-score" id="tourney-win-score"></div>
     <div class="stats-row" id="tourney-stats"></div>
+    <div class="coin-display" id="champ-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="champ-coin-amount">0</span></div>
     <button class="btn" id="tourney-replay-btn">PLAY AGAIN</button>
     <button class="btn btn-secondary" id="tourney-win-menu-btn">MENU</button>
   </div>
@@ -147,8 +184,16 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="winner-text" style="color:#c0392b">❌ ELIMINATED</div>
     <div class="final-score" id="tourney-lose-score"></div>
     <div class="match-intro-round" id="tourney-lose-round"></div>
+    <div class="coin-display" id="lose-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="lose-coin-amount">0</span></div>
     <button class="btn" id="tourney-retry-btn">RETRY TOURNAMENT</button>
     <button class="btn btn-secondary" id="tourney-lose-menu-btn">MENU</button>
+  </div>
+  <div class="screen" id="store-screen">
+    <h1 style="font-size:clamp(22px,5.5vw,36px)">🛒 STORE</h1>
+    <div class="store-coin-display"><span class="coin-icon">🪙</span><span id="store-coin-count">0</span></div>
+    <div class="equip-slots"><span class="slots-label">EQUIPPED:</span><div class="equip-slot" id="equip-slot-0"></div><div class="equip-slot" id="equip-slot-1"></div></div>
+    <div class="store-grid" id="store-grid"></div>
+    <button class="btn btn-secondary" id="store-back-btn">BACK</button>
   </div>
 </div>
 
@@ -173,6 +218,142 @@ function getNoiseBuffer(){
 
 // Rally intensity factor for audio
 let rallyIntensity=0;
+
+// ===== STORE SYSTEM =====
+const ABILITIES=[
+  {id:'power_smash',name:'Power Smash',desc:'Stronger smash shots (+40% power)',price:500,icon:'💥'},
+  {id:'curve_boost',name:'Curve Boost',desc:'Stronger curve shots (+50% spin)',price:400,icon:'🌀'},
+  {id:'speed_boost',name:'Speed Boost',desc:'Faster paddle movement (+25%)',price:450,icon:'⚡'},
+  {id:'shield_block',name:'Shield Block',desc:'Auto-save one goal per match',price:600,icon:'🛡️'},
+  {id:'multi_ball',name:'Multi Ball',desc:'15% chance to spawn extra ball on hit',price:800,icon:'🔮'}
+];
+const MAX_EQUIP=2;
+let storeData={coins:0,owned:[],equipped:[]};
+let shieldUsedThisMatch=false;
+let matchCoinsEarned=0;
+let multiBalls=[];// extra balls for multi-ball ability
+let coinAnimations=[];// floating coin text animations
+
+function loadStore(){try{const d=localStorage.getItem('tt_store');if(d){const p=JSON.parse(d);storeData.coins=p.coins||0;storeData.owned=p.owned||[];storeData.equipped=p.equipped||[]}}catch(e){}}
+function saveStore(){try{localStorage.setItem('tt_store',JSON.stringify(storeData))}catch(e){}}
+function hasAbility(id){return storeData.equipped.includes(id)}
+function ownsAbility(id){return storeData.owned.includes(id)}
+
+function earnCoins(amount,reason){
+  storeData.coins+=amount;
+  matchCoinsEarned+=amount;
+  saveStore();
+  sndCoinEarn();
+}
+
+function buyAbility(id){
+  const ab=ABILITIES.find(a=>a.id===id);
+  if(!ab||ownsAbility(id)||storeData.coins<ab.price)return false;
+  storeData.coins-=ab.price;
+  storeData.owned.push(id);
+  saveStore();
+  sndPurchase();
+  return true;
+}
+
+function equipAbility(id){
+  if(!ownsAbility(id))return;
+  if(storeData.equipped.includes(id)){
+    storeData.equipped=storeData.equipped.filter(e=>e!==id);
+  } else {
+    if(storeData.equipped.length>=MAX_EQUIP)storeData.equipped.shift();
+    storeData.equipped.push(id);
+  }
+  saveStore();
+}
+
+function renderStore(){
+  const grid=document.getElementById('store-grid');
+  document.getElementById('store-coin-count').textContent=storeData.coins;
+  // Equip slots
+  for(let i=0;i<MAX_EQUIP;i++){
+    const slot=document.getElementById('equip-slot-'+i);
+    if(storeData.equipped[i]){
+      const ab=ABILITIES.find(a=>a.id===storeData.equipped[i]);
+      slot.textContent=ab?ab.icon:'';
+      slot.className='equip-slot filled';
+    } else {
+      slot.textContent='';
+      slot.className='equip-slot';
+    }
+  }
+  let html='';
+  ABILITIES.forEach(ab=>{
+    const owned=ownsAbility(ab.id);
+    const equipped=storeData.equipped.includes(ab.id);
+    const canAfford=storeData.coins>=ab.price;
+    let cls='ability-card';
+    if(equipped)cls+=' equipped';
+    else if(owned)cls+=' owned';
+    else if(!canAfford)cls+=' locked';
+    html+='<div class="'+cls+'">';
+    html+='<div class="ability-icon">'+ab.icon+'</div>';
+    html+='<div class="ability-name">'+ab.name+'</div>';
+    html+='<div class="ability-desc">'+ab.desc+'</div>';
+    if(!owned){
+      html+='<div class="ability-price"><span class="coin-icon" style="font-size:14px">🪙</span>'+ab.price+'</div>';
+      html+='<button class="ability-btn buy" data-buy="'+ab.id+'" '+(canAfford?'':'disabled')+'>BUY</button>';
+    } else if(equipped){
+      html+='<span class="ability-status status-equipped">EQUIPPED</span>';
+      html+='<button class="ability-btn unequip" data-equip="'+ab.id+'">UNEQUIP</button>';
+    } else {
+      html+='<span class="ability-status status-owned">OWNED</span>';
+      html+='<button class="ability-btn equip" data-equip="'+ab.id+'">EQUIP</button>';
+    }
+    html+='</div>';
+  });
+  grid.innerHTML=html;
+  // Bind buttons
+  grid.querySelectorAll('[data-buy]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(buyAbility(btn.dataset.buy))renderStore();
+    });
+  });
+  grid.querySelectorAll('[data-equip]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      equipAbility(btn.dataset.equip);renderStore();
+    });
+  });
+}
+
+function updateMenuCoins(){
+  const el=document.getElementById('menu-coin-count');
+  if(el)el.textContent=storeData.coins;
+}
+
+function showMatchCoins(containerId,amountId){
+  const c=document.getElementById(containerId);
+  const a=document.getElementById(amountId);
+  if(c&&a&&matchCoinsEarned>0){
+    c.style.display='flex';
+    a.textContent=matchCoinsEarned;
+  }
+}
+
+function sndPurchase(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  [523,659,784].forEach((f,i)=>{
+    const o=actx.createOscillator();o.type='sine';o.frequency.value=f;
+    const g=actx.createGain();g.gain.setValueAtTime(0.12,t+i*0.08);g.gain.exponentialRampToValueAtTime(0.001,t+i*0.08+0.2);
+    o.connect(g);g.connect(dst());o.start(t+i*0.08);o.stop(t+i*0.08+0.25);
+  });
+}
+function sndCoinEarn(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  const o=actx.createOscillator();o.type='sine';o.frequency.value=1300;
+  const g=actx.createGain();g.gain.setValueAtTime(0.06,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.08);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.1);
+}
+
+loadStore();
+
 
 function sndHit(power){
   if(!actx)return;
@@ -571,6 +752,9 @@ function resetGame(){
   rallyIntensity=0;ballSquash=0;idleTime=0;
   p1TouchId=null;p2TouchId=null;
   p2Keys={left:false,right:false,up:false,down:false};
+  shieldUsedThisMatch=false;
+  matchCoinsEarned=0;
+  multiBalls.length=0;
   resetBall(1);
 }
 
@@ -705,25 +889,39 @@ function checkPaddleHit(paddle,isPlayer){
   const rallyBoost=Math.min(3,ball.rallyHits*RALLY_SPEED_GAIN);
   const speedBoost=Math.min(2,padSpeed*0.15);
   let targetSpeed=BASE_SPEED+speedBoost+rallyBoost;
-  if(isSmash)targetSpeed+=SMASH_SPEED_BOOST;
+  let smashBoost=SMASH_SPEED_BOOST;
+  if(isSmash&&isPlayer&&hasAbility('power_smash'))smashBoost*=1.4;
+  if(isSmash)targetSpeed+=smashBoost;
   ball.speed=Math.min(MAX_SPEED,Math.max(ball.speed,targetSpeed));
+
+  // Coin rewards: smash bonus
+  if(isSmash&&isPlayer)earnCoins(15,'Smash!');
+  // Rally coin bonus (every 5 rallies)
+  if(isPlayer&&ball.rallyHits>0&&ball.rallyHits%5===0)earnCoins(10,'Rally x'+ball.rallyHits);
+
+  // Multi-ball chance
+  if(isPlayer&&hasAbility('multi_ball')&&Math.random()<0.15&&multiBalls.length<2){
+    multiBalls.push({x:ball.x,y:ball.y,vx:ball.vx*0.8+(Math.random()-0.5)*2,vy:ball.vy*0.9,speed:ball.speed*0.85,life:3,spin:ball.spin*0.5});
+    spawnSparks(ball.x,ball.y,'#a855f7',10,isPlayer?-Math.PI/2:Math.PI/2,Math.PI);
+  }
 
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   
+  const curveMultiplier=(isPlayer&&hasAbility('curve_boost'))?1.5:1;
   let newVX, spinVal;
   if(sideForce<1.0){
     newVX=hitOffsetX*ball.speed*0.04;
     spinVal=0;
   } else if(sideForce<3){
     newVX=paddle.vx*0.10 + hitOffsetX*ball.speed*0.05;
-    spinVal=paddle.vx*0.25;
+    spinVal=paddle.vx*0.25*curveMultiplier;
   } else if(sideForce<6){
     newVX=paddle.vx*0.20 + hitOffsetX*ball.speed*0.06;
-    spinVal=paddle.vx*0.40;
+    spinVal=paddle.vx*0.40*curveMultiplier;
   } else {
     newVX=paddle.vx*0.30 + hitOffsetX*ball.speed*0.06;
-    spinVal=paddle.vx*0.55;
+    spinVal=paddle.vx*0.55*curveMultiplier;
   }
   
   if(isSmash){
@@ -980,12 +1178,16 @@ function handleTournamentMatchEnd(playerWon,pScore,oScore){
         '<span><span class="stat-val">'+tournament.stats.totalPoints+'</span>Points</span>'+
         '<span><span class="stat-val">'+tournament.stats.pointsAgainst+'</span>Against</span>';
       showScreen('tourney-win-screen');
+      showMatchCoins('champ-coins-earned','champ-coin-amount');
+      updateMenuCoins();
       document.getElementById('pause-btn').style.display='none';
       spawnConfetti();sndWin();
     } else {
       document.getElementById('tourney-advance-score').textContent=pScore+' - '+oScore;
       document.getElementById('tourney-next-round').textContent='Next: '+getRoundName(tournament.round+1);
       showScreen('tourney-advance-screen');
+      showMatchCoins('advance-coins-earned','advance-coin-amount');
+      updateMenuCoins();
       document.getElementById('pause-btn').style.display='none';
       sndWin();
     }
@@ -993,6 +1195,8 @@ function handleTournamentMatchEnd(playerWon,pScore,oScore){
     document.getElementById('tourney-lose-score').textContent=pScore+' - '+oScore;
     document.getElementById('tourney-lose-round').textContent='Eliminated in '+getRoundName(tournament.round);
     showScreen('tourney-lose-screen');
+    showMatchCoins('lose-coins-earned','lose-coin-amount');
+    updateMenuCoins();
     document.getElementById('pause-btn').style.display='none';
     sndScore();
   }
@@ -1061,10 +1265,24 @@ function drawCountdown(){
 
 // ===== SCORE =====
 function scorePoint(scorer){
-  if(scorer===1){playerScore++;scorePop1=1}else{opponentScore++;scorePop2=1}
+  // Shield block ability
+  if(scorer===-1&&!shieldUsedThisMatch&&hasAbility('shield_block')){
+    shieldUsedThisMatch=true;
+    // Block the goal! Flash shield effect
+    addImpactFlash(ball.x,GH-20,60,'rgba(100,200,255,0.8)');
+    spawnSparks(ball.x,GH-20,'#60c0ff',15,-Math.PI/2,Math.PI*0.8);
+    spawnParticles(ball.x,GH-20,'#60c0ff',12,1.5);
+    shakeMag=6;
+    sndBounce();
+    // Bounce ball back
+    ball.vy=-Math.abs(ball.vy);
+    ball.y=GH-40;
+    return;
+  }
+
+  if(scorer===1){playerScore++;scorePop1=1;earnCoins(20,'Point!')}else{opponentScore++;scorePop2=1}
   sndScore();
   spawnParticles(ball.x,ball.y,scorer===1?'#d84080':'#20a0a0',15,1.2);
-  // Confetti burst on score
   spawnSparks(ball.x,ball.y,scorer===1?'#ff6090':'#40e0e0',12,scorer===1?-Math.PI/2:Math.PI/2,Math.PI);
   shakeMag=5;
   screenPulse=1;
@@ -1075,6 +1293,15 @@ function scorePoint(scorer){
   if((playerScore>=winScore||opponentScore>=winScore)&&Math.abs(playerScore-opponentScore)>=2){
     gameState='ended';
     document.getElementById('pause-btn').style.display='none';
+
+    // Win bonus coins
+    if(playerScore>opponentScore){
+      let winBonus=50;
+      if(tournament){
+        winBonus=tournament.round===0?75:tournament.round===1?125:250;
+      }
+      earnCoins(winBonus,'Victory!');
+    }
 
     if(tournament){
       const playerWon=playerScore>opponentScore;
@@ -1091,6 +1318,8 @@ function scorePoint(scorer){
     document.getElementById('winner-text').textContent=winText;
     document.getElementById('final-score').textContent=playerScore+' - '+opponentScore;
     showScreen('end-screen');
+    showMatchCoins('end-coins-earned','end-coin-amount');
+    updateMenuCoins();
     if(playerScore>opponentScore)spawnConfetti();
     sndWin();return;
   }
@@ -1134,14 +1363,26 @@ function update(dt){
   scorePop1*=0.9;scorePop2*=0.9;
   screenPulse*=0.92;
 
-  // Player 1 movement
+  // Player 1 movement (speed boost ability)
+  const speedMult=hasAbility('speed_boost')?1.25:1;
   player.prevX=player.x;player.prevY=player.y;
-  player.x=adaptiveLerp(player.x,p1InputX,sDt);
-  player.y=adaptiveLerp(player.y,p1InputY,sDt);
+  player.x=adaptiveLerp(player.x,p1InputX,sDt*speedMult);
+  player.y=adaptiveLerp(player.y,p1InputY,sDt*speedMult);
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
   player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
+
+  // Update multi-balls
+  for(let i=multiBalls.length-1;i>=0;i--){
+    const mb=multiBalls[i];
+    mb.x+=mb.vx*sDt;mb.y+=mb.vy*sDt;mb.life-=0.01*sDt;
+    if(mb.x<TBL_L+5||mb.x>TBL_R-5)mb.vx*=-0.7;
+    if(mb.y<-30||mb.y>GH+30||mb.life<=0){
+      if(mb.y<-30)spawnParticles(mb.x,TBL_T,'#a855f7',6,0.8);
+      multiBalls.splice(i,1);
+    }
+  }
 
   if(gameMode==='2p'){updateP2Human(sDt)}else{updateAI(sDt)}
 
@@ -1340,6 +1581,36 @@ function draw(){
     ctx.fillStyle='rgba(43,191,191,0.6)';
     ctx.fillText('PLAYER 2',GW/2,18);
   }
+
+  // Coin HUD
+  ctx.font='800 14px Fredoka One,cursive';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillStyle='rgba(212,160,23,0.8)';
+  ctx.fillText('🪙 '+storeData.coins,8,6);
+
+  // Equipped ability icons
+  if(storeData.equipped.length>0){
+    ctx.font='14px sans-serif';ctx.textAlign='right';ctx.textBaseline='top';
+    const eqText=storeData.equipped.map(id=>{const a=ABILITIES.find(ab=>ab.id===id);return a?a.icon:''}).join(' ');
+    ctx.fillText(eqText,GW-8,6);
+  }
+
+  // Shield indicator
+  if(hasAbility('shield_block')&&!shieldUsedThisMatch){
+    ctx.font='600 10px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.fillStyle='rgba(96,192,255,0.6)';
+    ctx.fillText('🛡️ SHIELD READY',GW/2,GH-4);
+  }
+
+  // Multi-balls rendering
+  for(const mb of multiBalls){
+    ctx.globalAlpha=mb.life*0.7;
+    ctx.fillStyle='#a855f7';
+    ctx.beginPath();ctx.arc(mb.x,mb.y,BALL_R*0.8,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=mb.life*0.3;
+    ctx.fillStyle='#d8b4fe';
+    ctx.beginPath();ctx.arc(mb.x-2,mb.y-2,BALL_R*0.4,0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
 
   // Serve indicator
   if(serving){
@@ -1568,7 +1839,7 @@ function showScreen(id){
     requestAnimationFrame(()=>{el.style.opacity='1'});
   }
 }
-function goToMenu(){tournament=null;showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
+function goToMenu(){tournament=null;updateMenuCoins();showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
 
 document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';resetGame();startCountdown()});
 document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';resetGame();startCountdown()});
@@ -1580,6 +1851,9 @@ document.querySelectorAll('.diff-btn').forEach(btn=>{
     btn.classList.add('selected');difficulty=parseInt(btn.dataset.diff);
   });
 });
+
+document.getElementById('store-btn').addEventListener('click',()=>{initAudio();renderStore();showScreen('store-screen')});
+document.getElementById('store-back-btn').addEventListener('click',()=>{updateMenuCoins();showScreen('start-screen')});
 
 document.getElementById('tournament-btn').addEventListener('click',()=>{
   initAudio();createTournament();showTournamentBracket();
@@ -1598,6 +1872,9 @@ document.getElementById('tourney-retry-btn').addEventListener('click',()=>{
   createTournament();showTournamentBracket();
 });
 document.getElementById('tourney-lose-menu-btn').addEventListener('click',goToMenu);
+
+// Init menu coins display
+updateMenuCoins();
 
 // ===== LOOP =====
 let lastTime=0;
