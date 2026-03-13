@@ -1756,6 +1756,43 @@ function draw(){
     ctx.fillRect(0,0,GW,GH);
   }
 
+  // ===== SMASH COOLDOWN INDICATOR =====
+  if(hasAbility('power_smash')&&gameState==='playing'){
+    const cdRatio=smashCooldownP1/SMASH_COOLDOWN;
+    const barW=60,barH=6;
+    const bx=player.x-barW/2;
+    const by=player.y+PAD_R+12;
+    if(cdRatio>0){
+      // Background
+      ctx.fillStyle='rgba(0,0,0,0.5)';
+      ctx.beginPath();ctx.roundRect(bx,by,barW,barH,3);ctx.fill();
+      // Fill (draining)
+      const fillW=barW*(1-cdRatio);
+      const grad=ctx.createLinearGradient(bx,by,bx+barW,by);
+      grad.addColorStop(0,'#ff8800');grad.addColorStop(1,'#ffcc00');
+      ctx.fillStyle=grad;
+      ctx.beginPath();ctx.roundRect(bx,by,fillW,barH,3);ctx.fill();
+      // Border
+      ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.roundRect(bx,by,barW,barH,3);ctx.stroke();
+    } else {
+      // Ready indicator
+      ctx.fillStyle='rgba(255,200,0,0.15)';
+      ctx.beginPath();ctx.roundRect(bx,by,barW,barH,3);ctx.fill();
+      ctx.fillStyle='#ffcc00';
+      ctx.beginPath();ctx.roundRect(bx,by,barW,barH,3);ctx.fill();
+      // Pulse glow
+      const pulse=0.4+Math.sin(performance.now()*0.006)*0.3;
+      ctx.shadowColor='#ffcc00';ctx.shadowBlur=8*pulse;
+      ctx.fillStyle='rgba(255,204,0,'+pulse+')';
+      ctx.beginPath();ctx.roundRect(bx,by,barW,barH,3);ctx.fill();
+      ctx.shadowBlur=0;
+      // "READY" text
+      ctx.fillStyle='rgba(0,0,0,0.8)';ctx.font='bold 5px Arial';ctx.textAlign='center';
+      ctx.fillText('SMASH',player.x,by+5);
+    }
+  }
+
   ctx.restore();
 }
 
