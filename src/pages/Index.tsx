@@ -1978,8 +1978,8 @@ function draw(){
 }
 
 function drawPaddle(x,y,isTop,squash,glow,recoil){
-  const faceColor=isTop?'#20a0a0':'#d84080';
-  const darkColor=isTop?'#188080':'#b03068';
+  const faceColor=isTop?'#22d3ee':'#a78bfa';
+  const darkColor=isTop?'#0ea5c0':'#7c5fd6';
   const handleAngle=isTop?Math.PI*0.75:Math.PI*1.75;
   
   // Recoil offset
