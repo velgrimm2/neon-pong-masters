@@ -1949,10 +1949,11 @@ function showScreen(id){
 }
 function goToMenu(){tournament=null;updateMenuCoins();showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
 
-document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';resetGame();startCountdown()});
-document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';resetGame();startCountdown()});
-document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{resetGame();startCountdown()}});
-document.getElementById('menu-btn').addEventListener('click',goToMenu);
+let pendingMode='1p';
+document.getElementById('play-btn').addEventListener('click',()=>{pendingMode='1p';document.getElementById('diff-mode-label').textContent='SINGLE PLAYER';showScreen('difficulty-screen')});
+document.getElementById('play-2p-btn').addEventListener('click',()=>{pendingMode='2p';document.getElementById('diff-mode-label').textContent='2 PLAYER LOCAL';showScreen('difficulty-screen')});
+document.getElementById('diff-back-btn').addEventListener('click',()=>{showScreen('start-screen')});
+document.getElementById('diff-start-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode=pendingMode;resetGame();startCountdown()});
 document.querySelectorAll('.diff-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
