@@ -126,11 +126,18 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
 
 /* Pause */
 #pause-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-display);font-size:clamp(28px,6.5vw,48px);color:var(--text);letter-spacing:6px;display:none;z-index:20;text-align:center}
-#pause-menu-btn{margin-top:18px;font-family:var(--font);font-size:clamp(13px,2.5vw,16px);padding:12px 32px;border-radius:var(--radius-full);border:none;background:var(--surface2);color:var(--text);cursor:pointer;letter-spacing:2px;font-weight:700;box-shadow:var(--shadow-sm);transition:all 0.2s}
+#pause-menu-btn{margin-top:18px;font-family:var(--font);font-size:clamp(13px,2.5vw,16px);padding:12px 32px;border-radius:var(--radius-full);border:none;background:var(--btn-secondary-bg);color:var(--text);cursor:pointer;letter-spacing:2px;font-weight:700;box-shadow:var(--shadow-sm);transition:all 0.2s}
 #pause-menu-btn:active{transform:scale(0.95)}
-#pause-btn{position:absolute;top:12px;right:12px;z-index:15;width:42px;height:42px;border-radius:50%;background:var(--surface2);border:1px solid rgba(255,255,255,0.1);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:all 0.2s}
-#pause-btn:hover{background:rgba(255,255,255,0.15)}
+#pause-btn{position:absolute;top:12px;right:12px;z-index:15;width:42px;height:42px;border-radius:50%;background:var(--btn-secondary-bg);border:1px solid var(--panel-border);cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:all 0.2s}
+#pause-btn:hover{background:var(--btn-secondary-hover)}
 #pause-btn .bar{width:3px;height:14px;background:var(--text);border-radius:2px;margin:0 2px}
+
+/* Theme toggle */
+#theme-toggle{position:absolute;top:12px;left:12px;z-index:15;width:42px;height:42px;border-radius:50%;background:var(--btn-secondary-bg);border:1px solid var(--panel-border);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:all 0.3s;font-size:18px;line-height:1}
+#theme-toggle:hover{background:var(--btn-secondary-hover);transform:scale(1.08)}
+#theme-toggle:active{transform:scale(0.95)}
+.theme-btn-menu{background:var(--btn-secondary-bg)!important;border:1px solid var(--panel-border)!important;color:var(--text)!important;box-shadow:none!important;display:flex!important;align-items:center;justify-content:center;gap:8px;max-width:180px!important;padding:10px 20px!important;font-size:clamp(11px,2.2vw,13px)!important}
+.theme-btn-menu:hover{background:var(--btn-secondary-hover)!important}
 
 /* Tournament bracket */
 .bracket-container{width:100%;max-width:340px;margin:10px auto}
