@@ -1494,8 +1494,8 @@ function draw(){
   for(const f of impactFlashes){ctx.globalAlpha=f.life*0.8;const r=f.radius*(1+(1-f.life)*0.5);const ig=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r);ig.addColorStop(0,f.color);ig.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=ig;ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.fill()}
   ctx.globalAlpha=1;
   const p1Float=Math.sin(idleTime*2)*1.5;const p2Float=Math.sin(idleTime*2+Math.PI)*1.5;
-  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil);
-  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil);
+  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil,player.vx);
+  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil,p2.vx);
   for(const p of particles){ctx.globalAlpha=p.life*0.7;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
   for(const s of sparks){ctx.globalAlpha=s.life;ctx.strokeStyle=s.color;ctx.lineWidth=s.size;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*2,s.y-s.vy*2);ctx.stroke();ctx.fillStyle='#fff';ctx.globalAlpha=s.life*0.6;ctx.beginPath();ctx.arc(s.x,s.y,s.size*0.5,0,Math.PI*2);ctx.fill()}
   ctx.globalAlpha=1;
