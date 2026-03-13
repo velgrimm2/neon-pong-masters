@@ -1707,11 +1707,11 @@ function update(dt){
 function drawTable(){
   // Background
   const cs=getComputedStyle(document.body);
-  const canvasBg=cs.getPropertyValue('--canvas-bg').trim()||'#1a1a2e';
-  const tableBorder=cs.getPropertyValue('--table-border').trim()||'#2a2a4a';
-  const tableSurface=cs.getPropertyValue('--table-surface').trim()||'#1e3a5f';
-  const netColor=cs.getPropertyValue('--net-color').trim()||'rgba(255,255,255,0.8)';
-  const centerLine=cs.getPropertyValue('--center-line').trim()||'rgba(255,255,255,0.12)';
+  const canvasBg=cs.getPropertyValue('--canvas-bg').trim()||'#141428';
+  const tableBorder=cs.getPropertyValue('--table-border').trim()||'#3a3a6a';
+  const tableSurface=cs.getPropertyValue('--table-surface').trim()||'#1e4a7a';
+  const netColor=cs.getPropertyValue('--net-color').trim()||'rgba(255,255,255,0.95)';
+  const centerLine=cs.getPropertyValue('--center-line').trim()||'rgba(255,255,255,0.2)';
   ctx.fillStyle=canvasBg;ctx.fillRect(0,0,GW,GH);
 
   // Table shadow
@@ -1898,10 +1898,12 @@ function draw(){
   }
 
   const bg=ctx.createRadialGradient(-2,-2,1,0,0,visualR);
-  bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#e0e0e0');
+  bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#cccccc');
   ctx.fillStyle=bg;
+  ctx.shadowColor='rgba(255,255,255,0.6)';ctx.shadowBlur=12;
   ctx.beginPath();ctx.arc(0,0,visualR,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;
+  ctx.shadowBlur=0;
+  ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.arc(0,0,visualR,0,Math.PI*2);ctx.stroke();
   ctx.restore();
 
@@ -2021,8 +2023,8 @@ function draw(){
 
 function drawPaddle(x,y,isTop,squash,glow,recoil){
   const cs=getComputedStyle(document.body);
-  const faceColor=isTop?(cs.getPropertyValue('--p2-color').trim()||'#22d3ee'):(cs.getPropertyValue('--p1-color').trim()||'#a78bfa');
-  const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#0ea5c0'):(cs.getPropertyValue('--p1-dark').trim()||'#7c5fd6');
+  const faceColor=isTop?(cs.getPropertyValue('--p2-color').trim()||'#34eaff'):(cs.getPropertyValue('--p1-color').trim()||'#b794ff');
+  const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#14c8d9'):(cs.getPropertyValue('--p1-dark').trim()||'#9060f0');
   const handleAngle=isTop?Math.PI*0.75:Math.PI*1.75;
   
   // Recoil offset
@@ -2062,18 +2064,20 @@ function drawPaddle(x,y,isTop,squash,glow,recoil){
   ctx.strokeStyle='#8b5e3c';ctx.lineWidth=hWid-2;
   ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(hx2,hy2);ctx.stroke();
 
-  ctx.fillStyle='rgba(0,0,0,0.12)';
-  ctx.beginPath();ctx.arc(2,2,PAD_R,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.18)';
+  ctx.beginPath();ctx.arc(2,3,PAD_R,0,Math.PI*2);ctx.fill();
 
   const g=ctx.createRadialGradient(-PAD_R*0.3,-PAD_R*0.3,2,0,0,PAD_R);
-  g.addColorStop(0,faceColor);g.addColorStop(1,darkColor);
+  g.addColorStop(0,faceColor);g.addColorStop(0.7,faceColor);g.addColorStop(1,darkColor);
   ctx.fillStyle=g;
+  ctx.shadowColor=faceColor;ctx.shadowBlur=14;
   ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;
 
-  ctx.strokeStyle=darkColor;ctx.lineWidth=2;
+  ctx.strokeStyle=darkColor;ctx.lineWidth=2.5;
   ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.stroke();
 
-  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.fillStyle='rgba(255,255,255,0.25)';
   ctx.beginPath();ctx.arc(-PAD_R*0.25,-PAD_R*0.25,PAD_R*0.5,0,Math.PI*2);ctx.fill();
   
   ctx.restore();
