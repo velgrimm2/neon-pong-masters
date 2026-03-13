@@ -219,6 +219,142 @@ function getNoiseBuffer(){
 // Rally intensity factor for audio
 let rallyIntensity=0;
 
+// ===== STORE SYSTEM =====
+const ABILITIES=[
+  {id:'power_smash',name:'Power Smash',desc:'Stronger smash shots (+40% power)',price:500,icon:'💥'},
+  {id:'curve_boost',name:'Curve Boost',desc:'Stronger curve shots (+50% spin)',price:400,icon:'🌀'},
+  {id:'speed_boost',name:'Speed Boost',desc:'Faster paddle movement (+25%)',price:450,icon:'⚡'},
+  {id:'shield_block',name:'Shield Block',desc:'Auto-save one goal per match',price:600,icon:'🛡️'},
+  {id:'multi_ball',name:'Multi Ball',desc:'15% chance to spawn extra ball on hit',price:800,icon:'🔮'}
+];
+const MAX_EQUIP=2;
+let storeData={coins:0,owned:[],equipped:[]};
+let shieldUsedThisMatch=false;
+let matchCoinsEarned=0;
+let multiBalls=[];// extra balls for multi-ball ability
+let coinAnimations=[];// floating coin text animations
+
+function loadStore(){try{const d=localStorage.getItem('tt_store');if(d){const p=JSON.parse(d);storeData.coins=p.coins||0;storeData.owned=p.owned||[];storeData.equipped=p.equipped||[]}}catch(e){}}
+function saveStore(){try{localStorage.setItem('tt_store',JSON.stringify(storeData))}catch(e){}}
+function hasAbility(id){return storeData.equipped.includes(id)}
+function ownsAbility(id){return storeData.owned.includes(id)}
+
+function earnCoins(amount,reason){
+  storeData.coins+=amount;
+  matchCoinsEarned+=amount;
+  saveStore();
+  sndCoinEarn();
+}
+
+function buyAbility(id){
+  const ab=ABILITIES.find(a=>a.id===id);
+  if(!ab||ownsAbility(id)||storeData.coins<ab.price)return false;
+  storeData.coins-=ab.price;
+  storeData.owned.push(id);
+  saveStore();
+  sndPurchase();
+  return true;
+}
+
+function equipAbility(id){
+  if(!ownsAbility(id))return;
+  if(storeData.equipped.includes(id)){
+    storeData.equipped=storeData.equipped.filter(e=>e!==id);
+  } else {
+    if(storeData.equipped.length>=MAX_EQUIP)storeData.equipped.shift();
+    storeData.equipped.push(id);
+  }
+  saveStore();
+}
+
+function renderStore(){
+  const grid=document.getElementById('store-grid');
+  document.getElementById('store-coin-count').textContent=storeData.coins;
+  // Equip slots
+  for(let i=0;i<MAX_EQUIP;i++){
+    const slot=document.getElementById('equip-slot-'+i);
+    if(storeData.equipped[i]){
+      const ab=ABILITIES.find(a=>a.id===storeData.equipped[i]);
+      slot.textContent=ab?ab.icon:'';
+      slot.className='equip-slot filled';
+    } else {
+      slot.textContent='';
+      slot.className='equip-slot';
+    }
+  }
+  let html='';
+  ABILITIES.forEach(ab=>{
+    const owned=ownsAbility(ab.id);
+    const equipped=storeData.equipped.includes(ab.id);
+    const canAfford=storeData.coins>=ab.price;
+    let cls='ability-card';
+    if(equipped)cls+=' equipped';
+    else if(owned)cls+=' owned';
+    else if(!canAfford)cls+=' locked';
+    html+='<div class="'+cls+'">';
+    html+='<div class="ability-icon">'+ab.icon+'</div>';
+    html+='<div class="ability-name">'+ab.name+'</div>';
+    html+='<div class="ability-desc">'+ab.desc+'</div>';
+    if(!owned){
+      html+='<div class="ability-price"><span class="coin-icon" style="font-size:14px">🪙</span>'+ab.price+'</div>';
+      html+='<button class="ability-btn buy" data-buy="'+ab.id+'" '+(canAfford?'':'disabled')+'>BUY</button>';
+    } else if(equipped){
+      html+='<span class="ability-status status-equipped">EQUIPPED</span>';
+      html+='<button class="ability-btn unequip" data-equip="'+ab.id+'">UNEQUIP</button>';
+    } else {
+      html+='<span class="ability-status status-owned">OWNED</span>';
+      html+='<button class="ability-btn equip" data-equip="'+ab.id+'">EQUIP</button>';
+    }
+    html+='</div>';
+  });
+  grid.innerHTML=html;
+  // Bind buttons
+  grid.querySelectorAll('[data-buy]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(buyAbility(btn.dataset.buy))renderStore();
+    });
+  });
+  grid.querySelectorAll('[data-equip]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      equipAbility(btn.dataset.equip);renderStore();
+    });
+  });
+}
+
+function updateMenuCoins(){
+  const el=document.getElementById('menu-coin-count');
+  if(el)el.textContent=storeData.coins;
+}
+
+function showMatchCoins(containerId,amountId){
+  const c=document.getElementById(containerId);
+  const a=document.getElementById(amountId);
+  if(c&&a&&matchCoinsEarned>0){
+    c.style.display='flex';
+    a.textContent=matchCoinsEarned;
+  }
+}
+
+function sndPurchase(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  [523,659,784].forEach((f,i)=>{
+    const o=actx.createOscillator();o.type='sine';o.frequency.value=f;
+    const g=actx.createGain();g.gain.setValueAtTime(0.12,t+i*0.08);g.gain.exponentialRampToValueAtTime(0.001,t+i*0.08+0.2);
+    o.connect(g);g.connect(dst());o.start(t+i*0.08);o.stop(t+i*0.08+0.25);
+  });
+}
+function sndCoinEarn(){
+  if(!actx)return;
+  const t=actx.currentTime;
+  const o=actx.createOscillator();o.type='sine';o.frequency.value=1300;
+  const g=actx.createGain();g.gain.setValueAtTime(0.06,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.08);
+  o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.1);
+}
+
+loadStore();
+
+
 function sndHit(power){
   if(!actx)return;
   const t=actx.currentTime;
