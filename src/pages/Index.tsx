@@ -752,6 +752,9 @@ function resetGame(){
   rallyIntensity=0;ballSquash=0;idleTime=0;
   p1TouchId=null;p2TouchId=null;
   p2Keys={left:false,right:false,up:false,down:false};
+  shieldUsedThisMatch=false;
+  matchCoinsEarned=0;
+  multiBalls.length=0;
   resetBall(1);
 }
 
