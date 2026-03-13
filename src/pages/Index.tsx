@@ -908,19 +908,20 @@ function checkPaddleHit(paddle,isPlayer){
   const hitOffsetX=(ball.x-paddle.x)/PAD_R;
   const sideForce=Math.abs(paddle.vx);
   
+  const curveMultiplier=(isPlayer&&hasAbility('curve_boost'))?1.5:1;
   let newVX, spinVal;
   if(sideForce<1.0){
     newVX=hitOffsetX*ball.speed*0.04;
     spinVal=0;
   } else if(sideForce<3){
     newVX=paddle.vx*0.10 + hitOffsetX*ball.speed*0.05;
-    spinVal=paddle.vx*0.25;
+    spinVal=paddle.vx*0.25*curveMultiplier;
   } else if(sideForce<6){
     newVX=paddle.vx*0.20 + hitOffsetX*ball.speed*0.06;
-    spinVal=paddle.vx*0.40;
+    spinVal=paddle.vx*0.40*curveMultiplier;
   } else {
     newVX=paddle.vx*0.30 + hitOffsetX*ball.speed*0.06;
-    spinVal=paddle.vx*0.55;
+    spinVal=paddle.vx*0.55*curveMultiplier;
   }
   
   if(isSmash){
