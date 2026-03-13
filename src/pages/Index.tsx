@@ -1960,6 +1960,9 @@ document.querySelectorAll('.diff-btn').forEach(btn=>{
   });
 });
 
+document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{resetGame();startCountdown()}});
+document.getElementById('menu-btn').addEventListener('click',goToMenu);
+
 document.getElementById('store-btn').addEventListener('click',()=>{initAudio();renderStore();showScreen('store-screen')});
 document.getElementById('store-back-btn').addEventListener('click',()=>{updateMenuCoins();showScreen('start-screen')});
 document.getElementById('help-btn').addEventListener('click',()=>{showScreen('help-screen')});
