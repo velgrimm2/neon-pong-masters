@@ -271,7 +271,7 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
       <h1>🏓 Ping Pong</h1>
       <div class="subtitle">A R C A D E</div>
       <div class="coin-display" id="menu-coins" style="justify-content:center"><span class="coin-icon">🪙</span><span id="menu-coin-count">0</span></div>
-      <button class="btn" id="play-btn">Play</button>
+      <button class="btn" id="play-btn">Single Player</button>
       <button class="btn btn-2p" id="play-2p-btn">2 Player Local</button>
       <button class="btn btn-tournament" id="tournament-btn">🏆 Tournament</button>
       <div style="display:flex;gap:8px;width:100%;max-width:280px;margin:4px auto">
