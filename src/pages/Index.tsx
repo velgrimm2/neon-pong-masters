@@ -1178,12 +1178,16 @@ function handleTournamentMatchEnd(playerWon,pScore,oScore){
         '<span><span class="stat-val">'+tournament.stats.totalPoints+'</span>Points</span>'+
         '<span><span class="stat-val">'+tournament.stats.pointsAgainst+'</span>Against</span>';
       showScreen('tourney-win-screen');
+      showMatchCoins('champ-coins-earned','champ-coin-amount');
+      updateMenuCoins();
       document.getElementById('pause-btn').style.display='none';
       spawnConfetti();sndWin();
     } else {
       document.getElementById('tourney-advance-score').textContent=pScore+' - '+oScore;
       document.getElementById('tourney-next-round').textContent='Next: '+getRoundName(tournament.round+1);
       showScreen('tourney-advance-screen');
+      showMatchCoins('advance-coins-earned','advance-coin-amount');
+      updateMenuCoins();
       document.getElementById('pause-btn').style.display='none';
       sndWin();
     }
@@ -1191,6 +1195,8 @@ function handleTournamentMatchEnd(playerWon,pScore,oScore){
     document.getElementById('tourney-lose-score').textContent=pScore+' - '+oScore;
     document.getElementById('tourney-lose-round').textContent='Eliminated in '+getRoundName(tournament.round);
     showScreen('tourney-lose-screen');
+    showMatchCoins('lose-coins-earned','lose-coin-amount');
+    updateMenuCoins();
     document.getElementById('pause-btn').style.display='none';
     sndScore();
   }
