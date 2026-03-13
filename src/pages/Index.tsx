@@ -146,6 +146,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
   <div class="screen" id="end-screen">
     <div class="winner-text" id="winner-text"></div>
     <div class="final-score" id="final-score"></div>
+    <div class="coin-display" id="end-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="end-coin-amount">0</span> coins earned!</div>
     <button class="btn" id="restart-btn">PLAY AGAIN</button>
     <button class="btn btn-secondary" id="menu-btn">MENU</button>
   </div>
@@ -167,6 +168,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="winner-text">🎉 YOU ADVANCE!</div>
     <div class="final-score" id="tourney-advance-score"></div>
     <div class="match-intro-round" id="tourney-next-round"></div>
+    <div class="coin-display" id="advance-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="advance-coin-amount">0</span></div>
     <button class="btn" id="tourney-advance-btn">CONTINUE</button>
   </div>
   <div class="screen" id="tourney-win-screen">
@@ -174,6 +176,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="winner-text">CHAMPION!</div>
     <div class="final-score" id="tourney-win-score"></div>
     <div class="stats-row" id="tourney-stats"></div>
+    <div class="coin-display" id="champ-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="champ-coin-amount">0</span></div>
     <button class="btn" id="tourney-replay-btn">PLAY AGAIN</button>
     <button class="btn btn-secondary" id="tourney-win-menu-btn">MENU</button>
   </div>
@@ -181,8 +184,16 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="winner-text" style="color:#c0392b">❌ ELIMINATED</div>
     <div class="final-score" id="tourney-lose-score"></div>
     <div class="match-intro-round" id="tourney-lose-round"></div>
+    <div class="coin-display" id="lose-coins-earned" style="display:none"><span class="coin-icon">🪙</span> +<span id="lose-coin-amount">0</span></div>
     <button class="btn" id="tourney-retry-btn">RETRY TOURNAMENT</button>
     <button class="btn btn-secondary" id="tourney-lose-menu-btn">MENU</button>
+  </div>
+  <div class="screen" id="store-screen">
+    <h1 style="font-size:clamp(22px,5.5vw,36px)">🛒 STORE</h1>
+    <div class="store-coin-display"><span class="coin-icon">🪙</span><span id="store-coin-count">0</span></div>
+    <div class="equip-slots"><span class="slots-label">EQUIPPED:</span><div class="equip-slot" id="equip-slot-0"></div><div class="equip-slot" id="equip-slot-1"></div></div>
+    <div class="store-grid" id="store-grid"></div>
+    <button class="btn btn-secondary" id="store-back-btn">BACK</button>
   </div>
 </div>
 
