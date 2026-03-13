@@ -1839,7 +1839,7 @@ function showScreen(id){
     requestAnimationFrame(()=>{el.style.opacity='1'});
   }
 }
-function goToMenu(){tournament=null;showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
+function goToMenu(){tournament=null;updateMenuCoins();showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
 
 document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';resetGame();startCountdown()});
 document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';resetGame();startCountdown()});
@@ -1851,6 +1851,9 @@ document.querySelectorAll('.diff-btn').forEach(btn=>{
     btn.classList.add('selected');difficulty=parseInt(btn.dataset.diff);
   });
 });
+
+document.getElementById('store-btn').addEventListener('click',()=>{initAudio();renderStore();showScreen('store-screen')});
+document.getElementById('store-back-btn').addEventListener('click',()=>{updateMenuCoins();showScreen('start-screen')});
 
 document.getElementById('tournament-btn').addEventListener('click',()=>{
   initAudio();createTournament();showTournamentBracket();
@@ -1869,6 +1872,9 @@ document.getElementById('tourney-retry-btn').addEventListener('click',()=>{
   createTournament();showTournamentBracket();
 });
 document.getElementById('tourney-lose-menu-btn').addEventListener('click',goToMenu);
+
+// Init menu coins display
+updateMenuCoins();
 
 // ===== LOOP =====
 let lastTime=0;
