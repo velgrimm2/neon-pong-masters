@@ -151,7 +151,73 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <div class="mode-divider">— OR —</div>
     <button class="btn btn-tournament" id="tournament-btn">🏆 TOURNAMENT</button>
     <button class="btn store-btn" id="store-btn">🛒 STORE</button>
+    <button class="btn btn-secondary" id="help-btn">❓ HOW TO PLAY</button>
     <div class="controls-hint">Move paddle to hit &middot; Faster swing = faster ball<br>P2: Arrow keys on desktop &middot; P to pause</div>
+  </div>
+  <div class="screen" id="help-screen">
+    <h1 style="font-size:clamp(20px,5vw,32px)">❓ HOW TO PLAY</h1>
+    <div class="help-screen">
+      <div class="help-section">
+        <h3>🎮 Basic Controls</h3>
+        <ul>
+          <li><span class="emoji">📱</span> <span><b>Mobile:</b> Drag your finger to move your paddle anywhere in your half of the table</span></li>
+          <li><span class="emoji">🖱️</span> <span><b>Desktop:</b> Move your mouse to control the paddle. Player 2 uses Arrow keys</span></li>
+          <li><span class="emoji">⏸️</span> <span><b>Pause:</b> Press P on keyboard or tap the pause button</span></li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>🏓 How to Score</h3>
+        <ul>
+          <li><span class="emoji">🎯</span> <span>Hit the ball past your opponent to score a point</span></li>
+          <li><span class="emoji">🏆</span> <span>First to 7 points wins the match</span></li>
+          <li><span class="emoji">💨</span> <span>Swing your paddle faster for a faster, harder-to-return shot</span></li>
+          <li><span class="emoji">↩️</span> <span>Swipe sideways while hitting to add curve spin to the ball</span></li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>💥 Smash Shots</h3>
+        <ul>
+          <li><span class="emoji">⚡</span> <span>Swipe your paddle forward quickly when hitting the ball to trigger a <b>smash shot</b></span></li>
+          <li><span class="emoji">🔥</span> <span>Smashes send the ball much faster and are harder to return</span></li>
+          <li><span class="emoji">⏱️</span> <span>Smash has a <b>3.5 second cooldown</b> — watch the bar below your paddle</span></li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>🪙 Earning Coins</h3>
+        <ul>
+          <li><span class="emoji">✅</span> <span><b>+20</b> coins per point scored</span></li>
+          <li><span class="emoji">💥</span> <span><b>+15</b> coins per smash shot</span></li>
+          <li><span class="emoji">🔁</span> <span><b>+10</b> coins every 5-hit rally</span></li>
+          <li><span class="emoji">🏆</span> <span><b>+50–250</b> coins for tournament progress</span></li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3>🛒 Store Abilities</h3>
+        <p style="margin-bottom:6px">Buy abilities in the Store, then <b>equip up to 2</b> at a time. Here's how each one works:</p>
+        <div class="ability-card-help">
+          <div class="ability-name">💥 Power Smash — 500 coins</div>
+          <div class="ability-how">Your smash shots become <b>40% stronger</b> with epic visual effects — slow motion, screen shake, sparks, and speed lines. Smash by swiping forward fast. Cooldown bar appears below your paddle when equipped.</div>
+        </div>
+        <div class="ability-card-help">
+          <div class="ability-name">🌀 Curve Boost — 400 coins</div>
+          <div class="ability-how">Increases your curve spin by <b>50%</b>. Swipe <b>left or right</b> while hitting the ball to bend its path. Great for tricky angles your opponent can't predict!</div>
+        </div>
+        <div class="ability-card-help">
+          <div class="ability-name">⚡ Speed Boost — 450 coins</div>
+          <div class="ability-how">Your paddle moves <b>25% faster</b>, making it easier to reach and return difficult shots. Works automatically once equipped — just move normally.</div>
+        </div>
+        <div class="ability-card-help">
+          <div class="ability-name">🛡️ Shield Block — 600 coins</div>
+          <div class="ability-how">Automatically <b>saves one goal per match</b>. If the ball gets past you, the shield bounces it back once. Resets each new match.</div>
+        </div>
+        <div class="ability-card-help">
+          <div class="ability-name">🎱 Multi Ball — 800 coins</div>
+          <div class="ability-how">Every hit has a <b>15% chance</b> to spawn an extra ball! Creates chaos your opponent has to deal with. Extra balls score points too.</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-secondary" id="help-back-btn" style="margin-top:12px">BACK TO MENU</button>
+  </div>
   </div>
   <div class="screen" id="end-screen">
     <div class="winner-text" id="winner-text"></div>
