@@ -679,6 +679,13 @@ function sndCountdownGo(){
   o2.connect(g2);g2.connect(dst());o2.start(t);o2.stop(t+0.25);
 }
 
+// ===== PADDLE IMAGE =====
+const paddleImg=new Image();
+paddleImg.src='images/paddle.png';
+let paddleImgLoaded=false;
+paddleImg.onload=()=>{paddleImgLoaded=true};
+const PAD_IMG_W=80,PAD_IMG_H=120;
+
 // ===== CANVAS =====
 const canvas=document.getElementById('gc');
 const ctx=canvas.getContext('2d');
