@@ -41,6 +41,32 @@ const GAME_HTML = `<!DOCTYPE html>
   --radius:16px;--radius-sm:10px;--radius-full:50px;
   --shadow:0 8px 32px rgba(0,0,0,0.3);--shadow-sm:0 4px 16px rgba(0,0,0,0.2);
   --font:'Plus Jakarta Sans',sans-serif;--font-display:'Outfit',sans-serif;
+  --canvas-bg:#1a1a2e;--table-border:#2a2a4a;--table-surface:#1e3a5f;
+  --net-color:rgba(255,255,255,0.8);--center-line:rgba(255,255,255,0.12);
+  --score-color:rgba(255,255,255,0.2);--serve-text:rgba(255,255,255,0.4);
+  --panel-bg:linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03));
+  --panel-border:rgba(255,255,255,0.08);
+  --btn-secondary-bg:rgba(255,255,255,0.1);--btn-secondary-hover:rgba(255,255,255,0.15);
+  --p1-color:#a78bfa;--p1-dark:#7c5fd6;--p2-color:#22d3ee;--p2-dark:#0ea5c0;
+}
+body.light-theme{
+  --bg:#e8edf5;--bg2:#dde3ed;--surface:rgba(0,0,0,0.05);--surface2:rgba(0,0,0,0.08);
+  --text:#1a1a2e;--text2:rgba(26,26,46,0.6);--text3:rgba(26,26,46,0.35);
+  --accent:#5b52e0;--accent2:#7069e8;--accent-glow:rgba(91,82,224,0.25);
+  --green:#22a87a;--green-bg:rgba(34,168,122,0.12);
+  --red:#e05050;--red-bg:rgba(224,80,80,0.12);
+  --orange:#e07830;--orange-bg:rgba(224,120,48,0.12);
+  --gold:#d49e10;--gold-bg:rgba(212,158,16,0.12);
+  --cyan:#0ea5c0;--cyan-bg:rgba(14,165,192,0.12);
+  --purple:#7c5fd6;--purple-bg:rgba(124,95,214,0.12);
+  --shadow:0 8px 32px rgba(0,0,0,0.1);--shadow-sm:0 4px 16px rgba(0,0,0,0.08);
+  --canvas-bg:#c8d0e0;--table-border:#8898b8;--table-surface:#3a6a9f;
+  --net-color:rgba(255,255,255,0.95);--center-line:rgba(255,255,255,0.18);
+  --score-color:rgba(255,255,255,0.25);--serve-text:rgba(0,0,0,0.4);
+  --panel-bg:linear-gradient(145deg,rgba(255,255,255,0.75),rgba(255,255,255,0.55));
+  --panel-border:rgba(0,0,0,0.08);
+  --btn-secondary-bg:rgba(0,0,0,0.06);--btn-secondary-hover:rgba(0,0,0,0.1);
+  --p1-color:#7c5fd6;--p1-dark:#5b42b8;--p2-color:#0ea5c0;--p2-dark:#0886a0;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:var(--font)}
