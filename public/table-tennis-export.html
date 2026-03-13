@@ -1320,8 +1320,8 @@ function drawCountdown(){
   ctx.save();
   ctx.setTransform(sx,0,0,sy,0,0);
   drawTable();
-  drawPaddle(player.x,player.y,false,0,0,0);
-  drawPaddle(p2.x,p2.y,true,0,0,0);
+  drawPaddle(player.x,player.y,false,0,0,0,0);
+  drawPaddle(p2.x,p2.y,true,0,0,0,0);
   let text='';
   let progress=countdownTimer/0.8;
   if(countdownState>0){text=countdownState.toString()}
@@ -1494,8 +1494,8 @@ function draw(){
   for(const f of impactFlashes){ctx.globalAlpha=f.life*0.8;const r=f.radius*(1+(1-f.life)*0.5);const ig=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,r);ig.addColorStop(0,f.color);ig.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=ig;ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.fill()}
   ctx.globalAlpha=1;
   const p1Float=Math.sin(idleTime*2)*1.5;const p2Float=Math.sin(idleTime*2+Math.PI)*1.5;
-  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil);
-  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil);
+  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil,player.vx);
+  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil,p2.vx);
   for(const p of particles){ctx.globalAlpha=p.life*0.7;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
   for(const s of sparks){ctx.globalAlpha=s.life;ctx.strokeStyle=s.color;ctx.lineWidth=s.size;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x-s.vx*2,s.y-s.vy*2);ctx.stroke();ctx.fillStyle='#fff';ctx.globalAlpha=s.life*0.6;ctx.beginPath();ctx.arc(s.x,s.y,s.size*0.5,0,Math.PI*2);ctx.fill()}
   ctx.globalAlpha=1;
@@ -1511,12 +1511,13 @@ function draw(){
   ctx.restore();
 }
 
-function drawPaddle(x,y,isTop,squash,glow,recoil){
+function drawPaddle(x,y,isTop,squash,glow,recoil,padVX){
   const faceColor=isTop?'#22b8c8':'#e8445a';
   const recoilDir=isTop?1:-1;
   const ry=y+recoil*6*recoilDir;
+  const tilt=Math.max(-0.26,Math.min(0.26,(padVX||0)*0.04));
   const scX=1+squash*0.15;const scY=1-squash*0.1;
-  ctx.save();ctx.translate(x,ry);ctx.scale(scX,scY);
+  ctx.save();ctx.translate(x,ry);ctx.rotate(tilt);ctx.scale(scX,scY);
   if(glow>0.05){ctx.globalAlpha=glow*0.4;const gg=ctx.createRadialGradient(0,0,PAD_R*0.5,0,0,PAD_R*2);gg.addColorStop(0,faceColor);gg.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gg;ctx.beginPath();ctx.arc(0,0,PAD_R*2,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
   const sprite=isTop?paddleSpriteP2:paddleSpriteP1;
   if(isTop){ctx.rotate(Math.PI)}

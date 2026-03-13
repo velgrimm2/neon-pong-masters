@@ -1487,8 +1487,8 @@ function drawCountdown(){
   ctx.setTransform(sx,0,0,sy,0,0);
   // Draw table behind
   drawTable();
-  drawPaddle(player.x,player.y,false,0,0,0);
-  drawPaddle(p2.x,p2.y,true,0,0,0);
+  drawPaddle(player.x,player.y,false,0,0,0,0);
+  drawPaddle(p2.x,p2.y,true,0,0,0,0);
   
   // Countdown text
   let text='';
@@ -1967,8 +1967,8 @@ function draw(){
   // Paddles
   const p1Float=Math.sin(idleTime*2)*1.5;
   const p2Float=Math.sin(idleTime*2+Math.PI)*1.5;
-  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil);
-  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil);
+  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil,player.vx);
+  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil,p2.vx);
 
   // Particles
   for(const p of particles){
@@ -2066,7 +2066,7 @@ function draw(){
   ctx.restore();
 }
 
-function drawPaddle(x,y,isTop,squash,glow,recoil){
+function drawPaddle(x,y,isTop,squash,glow,recoil,padVX){
   const cs=getComputedStyle(document.body);
   const faceColor=isTop?'#22b8c8':'#e8445a';
   
@@ -2074,12 +2074,16 @@ function drawPaddle(x,y,isTop,squash,glow,recoil){
   const recoilDir=isTop?1:-1;
   const ry=y+recoil*6*recoilDir;
   
+  // Tilt based on horizontal movement (clamp to ~15 degrees)
+  const tilt=Math.max(-0.26,Math.min(0.26,(padVX||0)*0.04));
+  
   // Squash scale
   const scX=1+squash*0.15;
   const scY=1-squash*0.1;
   
   ctx.save();
   ctx.translate(x,ry);
+  ctx.rotate(tilt);
   ctx.scale(scX,scY);
   
   // Glow effect
