@@ -129,6 +129,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
   <div class="screen active" id="start-screen">
     <h1>🏓 TABLE TENNIS</h1>
     <div class="subtitle">A R C A D E</div>
+    <div class="coin-display" id="menu-coins"><span class="coin-icon">🪙</span><span id="menu-coin-count">0</span></div>
     <div class="difficulty-row">
       <button class="btn diff-btn" data-diff="0">Easy</button>
       <button class="btn diff-btn selected" data-diff="1">Medium</button>
@@ -139,6 +140,7 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn btn-2p" id="play-2p-btn">2 PLAYER LOCAL</button>
     <div class="mode-divider">— OR —</div>
     <button class="btn btn-tournament" id="tournament-btn">🏆 TOURNAMENT</button>
+    <button class="btn store-btn" id="store-btn">🛒 STORE</button>
     <div class="controls-hint">Move paddle to hit &middot; Faster swing = faster ball<br>P2: Arrow keys on desktop &middot; P to pause</div>
   </div>
   <div class="screen" id="end-screen">
