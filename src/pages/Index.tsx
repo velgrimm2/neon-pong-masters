@@ -1730,7 +1730,7 @@ function draw(){
   ctx.save();
   ctx.translate(GW/2,(TBL_T+NET_Y)/2);
   ctx.scale(s2Scale,s2Scale);
-  ctx.font='800 60px Fredoka One,sans-serif';
+  ctx.font='800 60px Outfit,sans-serif';
   ctx.fillStyle='rgba(255,255,255,0.2)';
   ctx.fillText(opponentScore,0,0);
   ctx.restore();
