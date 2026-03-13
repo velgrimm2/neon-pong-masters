@@ -1259,10 +1259,24 @@ function drawCountdown(){
 
 // ===== SCORE =====
 function scorePoint(scorer){
-  if(scorer===1){playerScore++;scorePop1=1}else{opponentScore++;scorePop2=1}
+  // Shield block ability
+  if(scorer===-1&&!shieldUsedThisMatch&&hasAbility('shield_block')){
+    shieldUsedThisMatch=true;
+    // Block the goal! Flash shield effect
+    addImpactFlash(ball.x,GH-20,60,'rgba(100,200,255,0.8)');
+    spawnSparks(ball.x,GH-20,'#60c0ff',15,-Math.PI/2,Math.PI*0.8);
+    spawnParticles(ball.x,GH-20,'#60c0ff',12,1.5);
+    shakeMag=6;
+    sndBounce();
+    // Bounce ball back
+    ball.vy=-Math.abs(ball.vy);
+    ball.y=GH-40;
+    return;
+  }
+
+  if(scorer===1){playerScore++;scorePop1=1;earnCoins(20,'Point!')}else{opponentScore++;scorePop2=1}
   sndScore();
   spawnParticles(ball.x,ball.y,scorer===1?'#d84080':'#20a0a0',15,1.2);
-  // Confetti burst on score
   spawnSparks(ball.x,ball.y,scorer===1?'#ff6090':'#40e0e0',12,scorer===1?-Math.PI/2:Math.PI/2,Math.PI);
   shakeMag=5;
   screenPulse=1;
@@ -1273,6 +1287,15 @@ function scorePoint(scorer){
   if((playerScore>=winScore||opponentScore>=winScore)&&Math.abs(playerScore-opponentScore)>=2){
     gameState='ended';
     document.getElementById('pause-btn').style.display='none';
+
+    // Win bonus coins
+    if(playerScore>opponentScore){
+      let winBonus=50;
+      if(tournament){
+        winBonus=tournament.round===0?75:tournament.round===1?125:250;
+      }
+      earnCoins(winBonus,'Victory!');
+    }
 
     if(tournament){
       const playerWon=playerScore>opponentScore;
@@ -1289,6 +1312,8 @@ function scorePoint(scorer){
     document.getElementById('winner-text').textContent=winText;
     document.getElementById('final-score').textContent=playerScore+' - '+opponentScore;
     showScreen('end-screen');
+    showMatchCoins('end-coins-earned','end-coin-amount');
+    updateMenuCoins();
     if(playerScore>opponentScore)spawnConfetti();
     sndWin();return;
   }
