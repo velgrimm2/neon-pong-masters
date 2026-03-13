@@ -1745,10 +1745,10 @@ function draw(){
 
   // Player labels in 2P mode
   if(gameMode==='2p'){
-    ctx.font='700 11px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
-    ctx.fillStyle='rgba(216,64,128,0.6)';
+    ctx.font='700 11px Plus Jakarta Sans,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillStyle='rgba(108,99,255,0.6)';
     ctx.fillText('PLAYER 1',GW/2,GH-8);
-    ctx.fillStyle='rgba(43,191,191,0.6)';
+    ctx.fillStyle='rgba(34,211,238,0.6)';
     ctx.fillText('PLAYER 2',GW/2,18);
   }
 
