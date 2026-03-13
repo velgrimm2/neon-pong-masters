@@ -435,7 +435,8 @@ function sndCoinEarn(){
 }
 
 loadStore();
-
+document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{resetGame();startCountdown()}});
+document.getElementById('menu-btn').addEventListener('click',goToMenu);
 
 function sndHit(power){
   if(!actx)return;
