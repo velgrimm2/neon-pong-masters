@@ -1738,7 +1738,7 @@ function draw(){
   ctx.save();
   ctx.translate(GW/2,(NET_Y+TBL_B)/2);
   ctx.scale(s1Scale,s1Scale);
-  ctx.font='800 60px Fredoka One,sans-serif';
+  ctx.font='800 60px Outfit,sans-serif';
   ctx.fillStyle='rgba(255,255,255,0.2)';
   ctx.fillText(playerScore,0,0);
   ctx.restore();
