@@ -2093,7 +2093,13 @@ function showScreen(id){
     });
   }
 }
-function goToMenu(){tournament=null;updateMenuCoins();showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
+function goToMenu(){tournament=null;updateMenuCoins();showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';document.getElementById('theme-toggle').style.display='flex';ctx.clearRect(0,0,canvas.width,canvas.height)}
+
+// ===== THEME =====
+let isDark=true;
+function loadTheme(){const t=localStorage.getItem('tt_theme');if(t==='light'){isDark=false;document.body.classList.add('light-theme');document.getElementById('theme-toggle').textContent='☀️'}else{isDark=true}}
+function toggleTheme(){isDark=!isDark;if(isDark){document.body.classList.remove('light-theme');document.getElementById('theme-toggle').textContent='🌙';localStorage.setItem('tt_theme','dark')}else{document.body.classList.add('light-theme');document.getElementById('theme-toggle').textContent='☀️';localStorage.setItem('tt_theme','light')}}
+loadTheme();
 
 let pendingMode='1p';
 document.getElementById('play-btn').addEventListener('click',()=>{pendingMode='1p';document.getElementById('diff-mode-label').textContent='SINGLE PLAYER';showScreen('difficulty-screen')});
