@@ -1707,11 +1707,11 @@ function update(dt){
 function drawTable(){
   // Background
   const cs=getComputedStyle(document.body);
-  const canvasBg=cs.getPropertyValue('--canvas-bg').trim()||'#1a1a2e';
-  const tableBorder=cs.getPropertyValue('--table-border').trim()||'#2a2a4a';
-  const tableSurface=cs.getPropertyValue('--table-surface').trim()||'#1e3a5f';
-  const netColor=cs.getPropertyValue('--net-color').trim()||'rgba(255,255,255,0.8)';
-  const centerLine=cs.getPropertyValue('--center-line').trim()||'rgba(255,255,255,0.12)';
+  const canvasBg=cs.getPropertyValue('--canvas-bg').trim()||'#141428';
+  const tableBorder=cs.getPropertyValue('--table-border').trim()||'#3a3a6a';
+  const tableSurface=cs.getPropertyValue('--table-surface').trim()||'#1e4a7a';
+  const netColor=cs.getPropertyValue('--net-color').trim()||'rgba(255,255,255,0.95)';
+  const centerLine=cs.getPropertyValue('--center-line').trim()||'rgba(255,255,255,0.2)';
   ctx.fillStyle=canvasBg;ctx.fillRect(0,0,GW,GH);
 
   // Table shadow
