@@ -1967,8 +1967,8 @@ function draw(){
   // Paddles
   const p1Float=Math.sin(idleTime*2)*1.5;
   const p2Float=Math.sin(idleTime*2+Math.PI)*1.5;
-  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil);
-  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil);
+  drawPaddle(player.x,player.y+p1Float,false,p1Squash,p1Glow,p1Recoil,player.vx);
+  drawPaddle(p2.x,p2.y+p2Float,true,p2Squash,p2Glow,p2Recoil,p2.vx);
 
   // Particles
   for(const p of particles){
