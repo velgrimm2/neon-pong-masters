@@ -2029,8 +2029,6 @@ function draw(){
 function drawPaddle(x,y,isTop,squash,glow,recoil){
   const cs=getComputedStyle(document.body);
   const faceColor=isTop?(cs.getPropertyValue('--p2-color').trim()||'#22d3ee'):(cs.getPropertyValue('--p1-color').trim()||'#a78bfa');
-  const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#0ea5c0'):(cs.getPropertyValue('--p1-dark').trim()||'#7c5fd6');
-  const handleAngle=isTop?Math.PI*0.75:Math.PI*1.75;
   
   // Recoil offset
   const recoilDir=isTop?1:-1;
@@ -2055,33 +2053,23 @@ function drawPaddle(x,y,isTop,squash,glow,recoil){
     ctx.globalAlpha=1;
   }
   
-  const hLen=20,hWid=7;
-  const hx=Math.cos(handleAngle)*PAD_R*0.7;
-  const hy=Math.sin(handleAngle)*PAD_R*0.7;
-  const hx2=Math.cos(handleAngle)*(PAD_R*0.7+hLen);
-  const hy2=Math.sin(handleAngle)*(PAD_R*0.7+hLen);
-  
-  ctx.strokeStyle='rgba(0,0,0,0.12)';ctx.lineWidth=hWid+2;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(hx+1,hy+2);ctx.lineTo(hx2+1,hy2+2);ctx.stroke();
-  
-  ctx.strokeStyle='#6d4530';ctx.lineWidth=hWid;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(hx2,hy2);ctx.stroke();
-  ctx.strokeStyle='#8b5e3c';ctx.lineWidth=hWid-2;
-  ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(hx2,hy2);ctx.stroke();
-
-  ctx.fillStyle='rgba(0,0,0,0.12)';
-  ctx.beginPath();ctx.arc(2,2,PAD_R,0,Math.PI*2);ctx.fill();
-
-  const g=ctx.createRadialGradient(-PAD_R*0.3,-PAD_R*0.3,2,0,0,PAD_R);
-  g.addColorStop(0,faceColor);g.addColorStop(1,darkColor);
-  ctx.fillStyle=g;
-  ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.fill();
-
-  ctx.strokeStyle=darkColor;ctx.lineWidth=2;
-  ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.stroke();
-
-  ctx.fillStyle='rgba(255,255,255,0.15)';
-  ctx.beginPath();ctx.arc(-PAD_R*0.25,-PAD_R*0.25,PAD_R*0.5,0,Math.PI*2);ctx.fill();
+  if(paddleImgLoaded){
+    // Draw paddle image centered on position
+    // For top player, rotate 180 degrees so handle faces up
+    if(isTop){
+      ctx.rotate(Math.PI);
+    }
+    ctx.drawImage(paddleImg,-PAD_IMG_W/2,-PAD_IMG_H/2,PAD_IMG_W,PAD_IMG_H);
+  } else {
+    // Fallback: draw circle paddle if image not loaded
+    const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#0ea5c0'):(cs.getPropertyValue('--p1-dark').trim()||'#7c5fd6');
+    const g=ctx.createRadialGradient(-PAD_R*0.3,-PAD_R*0.3,2,0,0,PAD_R);
+    g.addColorStop(0,faceColor);g.addColorStop(1,darkColor);
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=darkColor;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.stroke();
+  }
   
   ctx.restore();
 }
