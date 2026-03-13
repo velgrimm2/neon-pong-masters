@@ -140,11 +140,6 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <h1>🏓 TABLE TENNIS</h1>
     <div class="subtitle">A R C A D E</div>
     <div class="coin-display" id="menu-coins"><span class="coin-icon">🪙</span><span id="menu-coin-count">0</span></div>
-    <div class="difficulty-row">
-      <button class="btn diff-btn" data-diff="0">Easy</button>
-      <button class="btn diff-btn selected" data-diff="1">Medium</button>
-      <button class="btn diff-btn" data-diff="2">Hard</button>
-    </div>
     <button class="btn" id="play-btn">SINGLE PLAYER</button>
     <div class="mode-divider">— OR —</div>
     <button class="btn btn-2p" id="play-2p-btn">2 PLAYER LOCAL</button>
@@ -153,6 +148,17 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn store-btn" id="store-btn">🛒 STORE</button>
     <button class="btn btn-secondary" id="help-btn">❓ HOW TO PLAY</button>
     <div class="controls-hint">Move paddle to hit &middot; Faster swing = faster ball<br>P2: Arrow keys on desktop &middot; P to pause</div>
+  </div>
+  <div class="screen" id="difficulty-screen">
+    <h1 style="font-size:clamp(22px,5.5vw,36px)">⚡ SELECT DIFFICULTY</h1>
+    <div class="subtitle" id="diff-mode-label">SINGLE PLAYER</div>
+    <div class="difficulty-row" style="margin:20px 0">
+      <button class="btn diff-btn" data-diff="0">Easy</button>
+      <button class="btn diff-btn selected" data-diff="1">Medium</button>
+      <button class="btn diff-btn" data-diff="2">Hard</button>
+    </div>
+    <button class="btn" id="diff-start-btn">START GAME</button>
+    <button class="btn btn-secondary" id="diff-back-btn">← BACK</button>
   </div>
   <div class="screen" id="help-screen">
     <h1 style="font-size:clamp(20px,5vw,32px)">❓ HOW TO PLAY</h1>
@@ -428,8 +434,7 @@ function sndCoinEarn(){
   o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.1);
 }
 
-loadStore();
-
+});
 
 function sndHit(power){
   if(!actx)return;
@@ -1943,16 +1948,20 @@ function showScreen(id){
 }
 function goToMenu(){tournament=null;updateMenuCoins();showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
 
-document.getElementById('play-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='1p';resetGame();startCountdown()});
-document.getElementById('play-2p-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode='2p';resetGame();startCountdown()});
-document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{resetGame();startCountdown()}});
-document.getElementById('menu-btn').addEventListener('click',goToMenu);
+let pendingMode='1p';
+document.getElementById('play-btn').addEventListener('click',()=>{pendingMode='1p';document.getElementById('diff-mode-label').textContent='SINGLE PLAYER';showScreen('difficulty-screen')});
+document.getElementById('play-2p-btn').addEventListener('click',()=>{pendingMode='2p';document.getElementById('diff-mode-label').textContent='2 PLAYER LOCAL';showScreen('difficulty-screen')});
+document.getElementById('diff-back-btn').addEventListener('click',()=>{showScreen('start-screen')});
+document.getElementById('diff-start-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode=pendingMode;resetGame();startCountdown()});
 document.querySelectorAll('.diff-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
     btn.classList.add('selected');difficulty=parseInt(btn.dataset.diff);
   });
 });
+
+document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{resetGame();startCountdown()}});
+document.getElementById('menu-btn').addEventListener('click',goToMenu);
 
 document.getElementById('store-btn').addEventListener('click',()=>{initAudio();renderStore();showScreen('store-screen')});
 document.getElementById('store-back-btn').addEventListener('click',()=>{updateMenuCoins();showScreen('start-screen')});
