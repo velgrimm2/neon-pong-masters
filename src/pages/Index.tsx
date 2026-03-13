@@ -680,7 +680,7 @@ function sndCountdownGo(){
 }
 
 // ===== PADDLE SPRITE CANVAS (cartoon style like reference) =====
-const PAD_IMG_W=80,PAD_IMG_H=110;
+const PAD_IMG_W=60,PAD_IMG_H=82;
 
 function createPaddleSprite(faceColor,faceHighlight,faceDark,outlineColor){
   const c=document.createElement('canvas');
