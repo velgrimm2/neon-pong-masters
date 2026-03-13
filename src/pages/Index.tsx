@@ -461,7 +461,7 @@ function sndCoinEarn(){
   o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.1);
 }
 
-});
+
 
 function sndHit(power){
   if(!actx)return;
