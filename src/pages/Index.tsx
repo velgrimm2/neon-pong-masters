@@ -1766,7 +1766,7 @@ function draw(){
 
   // Shield indicator
   if(hasAbility('shield_block')&&!shieldUsedThisMatch){
-    ctx.font='600 10px Nunito,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.font='600 10px Plus Jakarta Sans,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';
     ctx.fillStyle='rgba(96,192,255,0.6)';
     ctx.fillText('🛡️ SHIELD READY',GW/2,GH-4);
   }
