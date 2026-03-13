@@ -128,6 +128,20 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 .coin-float-anim{position:absolute;font-family:'Fredoka One',cursive;color:#d4a017;animation:coin-float 1.2s ease-out forwards;pointer-events:none;z-index:30;white-space:nowrap}
 @keyframes purchase-flash{0%{opacity:0.6}100%{opacity:0}}
 .store-coin-display{font-family:'Fredoka One',cursive;font-size:clamp(18px,4vw,24px);color:#d4a017;margin:4px 0;display:flex;align-items:center;justify-content:center;gap:6px}
+#tutorial-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column;padding:16px;overflow-y:auto}
+#tutorial-overlay.active{display:flex}
+.tut-card{background:linear-gradient(145deg,#fff8e1,#fff3cd);border-radius:20px;padding:20px 18px;max-width:340px;width:90%;max-height:80vh;overflow-y:auto;position:relative;box-shadow:0 8px 40px rgba(0,0,0,0.4)}
+.tut-title{font-family:'Fredoka One',cursive;font-size:clamp(18px,4.5vw,26px);color:#5a3a1a;text-align:center;margin-bottom:4px}
+.tut-sub{font-size:clamp(10px,2vw,12px);color:rgba(90,58,26,0.5);text-align:center;margin-bottom:14px;font-weight:700;letter-spacing:2px}
+.tut-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(90,58,26,0.08)}
+.tut-step:last-child{border-bottom:none}
+.tut-step-icon{font-size:clamp(20px,5vw,28px);flex-shrink:0;width:36px;text-align:center}
+.tut-step-text{font-size:clamp(11px,2.2vw,13px);color:rgba(90,58,26,0.75);line-height:1.5;font-weight:600}
+.tut-step-text b{color:#5a3a1a}
+.tut-start-btn{font-family:'Fredoka One',cursive;font-size:clamp(14px,3vw,18px);padding:12px 40px;border-radius:50px;border:none;background:#e86040;color:#fff;cursor:pointer;letter-spacing:2px;box-shadow:0 4px 15px rgba(232,96,64,0.4);margin-top:16px;transition:all 0.15s;display:block;margin-left:auto;margin-right:auto}
+.tut-start-btn:active{transform:scale(0.95)}
+@keyframes tut-fade-in{0%{opacity:0;transform:scale(0.9) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.tut-card{animation:tut-fade-in 0.4s ease-out}
 </style>
 </head>
 <body>
