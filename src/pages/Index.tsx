@@ -2068,7 +2068,7 @@ function draw(){
 
 function drawPaddle(x,y,isTop,squash,glow,recoil){
   const cs=getComputedStyle(document.body);
-  const faceColor=isTop?(cs.getPropertyValue('--p2-color').trim()||'#22d3ee'):(cs.getPropertyValue('--p1-color').trim()||'#a78bfa');
+  const faceColor=isTop?'#22b8c8':'#e8445a';
   
   // Recoil offset
   const recoilDir=isTop?1:-1;
@@ -2093,23 +2093,12 @@ function drawPaddle(x,y,isTop,squash,glow,recoil){
     ctx.globalAlpha=1;
   }
   
-  if(paddleImgLoaded){
-    // Draw paddle image centered on position
-    // For top player, rotate 180 degrees so handle faces up
-    if(isTop){
-      ctx.rotate(Math.PI);
-    }
-    ctx.drawImage(paddleImg,-PAD_IMG_W/2,-PAD_IMG_H/2,PAD_IMG_W,PAD_IMG_H);
-  } else {
-    // Fallback: draw circle paddle if image not loaded
-    const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#0ea5c0'):(cs.getPropertyValue('--p1-dark').trim()||'#7c5fd6');
-    const g=ctx.createRadialGradient(-PAD_R*0.3,-PAD_R*0.3,2,0,0,PAD_R);
-    g.addColorStop(0,faceColor);g.addColorStop(1,darkColor);
-    ctx.fillStyle=g;
-    ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle=darkColor;ctx.lineWidth=2;
-    ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.stroke();
+  const sprite=isTop?paddleSpriteP2:paddleSpriteP1;
+  // For top player, rotate 180 degrees so handle faces up
+  if(isTop){
+    ctx.rotate(Math.PI);
   }
+  ctx.drawImage(sprite,-PAD_IMG_W/2,-PAD_IMG_H/2,PAD_IMG_W,PAD_IMG_H);
   
   ctx.restore();
 }
