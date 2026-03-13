@@ -140,11 +140,6 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <h1>🏓 TABLE TENNIS</h1>
     <div class="subtitle">A R C A D E</div>
     <div class="coin-display" id="menu-coins"><span class="coin-icon">🪙</span><span id="menu-coin-count">0</span></div>
-    <div class="difficulty-row">
-      <button class="btn diff-btn" data-diff="0">Easy</button>
-      <button class="btn diff-btn selected" data-diff="1">Medium</button>
-      <button class="btn diff-btn" data-diff="2">Hard</button>
-    </div>
     <button class="btn" id="play-btn">SINGLE PLAYER</button>
     <div class="mode-divider">— OR —</div>
     <button class="btn btn-2p" id="play-2p-btn">2 PLAYER LOCAL</button>
@@ -153,6 +148,17 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
     <button class="btn store-btn" id="store-btn">🛒 STORE</button>
     <button class="btn btn-secondary" id="help-btn">❓ HOW TO PLAY</button>
     <div class="controls-hint">Move paddle to hit &middot; Faster swing = faster ball<br>P2: Arrow keys on desktop &middot; P to pause</div>
+  </div>
+  <div class="screen" id="difficulty-screen">
+    <h1 style="font-size:clamp(22px,5.5vw,36px)">⚡ SELECT DIFFICULTY</h1>
+    <div class="subtitle" id="diff-mode-label">SINGLE PLAYER</div>
+    <div class="difficulty-row" style="margin:20px 0">
+      <button class="btn diff-btn" data-diff="0">Easy</button>
+      <button class="btn diff-btn selected" data-diff="1">Medium</button>
+      <button class="btn diff-btn" data-diff="2">Hard</button>
+    </div>
+    <button class="btn" id="diff-start-btn">START GAME</button>
+    <button class="btn btn-secondary" id="diff-back-btn">← BACK</button>
   </div>
   <div class="screen" id="help-screen">
     <h1 style="font-size:clamp(20px,5vw,32px)">❓ HOW TO PLAY</h1>
