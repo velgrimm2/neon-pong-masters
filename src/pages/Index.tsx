@@ -504,7 +504,7 @@ const ANGLE_JITTER=0.04;
 const DIR_SMOOTHING=0.15;
 const SMASH_THRESHOLD=7;
 const SMASH_SPEED_BOOST=3.5;
-const SMASH_COOLDOWN=90;
+const SMASH_COOLDOWN=210; // 3.5 seconds at 60fps
 
 // ===== JUICE STATE =====
 let gameMode='1p';
