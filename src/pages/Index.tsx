@@ -1979,7 +1979,13 @@ let pendingMode='1p';
 document.getElementById('play-btn').addEventListener('click',()=>{pendingMode='1p';document.getElementById('diff-mode-label').textContent='SINGLE PLAYER';showScreen('difficulty-screen')});
 document.getElementById('play-2p-btn').addEventListener('click',()=>{pendingMode='2p';document.getElementById('diff-mode-label').textContent='2 PLAYER LOCAL';showScreen('difficulty-screen')});
 document.getElementById('diff-back-btn').addEventListener('click',()=>{showScreen('start-screen')});
-document.getElementById('diff-start-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode=pendingMode;resetGame();startCountdown()});
+let tutorialPendingStart=false;
+function isFirstTime(){return !localStorage.getItem('tt_tutorial_done')}
+function markTutorialDone(){localStorage.setItem('tt_tutorial_done','1')}
+function showTutorial(){const el=document.getElementById('tutorial-overlay');el.classList.add('active');el.style.display='flex'}
+function hideTutorial(){const el=document.getElementById('tutorial-overlay');el.classList.remove('active');el.style.display='none'}
+document.getElementById('tut-got-it-btn').addEventListener('click',()=>{markTutorialDone();hideTutorial();resetGame();startCountdown()});
+document.getElementById('diff-start-btn').addEventListener('click',()=>{initAudio();tournament=null;gameMode=pendingMode;if(isFirstTime()){showScreen('');showTutorial()}else{resetGame();startCountdown()}});
 document.querySelectorAll('.diff-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('selected'));
