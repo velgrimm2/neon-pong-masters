@@ -1575,7 +1575,7 @@ function update(dt){
   player.x=adaptiveLerp(player.x,p1InputX,sDt*speedMult);
   player.y=adaptiveLerp(player.y,p1InputY,sDt*speedMult);
   player.x=Math.max(PAD_R,Math.min(GW-PAD_R,player.x));
-  player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH-PAD_R,player.y));
+  player.y=Math.max(NET_Y+PAD_R+4,Math.min(GH+PAD_R,player.y));
   player.vx=player.x-player.prevX;
   player.vy=player.y-player.prevY;
 
