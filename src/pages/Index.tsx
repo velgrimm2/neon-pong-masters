@@ -1422,9 +1422,9 @@ function drawCountdown(){
     const scale=progress<0.3?0.3+progress*2.3:1+(1-progress)*0.15;
     const alpha=progress>0.7?1-(progress-0.7)/0.3:1;
     ctx.globalAlpha=alpha;
-    ctx.font='900 '+Math.floor(80*scale)+'px Fredoka One,cursive';
+    ctx.font='900 '+Math.floor(80*scale)+'px Outfit,sans-serif';
     ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=countdownState===-1?'#e86040':'#5a3a1a';
+    ctx.fillStyle=countdownState===-1?'#6c63ff':'#e8e8f0';
     ctx.shadowColor='rgba(0,0,0,0.3)';ctx.shadowBlur=10;
     ctx.fillText(text,GW/2,GH/2);
     ctx.shadowBlur=0;
