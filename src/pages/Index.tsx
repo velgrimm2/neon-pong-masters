@@ -1753,8 +1753,8 @@ function draw(){
   }
 
   // Coin HUD
-  ctx.font='800 14px Fredoka One,cursive';ctx.textAlign='left';ctx.textBaseline='top';
-  ctx.fillStyle='rgba(212,160,23,0.8)';
+  ctx.font='800 14px Outfit,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillStyle='rgba(251,191,36,0.7)';
   ctx.fillText('🪙 '+storeData.coins,8,6);
 
   // Equipped ability icons
