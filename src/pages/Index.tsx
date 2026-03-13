@@ -1704,22 +1704,28 @@ function update(dt){
 // ===== DRAW =====
 function drawTable(){
   // Background
-  ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,GW,GH);
+  const cs=getComputedStyle(document.body);
+  const canvasBg=cs.getPropertyValue('--canvas-bg').trim()||'#1a1a2e';
+  const tableBorder=cs.getPropertyValue('--table-border').trim()||'#2a2a4a';
+  const tableSurface=cs.getPropertyValue('--table-surface').trim()||'#1e3a5f';
+  const netColor=cs.getPropertyValue('--net-color').trim()||'rgba(255,255,255,0.8)';
+  const centerLine=cs.getPropertyValue('--center-line').trim()||'rgba(255,255,255,0.12)';
+  ctx.fillStyle=canvasBg;ctx.fillRect(0,0,GW,GH);
 
   // Table shadow
   ctx.fillStyle='rgba(0,0,0,0.3)';
   ctx.beginPath();ctx.roundRect(TBL_L-2+3,TBL_T-2+4,TBL_W+4,TBL_H+4,6);ctx.fill();
 
   // Table border
-  ctx.fillStyle='#2a2a4a';
+  ctx.fillStyle=tableBorder;
   ctx.beginPath();ctx.roundRect(TBL_L-8,TBL_T-8,TBL_W+16,TBL_H+16,6);ctx.fill();
 
   // Table surface
-  ctx.fillStyle='#1e3a5f';
+  ctx.fillStyle=tableSurface;
   ctx.beginPath();ctx.roundRect(TBL_L,TBL_T,TBL_W,TBL_H,2);ctx.fill();
 
   // Center line
-  ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=4;
+  ctx.strokeStyle=centerLine;ctx.lineWidth=4;
   ctx.beginPath();ctx.moveTo(GW/2,TBL_T);ctx.lineTo(GW/2,TBL_B);ctx.stroke();
 
   // Bounce marks
@@ -1732,7 +1738,7 @@ function drawTable(){
   ctx.globalAlpha=1;
 
   // Net
-  ctx.fillStyle='rgba(255,255,255,0.8)';
+  ctx.fillStyle=netColor;
   ctx.shadowColor='rgba(0,0,0,0.3)';ctx.shadowBlur=6;ctx.shadowOffsetY=2;
   ctx.fillRect(TBL_L-8,NET_Y-3,TBL_W+16,6);
   ctx.shadowBlur=0;ctx.shadowOffsetY=0;
