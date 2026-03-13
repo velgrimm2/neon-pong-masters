@@ -2038,12 +2038,18 @@ function drawPaddle(x,y,isTop,squash,glow,recoil){
 
 // ===== UI =====
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.opacity='0'});
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active');
+    s.style.opacity='0';
+    s.style.transform='translateY(12px) scale(0.97)';
+  });
   if(id){
     const el=document.getElementById(id);
     el.classList.add('active');
-    // Trigger fade in
-    requestAnimationFrame(()=>{el.style.opacity='1'});
+    requestAnimationFrame(()=>{
+      el.style.opacity='1';
+      el.style.transform='translateY(0) scale(1)';
+    });
   }
 }
 function goToMenu(){tournament=null;updateMenuCoins();showScreen('start-screen');gameState='menu';document.getElementById('pause-btn').style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height)}
