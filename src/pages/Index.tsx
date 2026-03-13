@@ -816,48 +816,37 @@ function doServe(dt){
 
 // ===== HIT EFFECTS =====
 function triggerHitEffects(x,y,padSpeed,isPlayer,isSmash){
-  if(isSmash){
+  const isPowerSmash=isSmash&&isPlayer&&hasAbility('power_smash');
+  if(isPowerSmash){
     sndSmash();
     shakeMag=Math.min(14,padSpeed*1.3);
     lastSmashTime=performance.now();
-    // Slow motion
     slowMoTimer=12;
     slowMoFactor=0.3;
-    // Camera zoom punch
     targetZoom=1.06;
-    // Impact flash
     addImpactFlash(x,y,50,'rgba(255,255,200,0.9)');
     addImpactFlash(x,y,30,'rgba(255,180,60,0.7)');
-    // Sparks
     const baseAngle=isPlayer?-Math.PI/2:Math.PI/2;
     spawnSparks(x,y,'#ffff00',20,baseAngle,Math.PI*0.8);
     spawnSparks(x,y,'#ff8800',12,baseAngle,Math.PI*0.6);
     spawnSparks(x,y,'#ffffff',8,baseAngle,Math.PI*0.5);
-    // Regular particles
     const color=isPlayer?'#ff4060':'#00e0e0';
     spawnParticles(x,y,color,15,1.5);
     spawnParticles(x,y,'#ffff00',10,1.2);
-    // Speed lines
     spawnSpeedLines(x,y,ball.vx,ball.vy,10);
-    // Ball squash
     ballSquash=1;
-    // Paddle effects
     if(isPlayer){p1Squash=1;p1Glow=1;p1Recoil=1}else{p2Squash=1;p2Glow=1;p2Recoil=1}
   } else {
     sndHit(ball.speed);
     const color=isPlayer?'#e86080':'#2bbfbf';
     const pCount=Math.floor(4+padSpeed*2);
     spawnParticles(x,y,color,pCount,0.5+padSpeed*0.1);
-    // Small impact flash
     if(padSpeed>3){
       addImpactFlash(x,y,20+padSpeed*3,'rgba(255,255,255,0.5)');
       spawnSparks(x,y,color,Math.floor(padSpeed*2),isPlayer?-Math.PI/2:Math.PI/2,Math.PI*0.6);
     }
-    // Subtle shake on normal hits
     if(padSpeed>4)shakeMag=Math.min(6,padSpeed*0.6);
-    // Ball squash
     ballSquash=Math.min(1,padSpeed*0.12);
-    // Paddle squash
     if(isPlayer){p1Squash=Math.min(1,padSpeed*0.15);if(padSpeed>5)p1Glow=padSpeed*0.1}
     else{p2Squash=Math.min(1,padSpeed*0.15);if(padSpeed>5)p2Glow=padSpeed*0.1}
     if(isPlayer)p1Recoil=Math.min(1,padSpeed*0.1);else p2Recoil=Math.min(1,padSpeed*0.1);
