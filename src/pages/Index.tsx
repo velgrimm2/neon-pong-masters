@@ -189,7 +189,7 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
 .ability-card.locked{opacity:0.6}
 .ability-icon{font-size:clamp(26px,5.5vw,34px)}
 .ability-name{font-family:var(--font-display);font-size:clamp(10px,2vw,13px);color:var(--text);font-weight:700}
-.ability-desc{font-size:clamp(8px,1.6vw,10px);color:var(--text3);line-height:1.4;text-align:center}
+.ability-desc{font-size:clamp(9px,1.8vw,11px);color:var(--text2);line-height:1.5;text-align:center;font-weight:600}
 .ability-price{display:flex;align-items:center;gap:4px;font-family:var(--font-display);font-size:clamp(11px,2.2vw,14px);color:var(--gold);margin:3px 0}
 .ability-status{font-size:clamp(9px,1.8vw,11px);font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px}
 .status-owned{color:var(--green);background:var(--green-bg)}
