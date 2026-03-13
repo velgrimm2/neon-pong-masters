@@ -1784,7 +1784,7 @@ function draw(){
 
   // Serve indicator
   if(serving){
-    ctx.font='600 12px Nunito,sans-serif';ctx.fillStyle='rgba(255,255,255,0.5)';ctx.textBaseline='alphabetic';ctx.textAlign='center';
+    ctx.font='600 12px Plus Jakarta Sans,sans-serif';ctx.fillStyle='rgba(255,255,255,0.4)';ctx.textBaseline='alphabetic';ctx.textAlign='center';
     if(serveSide===1){
       ctx.fillText('MOVE TO SERVE',GW/2,TBL_B+22);
     } else {
