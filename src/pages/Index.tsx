@@ -91,8 +91,8 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
 .btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--accent-glow);background:var(--accent2)}
 .btn:active{transform:translateY(1px) scale(0.98);box-shadow:0 2px 10px var(--accent-glow)}
 
-.btn-secondary{background:var(--surface2);color:var(--text);box-shadow:none}
-.btn-secondary:hover{background:rgba(255,255,255,0.15);box-shadow:none;transform:translateY(-1px)}
+.btn-secondary{background:var(--btn-secondary-bg);color:var(--text);box-shadow:none}
+.btn-secondary:hover{background:var(--btn-secondary-hover);box-shadow:none;transform:translateY(-1px)}
 .btn-secondary:active{background:rgba(255,255,255,0.08);transform:translateY(0)}
 
 .btn-2p{background:var(--cyan);box-shadow:0 4px 20px rgba(34,211,238,0.25)}
