@@ -2023,8 +2023,8 @@ function draw(){
 
 function drawPaddle(x,y,isTop,squash,glow,recoil){
   const cs=getComputedStyle(document.body);
-  const faceColor=isTop?(cs.getPropertyValue('--p2-color').trim()||'#22d3ee'):(cs.getPropertyValue('--p1-color').trim()||'#a78bfa');
-  const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#0ea5c0'):(cs.getPropertyValue('--p1-dark').trim()||'#7c5fd6');
+  const faceColor=isTop?(cs.getPropertyValue('--p2-color').trim()||'#34eaff'):(cs.getPropertyValue('--p1-color').trim()||'#b794ff');
+  const darkColor=isTop?(cs.getPropertyValue('--p2-dark').trim()||'#14c8d9'):(cs.getPropertyValue('--p1-dark').trim()||'#9060f0');
   const handleAngle=isTop?Math.PI*0.75:Math.PI*1.75;
   
   // Recoil offset
