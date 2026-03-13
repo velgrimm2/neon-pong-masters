@@ -182,11 +182,11 @@ h1{font-family:var(--font-display);font-size:clamp(28px,7vw,44px);color:var(--te
 .store-grid::-webkit-scrollbar-track{background:transparent}
 .store-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
 
-.ability-card{background:var(--surface);border-radius:var(--radius);padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;border:1.5px solid rgba(255,255,255,0.06);transition:all 0.25s;position:relative}
-.ability-card:hover{background:var(--surface2);border-color:rgba(255,255,255,0.12)}
-.ability-card.owned{border-color:var(--green);background:var(--green-bg)}
-.ability-card.equipped{border-color:var(--accent);background:rgba(108,99,255,0.1);box-shadow:0 0 20px var(--accent-glow)}
-.ability-card.locked{opacity:0.45}
+.ability-card{background:rgba(30,40,70,0.85);border-radius:var(--radius);padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;border:1.5px solid rgba(255,255,255,0.12);transition:all 0.25s;position:relative}
+.ability-card:hover{background:rgba(40,50,85,0.92);border-color:rgba(255,255,255,0.2)}
+.ability-card.owned{border-color:var(--green);background:rgba(52,211,153,0.18)}
+.ability-card.equipped{border-color:var(--accent);background:rgba(108,99,255,0.2);box-shadow:0 0 20px var(--accent-glow)}
+.ability-card.locked{opacity:0.6}
 .ability-icon{font-size:clamp(26px,5.5vw,34px)}
 .ability-name{font-family:var(--font-display);font-size:clamp(10px,2vw,13px);color:var(--text);font-weight:700}
 .ability-desc{font-size:clamp(8px,1.6vw,10px);color:var(--text3);line-height:1.4;text-align:center}
