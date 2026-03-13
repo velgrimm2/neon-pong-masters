@@ -2159,13 +2159,10 @@ document.getElementById('help-btn').addEventListener('click',()=>{showScreen('he
 document.getElementById('help-back-btn').addEventListener('click',()=>{showScreen('start-screen')});
 
 document.getElementById('download-btn').addEventListener('click',()=>{
-  const html=document.documentElement.outerHTML;
-  const blob=new Blob(['<!DOCTYPE html>'+html],{type:'text/html'});
-  const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download='table-tennis.html';
-  document.body.appendChild(a);a.click();
-  document.body.removeChild(a);URL.revokeObjectURL(url);
+  a.href='/table-tennis-export.html';
+  a.download='table-tennis.html';
+  a.click();
 });
 
 document.getElementById('tournament-btn').addEventListener('click',()=>{
