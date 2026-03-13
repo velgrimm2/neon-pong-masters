@@ -434,7 +434,9 @@ function sndCoinEarn(){
   o.connect(g);g.connect(dst());o.start(t);o.stop(t+0.1);
 }
 
-
+});
+document.getElementById('restart-btn').addEventListener('click',()=>{initAudio();if(tournament){startTournamentMatch()}else{resetGame();startCountdown()}});
+document.getElementById('menu-btn').addEventListener('click',goToMenu);
 
 function sndHit(power){
   if(!actx)return;
