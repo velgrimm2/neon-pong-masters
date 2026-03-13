@@ -2064,18 +2064,20 @@ function drawPaddle(x,y,isTop,squash,glow,recoil){
   ctx.strokeStyle='#8b5e3c';ctx.lineWidth=hWid-2;
   ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(hx2,hy2);ctx.stroke();
 
-  ctx.fillStyle='rgba(0,0,0,0.12)';
-  ctx.beginPath();ctx.arc(2,2,PAD_R,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.18)';
+  ctx.beginPath();ctx.arc(2,3,PAD_R,0,Math.PI*2);ctx.fill();
 
   const g=ctx.createRadialGradient(-PAD_R*0.3,-PAD_R*0.3,2,0,0,PAD_R);
-  g.addColorStop(0,faceColor);g.addColorStop(1,darkColor);
+  g.addColorStop(0,faceColor);g.addColorStop(0.7,faceColor);g.addColorStop(1,darkColor);
   ctx.fillStyle=g;
+  ctx.shadowColor=faceColor;ctx.shadowBlur=14;
   ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;
 
-  ctx.strokeStyle=darkColor;ctx.lineWidth=2;
+  ctx.strokeStyle=darkColor;ctx.lineWidth=2.5;
   ctx.beginPath();ctx.arc(0,0,PAD_R,0,Math.PI*2);ctx.stroke();
 
-  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.fillStyle='rgba(255,255,255,0.25)';
   ctx.beginPath();ctx.arc(-PAD_R*0.25,-PAD_R*0.25,PAD_R*0.5,0,Math.PI*2);ctx.fill();
   
   ctx.restore();
