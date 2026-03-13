@@ -149,6 +149,19 @@ h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,8vw,52px);color:#5a3a1
 <div id="pause-text">PAUSED<br><button id="pause-menu-btn" onclick="goToMenuFromPause()">MENU</button></div>
 <button id="pause-btn" onclick="togglePause()"><span class="bar"></span><span class="bar"></span></button>
 <div id="confetti-box" class="confetti-container"></div>
+<div id="tutorial-overlay">
+  <div class="tut-card">
+    <div class="tut-title">🏓 Welcome!</div>
+    <div class="tut-sub">QUICK START GUIDE</div>
+    <div class="tut-step"><span class="tut-step-icon">👆</span><span class="tut-step-text"><b>Move your paddle</b> by dragging on mobile or moving your mouse on desktop</span></div>
+    <div class="tut-step"><span class="tut-step-icon">🏓</span><span class="tut-step-text"><b>Hit the ball</b> past your opponent to score — first to 7 wins!</span></div>
+    <div class="tut-step"><span class="tut-step-icon">💨</span><span class="tut-step-text"><b>Swing faster</b> for a faster shot — swipe sideways to add <b>curve spin</b></span></div>
+    <div class="tut-step"><span class="tut-step-icon">⚡</span><span class="tut-step-text"><b>Smash shot:</b> Swipe forward fast when hitting. Has a <b>3.5s cooldown</b></span></div>
+    <div class="tut-step"><span class="tut-step-icon">🪙</span><span class="tut-step-text">Earn <b>coins</b> by scoring, smashing & rallying. Spend them in the <b>Store</b>!</span></div>
+    <div class="tut-step"><span class="tut-step-icon">⏸️</span><span class="tut-step-text">Press <b>P</b> or tap the pause button anytime to pause the game</span></div>
+    <button class="tut-start-btn" id="tut-got-it-btn">GOT IT — LET'S PLAY!</button>
+  </div>
+</div>
 <div id="ui-overlay">
   <div class="screen active" id="start-screen">
     <h1>🏓 TABLE TENNIS</h1>
