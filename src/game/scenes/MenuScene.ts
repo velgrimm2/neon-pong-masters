@@ -44,7 +44,6 @@ export class MenuScene extends Phaser.Scene {
       fontFamily: 'Arial',
       fontSize: '12px',
       color: '#666680',
-      letterSpacing: 6,
     }).setOrigin(0.5);
 
     // Difficulty selector
