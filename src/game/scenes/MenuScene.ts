@@ -51,7 +51,6 @@ export class MenuScene extends Phaser.Scene {
       fontFamily: 'Arial',
       fontSize: '11px',
       color: '#666680',
-      letterSpacing: 3,
     }).setOrigin(0.5);
 
     const difficulties: Array<'easy' | 'medium' | 'hard'> = ['easy', 'medium', 'hard'];

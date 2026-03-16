@@ -348,7 +348,6 @@ export class GameScene extends Phaser.Scene {
       fontFamily: 'Arial',
       fontSize: '14px',
       color: '#9999aa',
-      letterSpacing: 3,
       fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(20);
 

@@ -38,7 +38,6 @@ export class StoreScene extends Phaser.Scene {
       fontFamily: 'Arial',
       fontSize: '10px',
       color: '#666680',
-      letterSpacing: 3,
     }).setOrigin(0.5);
 
     const slotStartX = cx - 30;

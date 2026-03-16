@@ -22,7 +22,6 @@ export function createButton(
     fontSize: '14px',
     color: textColor,
     fontStyle: 'bold',
-    letterSpacing: 2,
   }).setOrigin(0.5);
 
   container.add([bg, text]);
