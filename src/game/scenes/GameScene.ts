@@ -99,7 +99,8 @@ export class GameScene extends Phaser.Scene {
     // Ball
     this.ball = this.physics.add.sprite(GAME_WIDTH / 2, TABLE.netY + 100, 'ball').setDepth(5);
     this.ball.setDisplaySize(18, 18);
-    this.ball.setCircle(this.ball.width / 2);
+    this.ballBody = this.ball.body as Phaser.Physics.Arcade.Body;
+    this.ballBody.setCircle(9);
     this.ballBody = this.ball.body as Phaser.Physics.Arcade.Body;
     this.ballBody.setCollideWorldBounds(false);
     this.ballBody.setBounce(1, 1);
